@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import {
     Box,
     Paper,
@@ -19,6 +20,7 @@ import {
 import { Info, Warning, CheckCircle, Error } from '@mui/icons-material';
 
 export const DynamicDataTable = ({ data, headers, filteredData }) => {
+    const navigate = useNavigate();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [orderBy, setOrderBy] = useState('');
@@ -81,6 +83,17 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
+    };
+
+    // Obsługa kliknięcia w wiersz - nawigacja do widoku pojedynczego sklepu
+    const handleRowClick = (row) => {
+        const storeId = row.StoreId;
+        if (storeId) {
+            console.log('🏪 Przechodzę do sklepu:', storeId);
+            navigate(`/sklep/${storeId}`);
+        } else {
+            console.warn('⚠️ Brak StoreId w wierszu:', row);
+        }
     };
 
     // Funkcja do stylizowania komórek na podstawie wartości
@@ -269,8 +282,6 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
         );
     }
 
-    const paginatedData = sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
     return (
         <Box>
             <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
@@ -336,10 +347,11 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {paginatedData.map((row, index) => (
+                        {sortedData.map((row, index) => (
                             <TableRow 
                                 key={index}
                                 hover
+                                onClick={() => handleRowClick(row)}
                                 sx={{ 
                                     '&:nth-of-type(even)': { 
                                         backgroundColor: 'rgba(0, 0, 0, 0.02)'

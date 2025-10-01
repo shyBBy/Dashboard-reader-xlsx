@@ -7,4 +7,5 @@ export default [
   route("info", "routes/info.jsx"),
   route("charts", "routes/charts.jsx"),
   route("analytics", "routes/analytics.jsx"),
+  route("sklep/:storeId", "routes/store.jsx"),
 ];
