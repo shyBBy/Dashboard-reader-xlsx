@@ -29,14 +29,17 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
     // NAPRAWIONE: Używaj filteredData jeśli istnieje, w przeciwnym razie data
     const dataToDisplay = filteredData !== undefined ? filteredData : (data || []);
     
-    console.log('🔄 TABELA OTRZYMAŁA:', {
-        originalDataLength: data?.length || 0,
-        filteredDataLength: filteredData?.length || 0,
-        filteredDataType: typeof filteredData,
-        filteredDataIsArray: Array.isArray(filteredData),
-        displayingLength: dataToDisplay.length,
-        displayingFirstRow: dataToDisplay[0]?.StoreId || 'BRAK'
-    }); // Debug
+    // Debug tylko przy zmianach danych
+    useEffect(() => {
+        console.log('🔄 TABELA OTRZYMAŁA:', {
+            originalDataLength: data?.length || 0,
+            filteredDataLength: filteredData?.length || 0,
+            filteredDataType: typeof filteredData,
+            filteredDataIsArray: Array.isArray(filteredData),
+            displayingLength: dataToDisplay.length,
+            displayingFirstRow: dataToDisplay[0]?.StoreId || 'BRAK'
+        });
+    }, [data?.length, filteredData?.length, dataToDisplay.length]); // Tylko przy zmianach długości danych
 
     // Reset strony do 0 gdy zmienią się dane (jak w Twojej starej aplikacji)
     useEffect(() => {
@@ -301,9 +304,9 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                 <Table stickyHeader size="medium">
                     <TableHead>
                         <TableRow>
-                            {headers?.map((header) => (
+                            {headers?.map((header, index) => (
                                 <TableCell 
-                                    key={header}
+                                    key={`header-${header || 'empty'}-${index}`}
                                     sx={{ 
                                         fontWeight: 'bold',
                                         fontSize: '0.95rem',
@@ -347,9 +350,12 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {sortedData.map((row, index) => (
+                        {sortedData.map((row, index) => {
+                            // nie mamy zadnego UUID to robimy tak
+                            const uniqueKey = `${row.StoreId || 'noStore'}-${row.BlockerName || 'noBlocker'}-${index}`;
+                            return (
                             <TableRow 
-                                key={index}
+                                key={uniqueKey}
                                 hover
                                 onClick={() => handleRowClick(row)}
                                 sx={{ 
@@ -365,9 +371,9 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                                     cursor: 'pointer'
                                 }}
                             >
-                                {headers?.map((header) => (
+                                {headers?.map((header, headerIndex) => (
                                     <TableCell 
-                                        key={header}
+                                        key={`cell-${header || 'empty'}-${headerIndex}`}
                                         sx={{
                                             ...getCellStyle(header, row[header]),
                                             fontSize: '0.9rem',
@@ -385,7 +391,8 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                                     </TableCell>
                                 ))}
                             </TableRow>
-                        ))}
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>
