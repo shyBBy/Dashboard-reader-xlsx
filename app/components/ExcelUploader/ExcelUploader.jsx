@@ -113,15 +113,15 @@ export const ExcelUploader = ({ onDataLoaded, onError }) => {
     return (
         <Box sx={{ width: '100%' }}>
             <Paper 
-                elevation={dragOver ? 8 : 3}
+                elevation={dragOver ? 4 : 1}
                 sx={{ 
                     p: 4, 
                     textAlign: 'center',
-                    border: dragOver ? '2px dashed' : '2px solid transparent',
-                    borderColor: dragOver ? 'primary.main' : 'transparent',
+                    border: `2px dashed ${dragOver ? 'primary.main' : 'divider'}`,
                     backgroundColor: dragOver ? 'action.hover' : 'background.paper',
-                    transition: 'all 0.3s ease',
-                    cursor: uploading ? 'not-allowed' : 'pointer'
+                    transition: 'all 0.2s ease',
+                    cursor: uploading ? 'not-allowed' : 'pointer',
+                    borderRadius: 2
                 }}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
@@ -146,12 +146,12 @@ export const ExcelUploader = ({ onDataLoaded, onError }) => {
                     </>
                 ) : (
                     <>
-                        <UploadFile sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
-                        <Typography variant="h5" gutterBottom>
+                        <UploadFile sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 500 }}>
                             Wgraj plik Excel (XLSX)
                         </Typography>
                         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                            Przeciągnij i upuść plik Excel lub kliknij aby wybrać
+                            Przeciągnij plik lub kliknij aby wybrać
                         </Typography>
                         <Button 
                             variant="contained" 
@@ -181,10 +181,10 @@ export const ExcelUploader = ({ onDataLoaded, onError }) => {
                         Informacje o pliku:
                     </Typography>
                     <Stack direction="row" spacing={1} flexWrap="wrap">
-                        <Chip label={`📁 ${fileInfo.name}`} />
-                        <Chip label={`📊 ${fileInfo.rows} wierszy`} />
-                        <Chip label={`📋 ${fileInfo.columns} kolumn`} />
-                        <Chip label={`📏 ${(fileInfo.size / 1024).toFixed(1)} KB`} />
+                        <Chip label={fileInfo.name} variant="outlined" />
+                        <Chip label={`${fileInfo.rows} wierszy`} variant="outlined" />
+                        <Chip label={`${fileInfo.columns} kolumn`} variant="outlined" />
+                        <Chip label={`${(fileInfo.size / 1024).toFixed(1)} KB`} variant="outlined" />
                     </Stack>
                 </Paper>
             )}

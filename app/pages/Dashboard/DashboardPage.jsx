@@ -1,11 +1,11 @@
 import React from 'react';
 import { MainLayout } from '../../layouts/MainLayout';
-import { DashboardNew } from '../../components/Dashboard/DashboardNew';
+import { Dashboard } from '../../components/Dashboard/Dashboard';
 
 export const DashboardPage = () => {
     return (
         <MainLayout>
-            <DashboardNew />
+            <Dashboard />
         </MainLayout>
     );
 };
