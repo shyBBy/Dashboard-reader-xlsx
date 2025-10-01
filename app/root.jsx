@@ -10,6 +10,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Container, Typography, Box } from '@mui/material';
 import { theme } from './theme';
+import { ExcelDataProvider } from './context/ExcelDataContext';
 
 import "./app.css";
 
@@ -48,7 +49,9 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Outlet />
+      <ExcelDataProvider>
+        <Outlet />
+      </ExcelDataProvider>
     </ThemeProvider>
   );
 }

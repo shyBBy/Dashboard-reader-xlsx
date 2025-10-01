@@ -1,13 +1,6 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import React from 'react';
+import LandingPage from './pages/LandingPage';
 
 export const App = () => {
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        // Przekierowanie na dashboard jako domyślną stronę
-        navigate('/dashboard');
-    }, [navigate]);
-
-    return null;
+    return <LandingPage />;
 };
