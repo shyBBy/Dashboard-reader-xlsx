@@ -1,0 +1,108 @@
+/**
+ * Helpery do formatowania i walidacji danych
+ */
+
+/**
+ * Sprawdza czy wartość jest liczbą
+ * @param {any} value - Wartość do sprawdzenia
+ * @returns {boolean}
+ */
+export const isNumeric = (value) => {
+    return typeof value === 'number' || (typeof value === 'string' && !isNaN(parseFloat(value)));
+};
+
+/**
+ * Formatuje wartość procentową
+ * @param {string|number} value - Wartość do sformatowania
+ * @returns {string} - Sformatowana wartość procentowa
+ */
+export const formatPercentage = (value) => {
+    if (typeof value === 'string' && value.includes('%')) {
+        return value;
+    }
+    
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return '-';
+    
+    return `${numValue.toFixed(1)}%`;
+};
+
+/**
+ * Skraca długi tekst i dodaje wielokropek
+ * @param {string} text - Tekst do skrócenia
+ * @param {number} maxLength - Maksymalna długość (domyślnie 40)
+ * @returns {string} - Skrócony tekst
+ */
+export const truncateText = (text, maxLength = 40) => {
+    if (!text || typeof text !== 'string') return '-';
+    
+    if (text.length <= maxLength) return text;
+    
+    return `${text.substring(0, maxLength - 3)}...`;
+};
+
+/**
+ * Sprawdza czy tekst jest długi i potrzebuje skrócenia
+ * @param {string} text - Tekst do sprawdzenia
+ * @param {number} maxLength - Maksymalna długość (domyślnie 40)
+ * @returns {boolean}
+ */
+export const isLongText = (text, maxLength = 40) => {
+    return typeof text === 'string' && text.length > maxLength;
+};
+
+/**
+ * Formatuje wartość do wyświetlenia w tabeli
+ * @param {any} value - Wartość do sformatowania
+ * @returns {string} - Sformatowana wartość
+ */
+export const formatDisplayValue = (value) => {
+    if (value === null || value === undefined || value === '') {
+        return '-';
+    }
+    
+    // Wartości liczbowe
+    if (isNumeric(value)) {
+        const numValue = parseFloat(value);
+        // Jeśli to całkowita, pokaż bez miejsc po przecinku
+        if (Number.isInteger(numValue)) {
+            return numValue.toString();
+        }
+        // Inaczej z 2 miejscami po przecinku
+        return numValue.toFixed(2);
+    }
+    
+    return String(value);
+};
+
+/**
+ * Generuje unikalny klucz dla wiersza tabeli
+ * @param {object} row - Wiersz danych
+ * @param {number} index - Indeks wiersza
+ * @returns {string} - Unikalny klucz
+ */
+export const generateRowKey = (row, index) => {
+    const storeId = row.StoreId || 'noStore';
+    const blockerName = row.BlockerName || 'noBlocker';
+    return `${storeId}-${blockerName}-${index}`;
+};
+
+/**
+ * Generuje unikalny klucz dla nagłówka
+ * @param {string} header - Nazwa nagłówka
+ * @param {number} index - Indeks nagłówka
+ * @returns {string} - Unikalny klucz
+ */
+export const generateHeaderKey = (header, index) => {
+    return `header-${header || 'empty'}-${index}`;
+};
+
+/**
+ * Generuje unikalny klucz dla komórki
+ * @param {string} header - Nazwa nagłówka
+ * @param {number} index - Indeks komórki
+ * @returns {string} - Unikalny klucz
+ */
+export const generateCellKey = (header, index) => {
+    return `cell-${header || 'empty'}-${index}`;
+};

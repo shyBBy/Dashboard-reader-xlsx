@@ -1,4 +1,4 @@
-import { DashboardPage } from "../pages/DashboardPage";
+import { DashboardPage } from "../pages/Dashboard/DashboardPage";
 
 export function meta() {
   return [

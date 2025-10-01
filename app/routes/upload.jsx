@@ -1,4 +1,4 @@
-import { UploadPage } from "../pages/UploadPage";
+import { UploadPage } from "../pages/Upload/UploadPage";
 
 export function meta() {
   return [

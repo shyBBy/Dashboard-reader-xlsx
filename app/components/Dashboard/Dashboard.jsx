@@ -3,7 +3,7 @@ import { Box, Container, Typography, Alert, Divider } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { DataFilters } from '../DataFilters/DataFilters';
 import { KPICards } from '../KPICards/KPICards';
-import { DynamicDataTable } from '../DynamicDataTable/DynamicDataTable';
+import { DynamicDataTable } from '../DynamicDataTable/DynamicDataTableNew';
 import { useExcelData } from '../../context/ExcelDataContext';
 
 export const Dashboard = () => {

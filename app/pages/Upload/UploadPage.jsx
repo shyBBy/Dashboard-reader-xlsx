@@ -1,10 +1,10 @@
 import React from 'react';
-import { MainLayout } from '../layouts/MainLayout';
+import { MainLayout } from '../../layouts/MainLayout';
 import { Typography, Box, Paper, Button, Alert, Divider } from '@mui/material';
 import { UploadFile, Delete, Dashboard } from '@mui/icons-material';
 import { Link } from 'react-router';
-import { ExcelUploader } from '../components/ExcelUploader/ExcelUploader';
-import { useExcelData } from '../context/ExcelDataContext';
+import { ExcelUploader } from '../../components/ExcelUploader/ExcelUploader';
+import { useExcelData } from '../../context/ExcelDataContext';
 
 const UploadView = () => {
     const { hasData, loadData, clearData, handleError, fileName, totalRows } = useExcelData();
