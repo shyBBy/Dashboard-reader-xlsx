@@ -1,0 +1,9 @@
+{
+  "remote.portsAttributes": {
+    "5173": {
+      "label": "Development Server",
+      "onAutoForward": "notify",
+      "visibility": "public"
+    }
+  }
+}
