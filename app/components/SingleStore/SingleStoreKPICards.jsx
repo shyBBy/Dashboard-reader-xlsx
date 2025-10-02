@@ -44,12 +44,41 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
         }, { rekomenduj: 0, brakAkcji: 0 });
 
         // Dostępność w drogerii (bez liczenia średniej - każdy rekord ma tę samą wartość dla sklepu)
-        const dostepnoscDrogeria = storeData.length > 0 ? 
-            parseFloat(storeData[0].DOSTEPNOSC_DROGERIA?.replace?.('%', '') || 0).toFixed(1) : 0;
-
+        const dostepnoscDrogeria = storeData.length > 0 ? (() => {
+            const rawValue = storeData[0].DOSTEPNOSC_DROGERIA;
+            if (typeof rawValue === 'string') {
+                // Jeśli to string z %, usuń % i parsuj
+                return parseFloat(rawValue.replace('%', '') || 0).toFixed(1);
+            } else if (typeof rawValue === 'number') {
+                // Jeśli to liczba, sprawdź czy to format dziesiętny (0.9646) czy procentowy (96.46)
+                if (rawValue <= 1) {
+                    // Format dziesiętny - pomnóż przez 100
+                    return (rawValue * 100).toFixed(1);
+                } else {
+                    // Format procentowy
+                    return rawValue.toFixed(1);
+                }
+            }
+            return '0.0';
+        })() : '0.0';
         // Dostępność sieć (bez liczenia średniej - każdy rekord ma tę samą wartość dla sklepu)  
-        const dostepnoscSiec = storeData.length > 0 ? 
-            parseFloat(storeData[0].Dostepnosc_siec?.replace?.('%', '') || 0).toFixed(1) : 0;
+        const dostepnoscSiec = storeData.length > 0 ? (() => {
+            const rawValue = storeData[0].Dostepnosc_siec;
+            if (typeof rawValue === 'string') {
+                // Jeśli to string z %, usuń % i parsuj
+                return parseFloat(rawValue.replace('%', '') || 0).toFixed(1);
+            } else if (typeof rawValue === 'number') {
+                // Jeśli to liczba, sprawdź czy to format dziesiętny (0.9646) czy procentowy (96.46)
+                if (rawValue <= 1) {
+                    // Format dziesiętny - pomnóż przez 100
+                    return (rawValue * 100).toFixed(1);
+                } else {
+                    // Format procentowy
+                    return rawValue.toFixed(1);
+                }
+            }
+            return '0.0';
+        })() : '0.0';
 
         // Największy bloker ostatnie zamówienie
         const blokerLastOrder = storeData.reduce((max, row) => {
@@ -114,18 +143,54 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             title: 'Dostępność w Drogerii',
             value: `${kpiData.dostepnoscDrogeria}%`,
             icon: <Inventory />,
-            color: parseFloat(kpiData.dostepnoscDrogeria) > 80 ? theme.palette.success.main : theme.palette.warning.main,
-            bgColor: parseFloat(kpiData.dostepnoscDrogeria) > 80 ? theme.palette.success.light + '20' : theme.palette.warning.light + '20',
-            subtitle: parseFloat(kpiData.dostepnoscDrogeria) > 80 ? 'wysoka dostępność' : 'wymaga uwagi',
+            color: (() => {
+                const value = parseFloat(kpiData.dostepnoscDrogeria);
+                if (value >= 96.7) return theme.palette.success.main; // Zielony - bardzo dobra
+                if (value >= 92) return theme.palette.info.main;     // Niebieski - dopuszczalna  
+                if (value >= 89) return theme.palette.warning.main;  // Pomarańczowy - słaba
+                return theme.palette.error.main;                     // Czerwony - krytyczna
+            })(),
+            bgColor: (() => {
+                const value = parseFloat(kpiData.dostepnoscDrogeria);
+                if (value >= 96.7) return theme.palette.success.light + '20';
+                if (value >= 92) return theme.palette.info.light + '20';
+                if (value >= 89) return theme.palette.warning.light + '20';
+                return theme.palette.error.light + '20';
+            })(),
+            subtitle: (() => {
+                const value = parseFloat(kpiData.dostepnoscDrogeria);
+                if (value >= 96.7) return 'bardzo dobra dostępność';
+                if (value >= 92) return 'dostępność dopuszczalna';
+                if (value >= 89) return 'słaba dostępność';
+                return 'krytyczna dostępność';
+            })(),
             progress: parseFloat(kpiData.dostepnoscDrogeria)
         },
         {
             title: 'Dostępność Sieć',
             value: `${kpiData.dostepnoscSiec}%`,
             icon: <Assessment />,
-            color: parseFloat(kpiData.dostepnoscSiec) > 80 ? theme.palette.success.main : theme.palette.info.main,
-            bgColor: parseFloat(kpiData.dostepnoscSiec) > 80 ? theme.palette.success.light + '20' : theme.palette.info.light + '20',
-            subtitle: parseFloat(kpiData.dostepnoscSiec) > 80 ? 'bardzo dobra' : 'w normie',
+            color: (() => {
+                const value = parseFloat(kpiData.dostepnoscSiec);
+                if (value >= 96.7) return theme.palette.success.main; // Zielony - bardzo dobra
+                if (value >= 92) return theme.palette.info.main;     // Niebieski - dopuszczalna  
+                if (value >= 89) return theme.palette.warning.main;  // Pomarańczowy - słaba
+                return theme.palette.error.main;                     // Czerwony - krytyczna
+            })(),
+            bgColor: (() => {
+                const value = parseFloat(kpiData.dostepnoscSiec);
+                if (value >= 96.7) return theme.palette.success.light + '20';
+                if (value >= 92) return theme.palette.info.light + '20';
+                if (value >= 89) return theme.palette.warning.light + '20';
+                return theme.palette.error.light + '20';
+            })(),
+            subtitle: (() => {
+                const value = parseFloat(kpiData.dostepnoscSiec);
+                if (value >= 96.7) return 'bardzo dobra sieć';
+                if (value >= 92) return 'sieć dopuszczalna';
+                if (value >= 89) return 'sieć słaba';
+                return 'sieć krytyczna';
+            })(),
             progress: parseFloat(kpiData.dostepnoscSiec)
         },
         {
