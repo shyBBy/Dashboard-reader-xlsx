@@ -52,13 +52,53 @@ export const isLongText = (text, maxLength = 40) => {
 };
 
 /**
+ * Formatuje datę do formatu DD-MM-YYYY
+ * @param {string|Date} dateValue - Wartość daty do sformatowania
+ * @returns {string} - Sformatowana data lub '-'
+ */
+export const formatDate = (dateValue) => {
+    if (!dateValue) return '-';
+    
+    try {
+        const date = new Date(dateValue);
+        if (isNaN(date.getTime())) return '-';
+        
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        
+        return `${day}-${month}-${year}`;
+    } catch (error) {
+        return '-';
+    }
+};
+
+/**
+ * Sprawdza czy wartość może być datą (zawiera słowo DATE lub kończy się na _zam)
+ * @param {string} header - Nazwa nagłówka
+ * @returns {boolean}
+ */
+export const isDateField = (header) => {
+    if (!header || typeof header !== 'string') return false;
+    
+    const upperHeader = header.toUpperCase();
+    return upperHeader.includes('DATE') || upperHeader.endsWith('_ZAM');
+};
+
+/**
  * Formatuje wartość do wyświetlenia w tabeli
  * @param {any} value - Wartość do sformatowania
+ * @param {string} header - Nazwa nagłówka (opcjonalnie dla dat)
  * @returns {string} - Sformatowana wartość
  */
-export const formatDisplayValue = (value) => {
+export const formatDisplayValue = (value, header = '') => {
     if (value === null || value === undefined || value === '') {
         return '-';
+    }
+    
+    // Sprawdź czy to pole daty
+    if (isDateField(header)) {
+        return formatDate(value);
     }
     
     // Wartości liczbowe

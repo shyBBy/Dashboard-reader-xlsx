@@ -75,7 +75,19 @@ export default function BlockerAnalysis({ storeData, storeId }) {
 
         // Statystyki ogólne
         const totalBlockers = Object.keys(allBlockers).length;
-        const totalOccurrences = storeData.length;
+        
+        // Obliczamy sumy linii z blokerów
+        const totalLastOrderLines = storeData.reduce((sum, row) => {
+            const lastOrderLines = parseInt(row.Bloker_ostatnie_zam) || 0;
+            return sum + lastOrderLines;
+        }, 0);
+        
+        const totalNextOrderLines = storeData.reduce((sum, row) => {
+            const nextOrderLines = parseInt(row.Bloker_najblizsze_zam) || 0;
+            return sum + nextOrderLines;
+        }, 0);
+        
+        const totalLinesSum = totalLastOrderLines + totalNextOrderLines;
         
         // Najczęstszy bloker
         const topBlocker = sortedBlockers[0];
@@ -94,7 +106,9 @@ export default function BlockerAnalysis({ storeData, storeId }) {
             allBlockers,
             sortedBlockers,
             totalBlockers,
-            totalOccurrences,
+            totalLastOrderLines,
+            totalNextOrderLines,
+            totalLinesSum,
             topBlocker,
             highImpactBlockers,
             trendingUpBlockers
@@ -148,10 +162,13 @@ export default function BlockerAnalysis({ storeData, storeId }) {
                         <CardContent sx={{ textAlign: 'center' }}>
                             <Block sx={{ fontSize: 40, color: theme.palette.warning.main, mb: 1 }} />
                             <Typography variant="h4" sx={{ fontWeight: 'bold', color: theme.palette.warning.main }}>
-                                {analysisData.totalOccurrences}
+                                {analysisData.totalLinesSum.toLocaleString()}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Wszystkich Wystąpień
+                                Łączna Suma Linii
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                                Ostatnie: {analysisData.totalLastOrderLines.toLocaleString()} | Następne: {analysisData.totalNextOrderLines.toLocaleString()}
                             </Typography>
                         </CardContent>
                     </Card>

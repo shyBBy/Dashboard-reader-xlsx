@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Container, Typography, Alert, Divider } from '@mui/material';
+import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { DataFilters } from '../DataFilters/DataFilters';
 import { KPICards } from '../KPICards/KPICards';
@@ -35,7 +35,7 @@ export const Dashboard = () => {
     }
 
     return (
-        <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 }, py: 3 }}>
             {/* Nagłówek */}
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
@@ -76,12 +76,7 @@ export const Dashboard = () => {
                 filteredData={filteredData}
             />
 
-            {/* Informacje o filtrach */}
-            <Box sx={{ mt: 2, p: 2, backgroundColor: 'info.light', borderRadius: 1 }}>
-                <Typography variant="body2">
-                    🔍 <strong>Pokazuję:</strong> {filteredCount} z {excelData.data.length} rekordów
-                </Typography>
-            </Box>
-        </Container>
+
+        </Box>
     );
 };

@@ -45,8 +45,8 @@ export const MainLayout = ({ children }) => {
                     }}
                 >
                     <Toolbar />
-                    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-                        <Grid container spacing={3}>
+                    <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 3, width: '100%' }}>
+                        <Grid container spacing={3} sx={{ width: '100%', m: 0 }}>
                             {children}
                         </Grid>
                         <Copyright sx={{ pt: 4 }} />

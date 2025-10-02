@@ -12,11 +12,18 @@ export const TableDataRow = ({ row, index, headers, onRowClick }) => {
     const theme = useTheme();
     const uniqueKey = generateRowKey(row, index);
 
+    const handleRowClick = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log('🖱️ TableDataRow - Kliknięto wiersz (przed onRowClick):', row.StoreId);
+        onRowClick(row);
+    };
+
     return (
         <TableRow 
             key={uniqueKey}
             hover
-            onClick={() => onRowClick(row)}
+            onClick={handleRowClick}
             sx={{ 
                 '&:nth-of-type(even)': { 
                     backgroundColor: 'rgba(0, 0, 0, 0.02)'

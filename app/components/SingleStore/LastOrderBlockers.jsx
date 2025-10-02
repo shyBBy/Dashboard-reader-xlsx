@@ -22,6 +22,7 @@ import {
     Info
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
+import { formatDate } from '../../helpers/dataFormatting.helper';
 
 export default function LastOrderBlockers({ storeData, storeId }) {
     const theme = useTheme();
@@ -29,61 +30,62 @@ export default function LastOrderBlockers({ storeData, storeId }) {
     const lastOrderData = useMemo(() => {
         if (!storeData || storeData.length === 0) return null;
 
-        // Filtrujemy dane które mają informacje o ostatnim zamówieniu
-        const lastOrderRecords = storeData.filter(row => 
-            row.DATE_last_zam || row.BlockerName
-        );
-
-        if (lastOrderRecords.length === 0) return null;
-
-        // Grupujemy blokery według nazwy dla ostatniego zamówienia
-        const blockerGroups = lastOrderRecords.reduce((acc, row) => {
-            const bloker = row.BlockerName;
+        // Grupujemy blokery według nazwy i analizujemy Bloker_ostatnie_zam
+        const blockerGroups = storeData.reduce((acc, row) => {
+            const blokerName = row.BlockerName;
+            const ostatnieZamLinii = parseInt(row.Bloker_ostatnie_zam) || 0;
             const wplyw = row.Wplyw;
             const date = row.DATE_last_zam;
             const dostepnosc = row.DOSTEPNOSC_DROGERIA;
             
-            if (bloker) {
-                if (!acc[bloker]) {
-                    acc[bloker] = {
-                        name: bloker,
-                        count: 0,
+            if (blokerName && ostatnieZamLinii > 0) {
+                if (!acc[blokerName]) {
+                    acc[blokerName] = {
+                        name: blokerName,
+                        totalLines: 0,
                         records: [],
                         wplyw: {},
                         dates: [],
-                        dostepnosc: []
+                        dostepnosc: [],
+                        avgLines: 0
                     };
                 }
                 
-                acc[bloker].count++;
-                acc[bloker].records.push(row);
+                acc[blokerName].totalLines += ostatnieZamLinii;
+                acc[blokerName].records.push(row);
                 
                 if (wplyw) {
-                    acc[bloker].wplyw[wplyw] = (acc[bloker].wplyw[wplyw] || 0) + 1;
+                    acc[blokerName].wplyw[wplyw] = (acc[blokerName].wplyw[wplyw] || 0) + 1;
                 }
                 
                 if (date) {
-                    acc[bloker].dates.push(new Date(date));
+                    acc[blokerName].dates.push(new Date(date));
                 }
                 
                 if (dostepnosc) {
-                    acc[bloker].dostepnosc.push(parseFloat(dostepnosc.replace('%', '')));
+                    const parsedDostepnosc = typeof dostepnosc === 'string' ? parseFloat(dostepnosc.replace('%', '')) : (typeof dostepnosc === 'number' ? dostepnosc : 0);
+                    acc[blokerName].dostepnosc.push(parsedDostepnosc);
                 }
             }
             
             return acc;
         }, {});
 
-        // Sortujemy według częstości wystąpień
+        // Obliczamy średnią liczbę linii na rekord dla każdego blokera
+        Object.values(blockerGroups).forEach(bloker => {
+            bloker.avgLines = Math.round(bloker.totalLines / bloker.records.length);
+        });
+
+        // Sortujemy według całkowitej liczby linii (najważniejsze metryki)
         const sortedBlockers = Object.values(blockerGroups)
-            .sort((a, b) => b.count - a.count);
+            .sort((a, b) => b.totalLines - a.totalLines);
 
         // Statystyki
         const totalLastOrderBlockers = Object.keys(blockerGroups).length;
-        const totalLastOrderOccurrences = lastOrderRecords.length;
+        const totalLastOrderLines = sortedBlockers.reduce((sum, bloker) => sum + bloker.totalLines, 0);
         
         // Najnowsza data ostatniego zamówienia
-        const allDates = lastOrderRecords
+        const allDates = storeData
             .map(row => row.DATE_last_zam)
             .filter(Boolean)
             .map(date => new Date(date))
@@ -91,19 +93,12 @@ export default function LastOrderBlockers({ storeData, storeId }) {
         
         const latestOrderDate = allDates[0];
         
-        // Średnia dostępność dla ostatnich zamówień
-        const avgDostepnosc = lastOrderRecords
-            .map(row => parseFloat(row.DOSTEPNOSC_DROGERIA?.replace('%', '') || 0))
-            .filter(val => val > 0)
-            .reduce((sum, val, _, arr) => sum + val / arr.length, 0);
-
         return {
             blockerGroups,
             sortedBlockers,
             totalLastOrderBlockers,
-            totalLastOrderOccurrences,
-            latestOrderDate,
-            avgDostepnosc: avgDostepnosc.toFixed(1)
+            totalLastOrderLines,
+            latestOrderDate
         };
     }, [storeData]);
 
@@ -155,7 +150,7 @@ export default function LastOrderBlockers({ storeData, storeId }) {
                             📦 Blokery - Ostatnie Zamówienie
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {lastOrderData.totalLastOrderBlockers} różnych blokerów, {lastOrderData.totalLastOrderOccurrences} wystąpień
+                            {lastOrderData.totalLastOrderBlockers} blokerów • {lastOrderData.totalLastOrderLines.toLocaleString()} linii zablokowanych
                         </Typography>
                     </Box>
                 </Box>
@@ -164,10 +159,8 @@ export default function LastOrderBlockers({ storeData, storeId }) {
                 {lastOrderData.latestOrderDate && (
                     <Alert severity="info" sx={{ mb: 3 }} icon={<DateRange />}>
                         <Typography variant="body2">
-                            <strong>Ostatnie zamówienie:</strong> {lastOrderData.latestOrderDate.toLocaleDateString('pl-PL')}
-                            {lastOrderData.avgDostepnosc > 0 && (
-                                <> • <strong>Średnia dostępność:</strong> {lastOrderData.avgDostepnosc}%</>
-                            )}
+                            <strong>Ostatnie zamówienie:</strong> {formatDate(lastOrderData.latestOrderDate)}
+                            <> • <strong>Łącznie zablokowano:</strong> {lastOrderData.totalLastOrderLines.toLocaleString()} linii</>
                         </Typography>
                     </Alert>
                 )}
@@ -192,9 +185,15 @@ export default function LastOrderBlockers({ storeData, storeId }) {
                                     mb: 1
                                 }}>
                                     <Badge 
-                                        badgeContent={bloker.count} 
-                                        color="primary"
-                                        sx={{ mr: 2 }}
+                                        badgeContent={`${bloker.totalLines}L`}
+                                        color="error"
+                                        sx={{ 
+                                            mr: 2,
+                                            '& .MuiBadge-badge': {
+                                                fontSize: '0.7rem',
+                                                fontWeight: 'bold'
+                                            }
+                                        }}
                                     >
                                         <Avatar sx={{ 
                                             backgroundColor: dominantWplyw ? getWplywColor(dominantWplyw[0]) + '20' : theme.palette.grey[200],
@@ -205,17 +204,41 @@ export default function LastOrderBlockers({ storeData, storeId }) {
                                     </Badge>
                                     
                                     <ListItemText
+                                        primaryTypographyProps={{ component: 'div' }}
+                                        secondaryTypographyProps={{ component: 'div' }}
                                         primary={
-                                            <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
-                                                {bloker.name}
-                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                                <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                                                    {bloker.name}
+                                                </Typography>
+                                                <Chip 
+                                                    label={`${bloker.totalLines.toLocaleString()} linii`}
+                                                    size="small"
+                                                    color="error"
+                                                    sx={{ fontWeight: 'bold' }}
+                                                />
+                                            </Box>
                                         }
                                         secondary={
                                             <Box sx={{ mt: 1 }}>
                                                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                                                    <Chip 
+                                                        label={`Średnio: ${bloker.avgLines} linii/rekord`}
+                                                        size="small"
+                                                        color="info"
+                                                        sx={{ fontWeight: 'medium' }}
+                                                    />
+                                                    
+                                                    <Chip 
+                                                        label={`${bloker.records.length} rekordów`}
+                                                        size="small"
+                                                        color="default"
+                                                        sx={{ fontWeight: 'medium' }}
+                                                    />
+                                                    
                                                     {dominantWplyw && (
                                                         <Chip 
-                                                            label={`${getWplywIcon(dominantWplyw[0])} ${dominantWplyw[0]} (${dominantWplyw[1]})`}
+                                                            label={`${getWplywIcon(dominantWplyw[0])} ${dominantWplyw[0]}`}
                                                             size="small"
                                                             sx={{
                                                                 backgroundColor: getWplywColor(dominantWplyw[0]) + '20',
@@ -224,19 +247,11 @@ export default function LastOrderBlockers({ storeData, storeId }) {
                                                             }}
                                                         />
                                                     )}
-                                                    
-                                                    {avgDostepnoscBloker && (
-                                                        <Chip 
-                                                            label={`📦 ${avgDostepnoscBloker}%`}
-                                                            size="small"
-                                                            color={avgDostepnoscBloker >= 95 ? 'success' : avgDostepnoscBloker >= 90 ? 'warning' : 'error'}
-                                                        />
-                                                    )}
                                                 </Box>
                                                 
                                                 {latestDate && (
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        📅 {latestDate.toLocaleDateString('pl-PL')}
+                                                    <Typography variant="caption" color="text.secondary" component="span">
+                                                        📅 Data: {formatDate(latestDate)}
                                                     </Typography>
                                                 )}
                                             </Box>
@@ -253,8 +268,8 @@ export default function LastOrderBlockers({ storeData, storeId }) {
                 {lastOrderData.sortedBlockers.length > 0 && (
                     <Box sx={{ mt: 2, p: 2, backgroundColor: theme.palette.grey[50], borderRadius: 1 }}>
                         <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-                            💡 <strong>Podsumowanie:</strong> Znaleziono {lastOrderData.totalLastOrderBlockers} różnych blokerów 
-                            w ostatnich zamówieniach. Najczęstszy: <strong>{lastOrderData.sortedBlockers[0]?.name}</strong>
+                            💡 <strong>Podsumowanie:</strong> {lastOrderData.totalLastOrderBlockers} blokerów zablokowało łącznie {lastOrderData.totalLastOrderLines.toLocaleString()} linii.
+                            Największy problem: <strong>{lastOrderData.sortedBlockers[0]?.name}</strong> ({lastOrderData.sortedBlockers[0]?.totalLines.toLocaleString()} linii)
                         </Typography>
                     </Box>
                 )}

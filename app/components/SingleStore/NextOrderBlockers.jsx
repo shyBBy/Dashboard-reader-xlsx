@@ -37,71 +37,76 @@ export default function NextOrderBlockers({ storeData, storeId }) {
 
         if (nextOrderRecords.length === 0) return null;
 
-        // Grupujemy blokery według nazwy dla następnego zamówienia
-        const blockerGroups = nextOrderRecords.reduce((acc, row) => {
-            const bloker = row.BlockerName;
+        // Grupujemy blokery według nazwy i analizujemy Bloker_najblizsze_zam
+        const blockerGroups = storeData.reduce((acc, row) => {
+            const blokerName = row.BlockerName;
+            const najblizsze_zam_linii = parseInt(row.Bloker_najblizsze_zam) || 0;
             const wplyw = row.Wplyw;
             const date = row.DATE_next_zam;
             const dostepnosc = row.DOSTEPNOSC_DROGERIA;
             const trend = row.Trend_analiza;
             const decyzja = row.Decyzja;
             
-            if (bloker) {
-                if (!acc[bloker]) {
-                    acc[bloker] = {
-                        name: bloker,
-                        count: 0,
+            if (blokerName && najblizsze_zam_linii > 0) {
+                if (!acc[blokerName]) {
+                    acc[blokerName] = {
+                        name: blokerName,
+                        totalLines: 0,
                         records: [],
                         wplyw: {},
                         dates: [],
                         dostepnosc: [],
                         trends: [],
-                        decyzje: []
+                        decyzje: [],
+                        priority: 0
                     };
                 }
                 
-                acc[bloker].count++;
-                acc[bloker].records.push(row);
+                // Dodajemy liczbę linii
+                acc[blokerName].totalLines += najblizsze_zam_linii;
+                acc[blokerName].records.push(row);
                 
                 if (wplyw) {
-                    acc[bloker].wplyw[wplyw] = (acc[bloker].wplyw[wplyw] || 0) + 1;
+                    acc[blokerName].wplyw[wplyw] = (acc[blokerName].wplyw[wplyw] || 0) + 1;
                 }
                 
                 if (date) {
-                    acc[bloker].dates.push(new Date(date));
+                    acc[blokerName].dates.push(new Date(date));
                 }
                 
-                if (dostepnosc) {
-                    acc[bloker].dostepnosc.push(parseFloat(dostepnosc.replace('%', '')));
+                if (dostepnosc !== undefined) {
+                    const dostepnoscVal = typeof dostepnosc === 'string' ? 
+                        parseFloat(dostepnosc.replace('%', '')) : 
+                        parseFloat(dostepnosc) || 0;
+                    acc[blokerName].dostepnosc.push(dostepnoscVal);
                 }
                 
                 if (trend) {
-                    acc[bloker].trends.push(trend);
+                    acc[blokerName].trends.push(trend);
                 }
                 
                 if (decyzja) {
-                    acc[bloker].decyzje.push(decyzja);
+                    acc[blokerName].decyzje.push(decyzja);
                 }
             }
             
             return acc;
         }, {});
 
-        // Sortujemy według wpływu i częstości
-        const sortedBlockers = Object.values(blockerGroups)
-            .sort((a, b) => {
-                // Najpierw według wysokiego wpływu
-                const aHighImpact = a.wplyw.WYSOKI || 0;
-                const bHighImpact = b.wplyw.WYSOKI || 0;
-                if (aHighImpact !== bHighImpact) return bHighImpact - aHighImpact;
-                
-                // Potem według częstości
-                return b.count - a.count;
-            });
+        // Obliczamy średnią liczbę linii na rekord
+        Object.values(blockerGroups).forEach(bloker => {
+            bloker.avgLines = Math.round(bloker.totalLines / bloker.records.length);
+        });
+
+        // Sortujemy według liczby linii (najważniejsze)
+        const sortedBlockers = blockerGroups && Object.keys(blockerGroups).length > 0 ? 
+            Object.values(blockerGroups).sort((a, b) => b.totalLines - a.totalLines) : 
+            [];
 
         // Statystyki
         const totalNextOrderBlockers = Object.keys(blockerGroups).length;
-        const totalNextOrderOccurrences = nextOrderRecords.length;
+        const totalNextOrderLines = sortedBlockers.length > 0 ? 
+            sortedBlockers.reduce((sum, bloker) => sum + bloker.totalLines, 0) : 0;
         
         // Najbliższa data następnego zamówienia
         const allDates = nextOrderRecords
@@ -126,7 +131,7 @@ export default function NextOrderBlockers({ storeData, storeId }) {
             blockerGroups,
             sortedBlockers,
             totalNextOrderBlockers,
-            totalNextOrderOccurrences,
+            totalNextOrderLines,
             nextOrderDate,
             recommendedBlockers: recommendedBlockers.length,
             trendingUpBlockers: trendingUpBlockers.length
@@ -189,7 +194,7 @@ export default function NextOrderBlockers({ storeData, storeId }) {
                             🔮 Blokery - Następne Zamówienie
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {nextOrderData.totalNextOrderBlockers} różnych blokerów, {nextOrderData.totalNextOrderOccurrences} wystąpień
+                            {nextOrderData.totalNextOrderBlockers} różnych blokerów, {nextOrderData.totalNextOrderLines} linii całkowicie
                         </Typography>
                     </Box>
                 </Box>
@@ -221,7 +226,8 @@ export default function NextOrderBlockers({ storeData, storeId }) {
 
                 {/* Lista blokerów */}
                 <List sx={{ maxHeight: 400, overflowY: 'auto' }}>
-                    {nextOrderData.sortedBlockers.map((bloker, index) => {
+                    {nextOrderData.sortedBlockers && nextOrderData.sortedBlockers.length > 0 ? 
+                        nextOrderData.sortedBlockers.map((bloker, index) => {
                         const dominantWplyw = Object.entries(bloker.wplyw)
                             .sort((a, b) => b[1] - a[1])[0];
                         
@@ -244,7 +250,7 @@ export default function NextOrderBlockers({ storeData, storeId }) {
                                             isTrendingUp ? `2px solid ${theme.palette.error.main}40` : 'none'
                                 }}>
                                     <Badge 
-                                        badgeContent={bloker.count} 
+                                        badgeContent={bloker.totalLines} 
                                         color="primary"
                                         sx={{ mr: 2 }}
                                     >
@@ -259,6 +265,8 @@ export default function NextOrderBlockers({ storeData, storeId }) {
                                     </Badge>
                                     
                                     <ListItemText
+                                        primaryTypographyProps={{ component: 'div' }}
+                                        secondaryTypographyProps={{ component: 'div' }}
                                         primary={
                                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                 <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
@@ -306,8 +314,12 @@ export default function NextOrderBlockers({ storeData, storeId }) {
                                                     )}
                                                 </Box>
                                                 
+                                                <Typography variant="caption" color="text.secondary" component="span">
+                                                    📊 {bloker.totalLines} linii (śr. {bloker.avgLines} na rekord)
+                                                </Typography>
+                                                
                                                 {nextDate && (
-                                                    <Typography variant="caption" color="text.secondary">
+                                                    <Typography variant="caption" color="text.secondary" component="span" sx={{ ml: 2 }}>
                                                         🔮 {nextDate.toLocaleDateString('pl-PL')}
                                                     </Typography>
                                                 )}
@@ -333,14 +345,25 @@ export default function NextOrderBlockers({ storeData, storeId }) {
                                         }
                                     />
                                 </ListItem>
-                                {index < nextOrderData.sortedBlockers.length - 1 && <Divider />}
+                                {nextOrderData.sortedBlockers && index < nextOrderData.sortedBlockers.length - 1 && <Divider />}
                             </React.Fragment>
                         );
-                    })}
+                    }) : 
+                        <ListItem>
+                            <ListItemText
+                                primaryTypographyProps={{ component: 'div' }}
+                                primary={
+                                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', fontStyle: 'italic' }}>
+                                        Brak danych o blokerach dla następnych zamówień
+                                    </Typography>
+                                }
+                            />
+                        </ListItem>
+                    }
                 </List>
 
                 {/* Podsumowanie */}
-                {nextOrderData.sortedBlockers.length > 0 && (
+                {nextOrderData.sortedBlockers && nextOrderData.sortedBlockers.length > 0 && (
                     <Box sx={{ mt: 2, p: 2, backgroundColor: theme.palette.warning[50], borderRadius: 1 }}>
                         <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
                             🔮 <strong>Prognoza:</strong> {nextOrderData.recommendedBlockers} blokerów wymaga rekomendacji, 

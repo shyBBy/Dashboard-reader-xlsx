@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Tooltip, Chip, useTheme } from '@mui/material';
 import { Info, Warning, CheckCircle, Error } from '@mui/icons-material';
-import { formatDisplayValue, isLongText, truncateText } from '../../helpers/dataFormatting.helper';
+import { formatDisplayValue, isLongText, truncateText, isDateField, formatDate } from '../../helpers/dataFormatting.helper';
 
 /**
  * Komponent do renderowania wartości komórki tabeli
@@ -78,6 +78,24 @@ export const TableCellRenderer = ({ header, value }) => {
             );
 
         default:
+            // Sprawdź czy to pole daty
+            if (isDateField(header)) {
+                return (
+                    <Typography variant="body2" sx={{ 
+                        fontWeight: 'medium',
+                        fontSize: '0.9rem',
+                        color: theme.palette.text.primary,
+                        backgroundColor: theme.palette.grey[100],
+                        padding: '4px 8px',
+                        borderRadius: 1,
+                        display: 'inline-block',
+                        border: `1px solid ${theme.palette.grey[300]}`
+                    }}>
+                        📅 {formatDate(value)}
+                    </Typography>
+                );
+            }
+
             // Długie teksty - skróć i dodaj tooltip
             if (isLongText(value)) {
                 return (
@@ -106,7 +124,7 @@ export const TableCellRenderer = ({ header, value }) => {
                         textAlign: 'right',
                         color: theme.palette.text.primary
                     }}>
-                        {formatDisplayValue(value)}
+                        {formatDisplayValue(value, header)}
                     </Typography>
                 );
             }
@@ -117,7 +135,7 @@ export const TableCellRenderer = ({ header, value }) => {
                     fontSize: '0.85rem',
                     color: theme.palette.text.primary
                 }}>
-                    {formatDisplayValue(value)}
+                    {formatDisplayValue(value, header)}
                 </Typography>
             );
     }

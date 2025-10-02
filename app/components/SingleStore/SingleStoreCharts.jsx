@@ -1,11 +1,8 @@
 import React, { useMemo } from 'react';
 import { 
     Grid, 
-    Card, 
-    CardContent, 
     Typography, 
-    Box,
-    Paper
+    Box
 } from '@mui/material';
 import {
     PieChart,
@@ -104,131 +101,171 @@ export default function SingleStoreCharts({ storeData, storeId }) {
 
     return (
         <Box>
-            <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
+            <Typography 
+                variant="h4" 
+                gutterBottom 
+                sx={{ 
+                    mb: 4, 
+                    fontWeight: 800,
+                    background: 'linear-gradient(45deg, #06b6d4, #8b5cf6)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    letterSpacing: '-0.02em'
+                }}
+            >
                 📈 Wykresy dla Sklepu {storeId}
             </Typography>
             
             <Grid container spacing={3}>
                 {/* Wykres wpływu - Pie Chart */}
                 <Grid item xs={12} md={6}>
-                    <Card elevation={3}>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                                🎯 Rozkład Wpływu
-                            </Typography>
-                            <PieChart
-                                series={[
-                                    {
-                                        data: chartData.wplywChartData.map((item, index) => ({
-                                            id: index,
-                                            value: item.value,
-                                            label: `${item.name}: ${item.percentage}%`,
-                                            color: colors[item.name] || theme.palette.grey[500]
-                                        }))
-                                    }
-                                ]}
-                                width={400}
-                                height={300}
-                                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                            />
-                        </CardContent>
-                    </Card>
+                    <Box 
+                        sx={{ 
+                            p: 3,
+                            borderRadius: 3,
+                            background: 'rgba(255, 255, 255, 0.02)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)',
+                            height: '100%'
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                            🎯 Rozkład Wpływu
+                        </Typography>
+                        <PieChart
+                            series={[
+                                {
+                                    data: chartData.wplywChartData.map((item, index) => ({
+                                        id: index,
+                                        value: item.value,
+                                        label: `${item.name}: ${item.percentage}%`,
+                                        color: colors[item.name] || theme.palette.grey[500]
+                                    }))
+                                }
+                            ]}
+                            width={400}
+                            height={300}
+                            margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                        />
+                    </Box>
                 </Grid>
 
                 {/* Wykres decyzji - Pie Chart */}
                 <Grid item xs={12} md={6}>
-                    <Card elevation={3}>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                                ✅ Rozkład Decyzji
-                            </Typography>
-                            <PieChart
-                                series={[
-                                    {
-                                        data: chartData.decyzjaChartData.map((item, index) => ({
-                                            id: index,
-                                            value: item.value,
-                                            label: `${item.name}: ${item.value}`,
-                                            color: decyzjaColors[index]
-                                        }))
-                                    }
-                                ]}
-                                width={400}
-                                height={300}
-                                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                            />
-                        </CardContent>
-                    </Card>
+                    <Box 
+                        sx={{ 
+                            p: 3,
+                            borderRadius: 3,
+                            background: 'rgba(255, 255, 255, 0.02)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)',
+                            height: '100%'
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                            ✅ Rozkład Decyzji
+                        </Typography>
+                        <PieChart
+                            series={[
+                                {
+                                    data: chartData.decyzjaChartData.map((item, index) => ({
+                                        id: index,
+                                        value: item.value,
+                                        label: `${item.name}: ${item.value}`,
+                                        color: decyzjaColors[index]
+                                    }))
+                                }
+                            ]}
+                            width={400}
+                            height={300}
+                            margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                        />
+                    </Box>
                 </Grid>
 
                 {/* Top blokery - Bar Chart */}
                 <Grid item xs={12}>
-                    <Card elevation={3}>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                                🚫 Top 10 Blokerów
+                    <Box 
+                        sx={{ 
+                            p: 3,
+                            borderRadius: 3,
+                            background: 'rgba(255, 255, 255, 0.02)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)',
+                            height: '100%'
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                            🚫 Top 10 Blokerów
+                        </Typography>
+                        <BarChart
+                            xAxis={[
+                                { 
+                                    scaleType: 'band', 
+                                    data: chartData.topBlokery.map(item => item.name),
+                                    tickLabelStyle: {
+                                        angle: -45,
+                                        textAnchor: 'end',
+                                        fontSize: 12
+                                    }
+                                }
+                            ]}
+                            series={[
+                                { 
+                                    data: chartData.topBlokery.map(item => item.count),
+                                    color: theme.palette.primary.main
+                                }
+                            ]}
+                            width={800}
+                            height={400}
+                            margin={{ top: 20, right: 30, left: 60, bottom: 100 }}
+                        />
+                    </Box>
+                </Grid>
+
+                {/* Trend dostępności w czasie (jeśli są dane) */}  
+                {chartData.dostepnoscTrendData.length > 1 && (
+                    <Grid item xs={12}>
+                        <Box 
+                            sx={{ 
+                                p: 3,
+                                borderRadius: 3,
+                                background: 'rgba(255, 255, 255, 0.02)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                backdropFilter: 'blur(10px)',
+                                height: '100%'
+                            }}
+                        >
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                                📊 Trend Dostępności w Czasie
                             </Typography>
-                            <BarChart
+                            <LineChart
                                 xAxis={[
                                     { 
                                         scaleType: 'band', 
-                                        data: chartData.topBlokery.map(item => item.name),
-                                        tickLabelStyle: {
-                                            angle: -45,
-                                            textAnchor: 'end',
-                                            fontSize: 12
-                                        }
+                                        data: chartData.dostepnoscTrendData.map(item => item.date)
+                                    }
+                                ]}
+                                yAxis={[
+                                    { 
+                                        min: 0,
+                                        max: 100,
+                                        label: 'Dostępność (%)'
                                     }
                                 ]}
                                 series={[
-                                    { 
-                                        data: chartData.topBlokery.map(item => item.count),
-                                        color: theme.palette.primary.main
+                                    {
+                                        data: chartData.dostepnoscTrendData.map(item => item.dostepnosc),
+                                        color: theme.palette.primary.main,
+                                        curve: 'linear'
                                     }
                                 ]}
                                 width={800}
                                 height={400}
-                                margin={{ top: 20, right: 30, left: 60, bottom: 100 }}
+                                margin={{ top: 20, right: 30, left: 80, bottom: 60 }}
                             />
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* Trend dostępności w czasie (jeśli są dane) */}
-                {chartData.dostepnoscTrendData.length > 1 && (
-                    <Grid item xs={12}>
-                        <Card elevation={3}>
-                            <CardContent>
-                                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                                    📊 Trend Dostępności w Czasie
-                                </Typography>
-                                <LineChart
-                                    xAxis={[
-                                        { 
-                                            scaleType: 'band', 
-                                            data: chartData.dostepnoscTrendData.map(item => item.date)
-                                        }
-                                    ]}
-                                    yAxis={[
-                                        { 
-                                            min: 0,
-                                            max: 100,
-                                            label: 'Dostępność (%)'
-                                        }
-                                    ]}
-                                    series={[
-                                        {
-                                            data: chartData.dostepnoscTrendData.map(item => item.dostepnosc),
-                                            color: theme.palette.primary.main,
-                                            curve: 'linear'
-                                        }
-                                    ]}
-                                    width={800}
-                                    height={400}
-                                    margin={{ top: 20, right: 30, left: 80, bottom: 60 }}
-                                />
-                            </CardContent>
-                        </Card>
+                        </Box>
                     </Grid>
                 )}
             </Grid>

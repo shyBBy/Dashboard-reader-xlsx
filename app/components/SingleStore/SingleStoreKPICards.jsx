@@ -1,11 +1,7 @@
 import React, { useMemo } from 'react';
 import { 
-    Grid, 
-    Card, 
-    CardContent, 
     Typography, 
     Box, 
-    Chip,
     useTheme,
     LinearProgress
 } from '@mui/material';
@@ -49,37 +45,45 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
 
         // Analiza dostępności
         const dostepnoscStats = storeData.reduce((acc, row) => {
-            const dostepnosc = parseFloat(row.DOSTEPNOSC_DROGERIA?.replace('%', '') || 0);
+            const dostepnosc = parseFloat(row.DOSTEPNOSC_DROGERIA?.replace?.('%', '') || 0);
             acc.total += dostepnosc;
             acc.count++;
-            if (dostepnosc >= 95) acc.excellent++;
-            else if (dostepnosc >= 90) acc.good++;
-            else acc.poor++;
+            if (dostepnosc > 80) acc.wysoka++;
+            else if (dostepnosc > 50) acc.srednia++;
+            else acc.niska++;
             return acc;
-        }, { total: 0, count: 0, excellent: 0, good: 0, poor: 0 });
+        }, { total: 0, count: 0, wysoka: 0, srednia: 0, niska: 0 });
 
         const avgDostepnosc = dostepnoscStats.count > 0 ? 
             (dostepnoscStats.total / dostepnoscStats.count).toFixed(1) : 0;
 
         // Analiza blokerów
-        const uniqueBlockers = [...new Set(storeData.map(row => row.BlockerName).filter(Boolean))];
-        
-        // Trend analiza
-        const trendStats = storeData.reduce((acc, row) => {
-            const trend = row.Trend_analiza;
-            if (trend && trend.includes('NASILAJACY')) acc.nasilajacy++;
-            else if (trend && trend.includes('MALEJACY')) acc.malejacy++;
-            return acc;
-        }, { nasilajacy: 0, malejacy: 0 });
+        const uniqueBlokery = new Set(storeData
+            .map(row => row.BlockerName)
+            .filter(bloker => bloker && bloker.trim() !== '')
+        ).size;
+
+        // Suma linii sprzedaży
+        const totalLinii = storeData.reduce((sum, row) => {
+            const linie = parseFloat(row.LiniiSprzedazy || 0);
+            return sum + linie;
+        }, 0);
+
+        // Suma utraconych sprzedaży
+        const totalUtraty = storeData.reduce((sum, row) => {
+            const utrata = parseFloat(row.UtraconeSprzedaze || 0);
+            return sum + utrata;
+        }, 0);
 
         return {
             totalRecords,
             wplywStats,
             decyzjaStats,
-            dostepnoscStats,
             avgDostepnosc,
-            uniqueBlockers: uniqueBlockers.length,
-            trendStats
+            dostepnoscStats,
+            uniqueBlokery,
+            totalLinii,
+            totalUtraty
         };
     }, [storeData]);
 
@@ -87,7 +91,7 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
         return (
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h6" color="text.secondary">
-                    Brak danych KPI
+                    Brak danych do analizy KPI
                 </Typography>
             </Box>
         );
@@ -95,199 +99,200 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
 
     const kpiCards = [
         {
-            title: 'Wszystkie Rekordy',
-            value: kpiData.totalRecords,
-            icon: <Assessment />,
+            title: 'Łączne Rekordy',
+            value: kpiData.totalRecords.toLocaleString(),
+            icon: <Store />,
             color: theme.palette.primary.main,
-            bgColor: theme.palette.primary.light + '20'
+            bgColor: theme.palette.primary.light + '20',
+            subtitle: 'pozycji w analizie'
+        },
+        {
+            title: 'Linie Sprzedaży',
+            value: kpiData.totalLinii.toLocaleString(),
+            icon: <Assessment />,
+            color: theme.palette.info.main,
+            bgColor: theme.palette.info.light + '20',
+            subtitle: 'suma wszystkich linii'
+        },
+        {
+            title: 'Utracone Sprzedaże',
+            value: `${kpiData.totalUtraty.toLocaleString()} zł`,
+            icon: <TrendingUp />,
+            color: theme.palette.warning.main,
+            bgColor: theme.palette.warning.light + '20',
+            subtitle: 'potencjalne straty'
         },
         {
             title: 'Średnia Dostępność',
             value: `${kpiData.avgDostepnosc}%`,
             icon: <Inventory />,
-            color: kpiData.avgDostepnosc >= 95 ? theme.palette.success.main : 
-                   kpiData.avgDostepnosc >= 90 ? theme.palette.warning.main : 
-                   theme.palette.error.main,
-            bgColor: kpiData.avgDostepnosc >= 95 ? theme.palette.success.light + '20' : 
-                     kpiData.avgDostepnosc >= 90 ? theme.palette.warning.light + '20' : 
-                     theme.palette.error.light + '20',
+            color: parseFloat(kpiData.avgDostepnosc) > 80 ? theme.palette.success.main : theme.palette.warning.main,
+            bgColor: parseFloat(kpiData.avgDostepnosc) > 80 ? theme.palette.success.light + '20' : theme.palette.warning.light + '20',
+            subtitle: parseFloat(kpiData.avgDostepnosc) > 80 ? 'wysoka dostępność' : 'wymaga uwagi',
             progress: parseFloat(kpiData.avgDostepnosc)
         },
         {
-            title: 'Wysoki Wpływ',
-            value: kpiData.wplywStats.wysoki,
-            icon: <Warning />,
+            title: 'Unikalne Blokery',
+            value: kpiData.uniqueBlokery.toString(),
+            icon: <Block />,
             color: theme.palette.error.main,
             bgColor: theme.palette.error.light + '20',
-            subtitle: `z ${kpiData.totalRecords} rekordów`
+            subtitle: 'różnych problemów'
         },
         {
             title: 'Rekomendacje',
-            value: kpiData.decyzjaStats.rekomenduj,
+            value: kpiData.decyzjaStats.rekomenduj.toString(),
             icon: <CheckCircle />,
             color: theme.palette.success.main,
             bgColor: theme.palette.success.light + '20',
-            subtitle: `${((kpiData.decyzjaStats.rekomenduj / kpiData.totalRecords) * 100).toFixed(1)}%`
+            subtitle: 'wymaga działania'
         },
         {
-            title: 'Unique Blokery',
-            value: kpiData.uniqueBlockers,
-            icon: <Block />,
-            color: theme.palette.warning.main,
-            bgColor: theme.palette.warning.light + '20',
-            subtitle: 'różnych powodów'
-        },
-        {
-            title: 'Trend Nasilający',
-            value: kpiData.trendStats.nasilajacy,
-            icon: <TrendingUp />,
+            title: 'Wpływ Wysoki',
+            value: kpiData.wplywStats.wysoki.toString(),
+            icon: <Warning />,
             color: theme.palette.error.main,
             bgColor: theme.palette.error.light + '20',
-            subtitle: 'problemów rośnie'
+            subtitle: 'priorytetowe problemy'
+        },
+        {
+            title: 'Transport',
+            value: '🚚',
+            icon: <LocalShipping />,
+            color: theme.palette.info.main,
+            bgColor: theme.palette.info.light + '20',
+            subtitle: 'logistyka sprawna'
         }
     ];
 
     return (
-        <Box sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold' }}>
-                📊 KPI Sklepu {storeId}
+        <Box sx={{ mb: 6 }}>
+            <Typography 
+                variant="h4" 
+                gutterBottom 
+                sx={{ 
+                    mb: 4, 
+                    fontWeight: 800,
+                    background: 'linear-gradient(45deg, #6366f1, #06b6d4)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    letterSpacing: '-0.02em'
+                }}
+            >
+                📊 Metryki Sklepu {storeId}
             </Typography>
             
-            <Grid container spacing={3}>
+            <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 3,
+                justifyContent: 'space-between'
+            }}>
                 {kpiCards.map((card, index) => (
-                    <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-                        <Card 
-                            elevation={3}
-                            sx={{ 
-                                height: '100%',
-                                background: `linear-gradient(135deg, ${card.bgColor}, rgba(255,255,255,0.9))`,
-                                border: `2px solid ${card.color}20`,
-                                '&:hover': {
-                                    transform: 'translateY(-4px)',
-                                    boxShadow: theme.shadows[8],
-                                    transition: 'all 0.3s ease'
-                                }
-                            }}
-                        >
-                            <CardContent sx={{ p: 3 }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                    <Box 
-                                        sx={{ 
-                                            p: 1.5, 
-                                            borderRadius: 2, 
-                                            backgroundColor: card.color + '20',
-                                            color: card.color,
-                                            mr: 2
-                                        }}
-                                    >
-                                        {card.icon}
-                                    </Box>
-                                    <Typography 
-                                        variant="body2" 
-                                        color="text.secondary"
-                                        sx={{ fontWeight: 'medium' }}
-                                    >
-                                        {card.title}
-                                    </Typography>
-                                </Box>
-                                
+                    <Box
+                        key={index}
+                        sx={{
+                            flex: '1 1 280px',
+                            minWidth: '280px',
+                            maxWidth: '320px',
+                            p: 3,
+                            borderRadius: 3,
+                            background: 'rgba(255, 255, 255, 0.02)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            backdropFilter: 'blur(10px)',
+                            transition: 'all 0.3s ease',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            '&:hover': {
+                                transform: 'translateY(-8px)',
+                                background: 'rgba(255, 255, 255, 0.03)',
+                                border: `1px solid ${card.color}60`,
+                                boxShadow: `0 20px 40px -12px ${card.color}30`
+                            },
+                            '&::before': {
+                                content: '""',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                height: '3px',
+                                background: `linear-gradient(90deg, ${card.color}, ${card.color}80)`,
+                                opacity: 0.8
+                            }
+                        }}
+                    >
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                            <Box 
+                                sx={{ 
+                                    p: 2, 
+                                    borderRadius: 2, 
+                                    background: `linear-gradient(135deg, ${card.color}20, ${card.color}10)`,
+                                    color: card.color,
+                                    mr: 3,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '1.5rem'
+                                }}
+                            >
+                                {card.icon}
+                            </Box>
+                            <Box>
+                                <Typography 
+                                    variant="body2" 
+                                    sx={{ 
+                                        fontWeight: 'medium',
+                                        color: 'rgba(255, 255, 255, 0.7)',
+                                        mb: 1
+                                    }}
+                                >
+                                    {card.title}
+                                </Typography>
                                 <Typography 
                                     variant="h4" 
-                                    component="div" 
                                     sx={{ 
                                         fontWeight: 'bold',
-                                        color: card.color,
-                                        mb: 1
+                                        color: 'white',
+                                        lineHeight: 1
                                     }}
                                 >
                                     {card.value}
                                 </Typography>
-                                
-                                {card.subtitle && (
-                                    <Typography variant="body2" color="text.secondary">
-                                        {card.subtitle}
-                                    </Typography>
-                                )}
-                                
-                                {card.progress !== undefined && (
-                                    <Box sx={{ mt: 2 }}>
-                                        <LinearProgress 
-                                            variant="determinate" 
-                                            value={Math.min(card.progress, 100)} 
-                                            sx={{
-                                                height: 6,
-                                                borderRadius: 3,
-                                                backgroundColor: card.color + '20',
-                                                '& .MuiLinearProgress-bar': {
-                                                    backgroundColor: card.color
-                                                }
-                                            }}
-                                        />
-                                    </Box>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+                            </Box>
+                        </Box>
+                        
+                        <Typography 
+                            variant="body2" 
+                            sx={{ 
+                                color: 'rgba(255, 255, 255, 0.6)',
+                                fontSize: '0.875rem',
+                                mb: card.progress ? 2 : 0
+                            }}
+                        >
+                            {card.subtitle}
+                        </Typography>
 
-            {/* Dodatkowe szczegółowe statystyki */}
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-                <Grid item xs={12} md={6}>
-                    <Card elevation={2} sx={{ p: 2 }}>
-                        <Typography variant="h6" gutterBottom>
-                            📈 Rozkład Wpływu
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                            <Chip 
-                                label={`Wysoki: ${kpiData.wplywStats.wysoki}`} 
-                                color="error" 
-                                size="small" 
-                            />
-                            <Chip 
-                                label={`Średni: ${kpiData.wplywStats.sredni}`} 
-                                color="warning" 
-                                size="small" 
-                            />
-                            <Chip 
-                                label={`Niski: ${kpiData.wplywStats.niski}`} 
-                                color="info" 
-                                size="small" 
-                            />
-                            <Chip 
-                                label={`Zerowy: ${kpiData.wplywStats.zerowy}`} 
-                                color="success" 
-                                size="small" 
-                            />
-                        </Box>
-                    </Card>
-                </Grid>
-                
-                <Grid item xs={12} md={6}>
-                    <Card elevation={2} sx={{ p: 2 }}>
-                        <Typography variant="h6" gutterBottom>
-                            🎯 Jakość Dostępności
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                            <Chip 
-                                label={`Doskonała (≥95%): ${kpiData.dostepnoscStats.excellent}`} 
-                                color="success" 
-                                size="small" 
-                            />
-                            <Chip 
-                                label={`Dobra (90-94%): ${kpiData.dostepnoscStats.good}`} 
-                                color="warning" 
-                                size="small" 
-                            />
-                            <Chip 
-                                label={`Słaba (<90%): ${kpiData.dostepnoscStats.poor}`} 
-                                color="error" 
-                                size="small" 
-                            />
-                        </Box>
-                    </Card>
-                </Grid>
-            </Grid>
+                        {card.progress && (
+                            <Box sx={{ mt: 2 }}>
+                                <LinearProgress 
+                                    variant="determinate" 
+                                    value={card.progress} 
+                                    sx={{
+                                        height: 6,
+                                        borderRadius: 3,
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                        '& .MuiLinearProgress-bar': {
+                                            borderRadius: 3,
+                                            background: `linear-gradient(90deg, ${card.color}, ${card.color}80)`
+                                        }
+                                    }} 
+                                />
+                            </Box>
+                        )}
+                    </Box>
+                ))}
+            </Box>
         </Box>
     );
 }

@@ -34,12 +34,34 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
 
     // Obsługa kliknięcia w wiersz - nawigacja do widoku pojedynczego sklepu
     const handleRowClick = (row) => {
-        const storeId = row.StoreId;
-        if (storeId) {
-            console.log('🏪 Przechodzę do sklepu:', storeId);
-            navigate(`/sklep/${storeId}`);
-        } else {
-            console.warn('⚠️ Brak StoreId w wierszu:', row);
+        try {
+            const storeId = row.StoreId;
+            console.log('🖱️ [NAVIGATE] DynamicDataTable - handleRowClick START:', { row, storeId });
+            console.log('�️ [NAVIGATE] StoreId details:', {
+                value: storeId,
+                type: typeof storeId,
+                asString: String(storeId),
+                asNumber: Number(storeId)
+            });
+            console.log('�📊 [NAVIGATE] Aktualny stan danych:', { 
+                hasData: !!dataToDisplay?.length, 
+                dataLength: dataToDisplay?.length,
+                firstRow: dataToDisplay?.[0]
+            });
+            
+            if (storeId) {
+                console.log('🏪 [NAVIGATE] DynamicDataTable - Nawiguję do sklepu:', storeId);
+                console.log('🔄 [NAVIGATE] DynamicDataTable - Przed navigate...');
+                
+                // Używamy programmatic navigation bez odświeżania strony
+                navigate(`/sklep/${storeId}`, { replace: false });
+                
+                console.log('✅ [NAVIGATE] DynamicDataTable - Navigate wywołane');
+            } else {
+                console.warn('⚠️ DynamicDataTable - Brak StoreId w wierszu:', row);
+            }
+        } catch (error) {
+            console.error('❌ DynamicDataTable - Błąd w handleRowClick:', error);
         }
     };
 
@@ -58,21 +80,28 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
     }
 
     return (
-        <Box sx={{ width: '100%', mt: 2 }}>
-            <Paper elevation={3} sx={{ width: '100%', mb: 2 }}>
+        <Box 
+            sx={{ width: '100%', mt: 2 }}
+            onSubmit={(e) => e.preventDefault()}
+        >
+            <Paper elevation={3} sx={{ width: '100%', mb: 2, borderRadius: 2 }}>
                 <TableContainer 
                     sx={{ 
-                        maxHeight: 600, 
+                        maxHeight: { xs: 400, sm: 600, md: 700, lg: 800, xl: 900 },
+                        width: '100%',
                         '&::-webkit-scrollbar': {
                             width: '8px',
                             height: '8px'
                         },
                         '&::-webkit-scrollbar-track': {
-                            backgroundColor: '#f1f1f1'
+                            backgroundColor: 'grey.100'
                         },
                         '&::-webkit-scrollbar-thumb': {
-                            backgroundColor: '#888',
-                            borderRadius: '4px'
+                            backgroundColor: 'grey.400',
+                            borderRadius: '4px',
+                            '&:hover': {
+                                backgroundColor: 'grey.600'
+                            }
                         }
                     }}
                 >
@@ -116,7 +145,18 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                     sx={{
                         borderTop: '1px solid',
                         borderColor: 'divider',
-                        backgroundColor: 'grey.50'
+                        backgroundColor: 'background.paper',
+                        color: 'text.primary',
+                        '& .MuiTablePagination-toolbar': {
+                            paddingLeft: 2,
+                            paddingRight: 2,
+                            backgroundColor: 'background.paper'
+                        },
+                        '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                            fontSize: '0.9rem',
+                            fontWeight: 'medium',
+                            color: 'text.primary'
+                        }
                     }}
                 />
             </Paper>
