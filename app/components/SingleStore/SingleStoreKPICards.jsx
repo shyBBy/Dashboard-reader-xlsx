@@ -43,47 +43,51 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             return acc;
         }, { rekomenduj: 0, brakAkcji: 0 });
 
-        // Analiza dostępności
-        const dostepnoscStats = storeData.reduce((acc, row) => {
-            const dostepnosc = parseFloat(row.DOSTEPNOSC_DROGERIA?.replace?.('%', '') || 0);
-            acc.total += dostepnosc;
-            acc.count++;
-            if (dostepnosc > 80) acc.wysoka++;
-            else if (dostepnosc > 50) acc.srednia++;
-            else acc.niska++;
-            return acc;
-        }, { total: 0, count: 0, wysoka: 0, srednia: 0, niska: 0 });
+        // Dostępność w drogerii (bez liczenia średniej - każdy rekord ma tę samą wartość dla sklepu)
+        const dostepnoscDrogeria = storeData.length > 0 ? 
+            parseFloat(storeData[0].DOSTEPNOSC_DROGERIA?.replace?.('%', '') || 0).toFixed(1) : 0;
 
-        const avgDostepnosc = dostepnoscStats.count > 0 ? 
-            (dostepnoscStats.total / dostepnoscStats.count).toFixed(1) : 0;
+        // Dostępność sieć (bez liczenia średniej - każdy rekord ma tę samą wartość dla sklepu)  
+        const dostepnoscSiec = storeData.length > 0 ? 
+            parseFloat(storeData[0].Dostepnosc_siec?.replace?.('%', '') || 0).toFixed(1) : 0;
 
-        // Analiza blokerów
-        const uniqueBlokery = new Set(storeData
-            .map(row => row.BlockerName)
-            .filter(bloker => bloker && bloker.trim() !== '')
-        ).size;
+        // Największy bloker ostatnie zamówienie
+        const blokerLastOrder = storeData.reduce((max, row) => {
+            const blokerName = row.BlockerName;
+            const lastOrderValue = parseInt(row.Bloker_ostatnie_zam) || 0;
+            
+            if (blokerName && lastOrderValue > (max.value || 0)) {
+                return { name: blokerName, value: lastOrderValue };
+            }
+            return max;
+        }, { name: '', value: 0 });
 
-        // Suma linii sprzedaży
-        const totalLinii = storeData.reduce((sum, row) => {
-            const linie = parseFloat(row.LiniiSprzedazy || 0);
-            return sum + linie;
-        }, 0);
+        // Największy bloker następne zamówienie
+        const blokerNextOrder = storeData.reduce((max, row) => {
+            const blokerName = row.BlockerName;
+            const nextOrderValue = parseInt(row.Bloker_najblizsze_zam) || 0;
+            
+            if (blokerName && nextOrderValue > (max.value || 0)) {
+                return { name: blokerName, value: nextOrderValue };
+            }
+            return max;
+        }, { name: '', value: 0 });
 
-        // Suma utraconych sprzedaży
-        const totalUtraty = storeData.reduce((sum, row) => {
-            const utrata = parseFloat(row.UtraconeSprzedaze || 0);
-            return sum + utrata;
+        // Suma zer w blokerze ostatnie zamówienie
+        const zeraLastOrder = storeData.reduce((sum, row) => {
+            const zera = parseInt(row.Zera_w_blokerze_ostatnie_zam) || 0;
+            return sum + zera;
         }, 0);
 
         return {
             totalRecords,
             wplywStats,
             decyzjaStats,
-            avgDostepnosc,
-            dostepnoscStats,
-            uniqueBlokery,
-            totalLinii,
-            totalUtraty
+            dostepnoscDrogeria,
+            dostepnoscSiec,
+            blokerLastOrder,
+            blokerNextOrder,
+            zeraLastOrder
         };
     }, [storeData]);
 
@@ -99,7 +103,7 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
 
     const kpiCards = [
         {
-            title: 'Łączne Rekordy',
+            title: 'Powody Blokerów',
             value: kpiData.totalRecords.toLocaleString(),
             icon: <Store />,
             color: theme.palette.primary.main,
@@ -107,37 +111,46 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             subtitle: 'pozycji w analizie'
         },
         {
-            title: 'Linie Sprzedaży',
-            value: kpiData.totalLinii.toLocaleString(),
-            icon: <Assessment />,
-            color: theme.palette.info.main,
-            bgColor: theme.palette.info.light + '20',
-            subtitle: 'suma wszystkich linii'
-        },
-        {
-            title: 'Utracone Sprzedaże',
-            value: `${kpiData.totalUtraty.toLocaleString()} zł`,
-            icon: <TrendingUp />,
-            color: theme.palette.warning.main,
-            bgColor: theme.palette.warning.light + '20',
-            subtitle: 'potencjalne straty'
-        },
-        {
-            title: 'Średnia Dostępność',
-            value: `${kpiData.avgDostepnosc}%`,
+            title: 'Dostępność w Drogerii',
+            value: `${kpiData.dostepnoscDrogeria}%`,
             icon: <Inventory />,
-            color: parseFloat(kpiData.avgDostepnosc) > 80 ? theme.palette.success.main : theme.palette.warning.main,
-            bgColor: parseFloat(kpiData.avgDostepnosc) > 80 ? theme.palette.success.light + '20' : theme.palette.warning.light + '20',
-            subtitle: parseFloat(kpiData.avgDostepnosc) > 80 ? 'wysoka dostępność' : 'wymaga uwagi',
-            progress: parseFloat(kpiData.avgDostepnosc)
+            color: parseFloat(kpiData.dostepnoscDrogeria) > 80 ? theme.palette.success.main : theme.palette.warning.main,
+            bgColor: parseFloat(kpiData.dostepnoscDrogeria) > 80 ? theme.palette.success.light + '20' : theme.palette.warning.light + '20',
+            subtitle: parseFloat(kpiData.dostepnoscDrogeria) > 80 ? 'wysoka dostępność' : 'wymaga uwagi',
+            progress: parseFloat(kpiData.dostepnoscDrogeria)
         },
         {
-            title: 'Unikalne Blokery',
-            value: kpiData.uniqueBlokery.toString(),
+            title: 'Dostępność Sieć',
+            value: `${kpiData.dostepnoscSiec}%`,
+            icon: <Assessment />,
+            color: parseFloat(kpiData.dostepnoscSiec) > 80 ? theme.palette.success.main : theme.palette.info.main,
+            bgColor: parseFloat(kpiData.dostepnoscSiec) > 80 ? theme.palette.success.light + '20' : theme.palette.info.light + '20',
+            subtitle: parseFloat(kpiData.dostepnoscSiec) > 80 ? 'bardzo dobra' : 'w normie',
+            progress: parseFloat(kpiData.dostepnoscSiec)
+        },
+        {
+            title: 'Największy Bloker Ostatnie',
+            value: kpiData.blokerLastOrder.value.toString(),
             icon: <Block />,
             color: theme.palette.error.main,
             bgColor: theme.palette.error.light + '20',
-            subtitle: 'różnych problemów'
+            subtitle: kpiData.blokerLastOrder.name || 'brak danych'
+        },
+        {
+            title: 'Największy Bloker Następne',
+            value: kpiData.blokerNextOrder.value.toString(),
+            icon: <TrendingUp />,
+            color: theme.palette.warning.main,
+            bgColor: theme.palette.warning.light + '20',
+            subtitle: kpiData.blokerNextOrder.name || 'brak danych'
+        },
+        {
+            title: 'Zera w Blokerze Ostatnie',
+            value: kpiData.zeraLastOrder.toString(),
+            icon: <Warning />,
+            color: theme.palette.error.main,
+            bgColor: theme.palette.error.light + '20',
+            subtitle: 'suma zer ostatnie zam'
         },
         {
             title: 'Rekomendacje',
@@ -154,14 +167,6 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             color: theme.palette.error.main,
             bgColor: theme.palette.error.light + '20',
             subtitle: 'priorytetowe problemy'
-        },
-        {
-            title: 'Transport',
-            value: '🚚',
-            icon: <LocalShipping />,
-            color: theme.palette.info.main,
-            bgColor: theme.palette.info.light + '20',
-            subtitle: 'logistyka sprawna'
         }
     ];
 

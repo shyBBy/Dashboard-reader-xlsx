@@ -42,18 +42,40 @@ export default function SingleStoreCharts({ storeData, storeId }) {
             }))
             .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        // Top blokery
-        const blokerStats = storeData.reduce((acc, row) => {
+        // Top blokery - ostatnie zamówienia
+        const blokerLastOrderStats = storeData.reduce((acc, row) => {
             const bloker = row.BlockerName;
-            if (bloker) {
-                acc[bloker] = (acc[bloker] || 0) + 1;
+            const ostatnieZamLinii = parseInt(row.Bloker_ostatnie_zam) || 0;
+            
+            if (bloker && ostatnieZamLinii > 0) {
+                if (!acc[bloker]) {
+                    acc[bloker] = { name: bloker, totalLines: 0 };
+                }
+                acc[bloker].totalLines += ostatnieZamLinii;
             }
             return acc;
         }, {});
 
-        const topBlokery = Object.entries(blokerStats)
-            .map(([name, count]) => ({ name, count }))
-            .sort((a, b) => b.count - a.count)
+        const topBlokeryLastOrder = Object.values(blokerLastOrderStats)
+            .sort((a, b) => b.totalLines - a.totalLines)
+            .slice(0, 10);
+
+        // Top blokery - następne zamówienia
+        const blokerNextOrderStats = storeData.reduce((acc, row) => {
+            const bloker = row.BlockerName;
+            const najblizsze_zam_linii = parseInt(row.Bloker_najblizsze_zam) || 0;
+            
+            if (bloker && najblizsze_zam_linii > 0) {
+                if (!acc[bloker]) {
+                    acc[bloker] = { name: bloker, totalLines: 0 };
+                }
+                acc[bloker].totalLines += najblizsze_zam_linii;
+            }
+            return acc;
+        }, {});
+
+        const topBlokeryNextOrder = Object.values(blokerNextOrderStats)
+            .sort((a, b) => b.totalLines - a.totalLines)
             .slice(0, 10);
 
         // Analiza decyzji
@@ -75,7 +97,8 @@ export default function SingleStoreCharts({ storeData, storeId }) {
         return {
             wplywChartData,
             dostepnoscTrendData,
-            topBlokery,
+            topBlokeryLastOrder,
+            topBlokeryNextOrder,
             decyzjaChartData
         };
     }, [storeData]);
@@ -184,43 +207,88 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                     </Box>
                 </Grid>
 
-                {/* Top blokery - Bar Chart */}
+                {/* Top blokery - Dwa wykresy obok siebie */}
                 <Grid item xs={12}>
-                    <Box 
-                        sx={{ 
-                            p: 3,
-                            borderRadius: 3,
-                            background: 'rgba(255, 255, 255, 0.02)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            backdropFilter: 'blur(10px)',
-                            height: '100%'
-                        }}
-                    >
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-                            🚫 Top 10 Blokerów
-                        </Typography>
-                        <BarChart
-                            xAxis={[
-                                { 
-                                    scaleType: 'band', 
-                                    data: chartData.topBlokery.map(item => item.name),
-                                    tickLabelStyle: {
-                                        angle: -45,
-                                        textAnchor: 'end',
-                                        fontSize: 12
+                    <Box sx={{ display: 'flex', gap: 3 }}>
+                        {/* Ostatnie zamówienie */}
+                        <Box 
+                            sx={{ 
+                                flex: 1,
+                                p: 3,
+                                borderRadius: 3,
+                                background: 'rgba(255, 255, 255, 0.02)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                backdropFilter: 'blur(10px)'
+                            }}
+                        >
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                                🚫 Top Blokery - Ostatnie Zamówienie
+                            </Typography>
+                            <BarChart
+                                xAxis={[
+                                    { 
+                                        scaleType: 'band', 
+                                        data: chartData.topBlokeryLastOrder.map(item => 
+                                            item.name.length > 12 ? item.name.substring(0, 12) + '...' : item.name
+                                        ),
+                                        tickLabelStyle: {
+                                            angle: -45,
+                                            textAnchor: 'end',
+                                            fontSize: 10
+                                        }
                                     }
-                                }
-                            ]}
-                            series={[
-                                { 
-                                    data: chartData.topBlokery.map(item => item.count),
-                                    color: theme.palette.primary.main
-                                }
-                            ]}
-                            width={800}
-                            height={400}
-                            margin={{ top: 20, right: 30, left: 60, bottom: 100 }}
-                        />
+                                ]}
+                                series={[
+                                    { 
+                                        data: chartData.topBlokeryLastOrder.map(item => item.totalLines),
+                                        color: theme.palette.error.main
+                                    }
+                                ]}
+                                width={400}
+                                height={350}
+                                margin={{ top: 20, right: 30, left: 60, bottom: 100 }}
+                            />
+                        </Box>
+
+                        {/* Następne zamówienie */}
+                        <Box 
+                            sx={{ 
+                                flex: 1,
+                                p: 3,
+                                borderRadius: 3,
+                                background: 'rgba(255, 255, 255, 0.02)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                backdropFilter: 'blur(10px)'
+                            }}
+                        >
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                                � Top Blokery - Następne Zamówienie
+                            </Typography>
+                            <BarChart
+                                xAxis={[
+                                    { 
+                                        scaleType: 'band', 
+                                        data: chartData.topBlokeryNextOrder.map(item => 
+                                            item.name.length > 12 ? item.name.substring(0, 12) + '...' : item.name
+                                        ),
+                                        tickLabelStyle: {
+                                            angle: -45,
+                                            textAnchor: 'end',
+                                            fontSize: 10
+                                        }
+                                    }
+                                ]}
+                                series={[
+                                    { 
+                                        data: chartData.topBlokeryNextOrder.map(item => item.totalLines),
+                                        color: theme.palette.warning.main
+                                    }
+                                ]}
+                                width={400}
+                                height={350}
+                                margin={{ top: 20, right: 30, left: 60, bottom: 100 }}
+                            />
+                        </Box>
                     </Box>
                 </Grid>
 
