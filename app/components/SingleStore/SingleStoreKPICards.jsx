@@ -1,10 +1,5 @@
 import React, { useMemo } from 'react';
-import { 
-    Typography, 
-    Box, 
-    useTheme,
-    LinearProgress
-} from '@mui/material';
+import { Typography, Box, useTheme } from '@mui/material';
 import { 
     Store, 
     TrendingUp, 
@@ -12,9 +7,9 @@ import {
     CheckCircle, 
     Block,
     Assessment,
-    LocalShipping,
     Inventory
 } from '@mui/icons-material';
+import MainKPICard from '../MainKPICard';
 
 export default function SingleStoreKPICards({ storeData, storeId }) {
     const theme = useTheme();
@@ -235,6 +230,92 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
         }
     ];
 
+    // Definiujemy karty KPI z typami
+    const kpiCardsData = [
+        {
+            title: 'Powody Blokerów',
+            value: kpiData.totalRecords.toLocaleString(),
+            icon: <Store />,
+            type: 'primary',
+            subtitle: 'pozycji w analizie'
+        },
+        {
+            title: 'Dostępność w Drogerii',
+            value: `${kpiData.dostepnoscDrogeria}%`,
+            icon: <Inventory />,
+            type: (() => {
+                const value = parseFloat(kpiData.dostepnoscDrogeria);
+                if (value >= 96.7) return 'success';
+                if (value >= 92) return 'info';
+                if (value >= 89) return 'warning';
+                return 'error';
+            })(),
+            subtitle: (() => {
+                const value = parseFloat(kpiData.dostepnoscDrogeria);
+                if (value >= 96.7) return 'bardzo dobra dostępność';
+                if (value >= 92) return 'dostępność dopuszczalna';
+                if (value >= 89) return 'słaba dostępność';
+                return 'krytyczna dostępność';
+            })(),
+            progress: parseFloat(kpiData.dostepnoscDrogeria)
+        },
+        {
+            title: 'Dostępność Sieć',
+            value: `${kpiData.dostepnoscSiec}%`,
+            icon: <Assessment />,
+            type: (() => {
+                const value = parseFloat(kpiData.dostepnoscSiec);
+                if (value >= 96.7) return 'success';
+                if (value >= 92) return 'info';
+                if (value >= 89) return 'warning';
+                return 'error';
+            })(),
+            subtitle: (() => {
+                const value = parseFloat(kpiData.dostepnoscSiec);
+                if (value >= 96.7) return 'bardzo dobra sieć';
+                if (value >= 92) return 'sieć dopuszczalna';
+                if (value >= 89) return 'sieć słaba';
+                return 'sieć krytyczna';
+            })(),
+            progress: parseFloat(kpiData.dostepnoscSiec)
+        },
+        {
+            title: 'Największy Bloker Ostatnie',
+            value: kpiData.blokerLastOrder.value.toString(),
+            icon: <Block />,
+            type: 'error',
+            subtitle: kpiData.blokerLastOrder.name || 'brak danych'
+        },
+        {
+            title: 'Największy Bloker Następne',
+            value: kpiData.blokerNextOrder.value.toString(),
+            icon: <TrendingUp />,
+            type: 'warning',
+            subtitle: kpiData.blokerNextOrder.name || 'brak danych'
+        },
+        {
+            title: 'Zera w Blokerze Ostatnie',
+            value: kpiData.zeraLastOrder.toString(),
+            icon: <Warning />,
+            type: 'error',
+            subtitle: 'suma zer ostatnie zam'
+        },
+        {
+            title: 'Rekomendacje',
+            value: kpiData.decyzjaStats.rekomenduj.toString(),
+            icon: <CheckCircle />,
+            type: 'success',
+            subtitle: 'wymaga działania'
+        },
+        {
+            title: 'Wpływ Wysoki',
+            value: kpiData.wplywStats.wysoki.toString(),
+            icon: <Warning />,
+            type: 'error',
+            subtitle: 'priorytetowe problemy'
+        }
+    ];
+
     return (
         <Box sx={{ mb: 6 }}>
             <Typography 
@@ -259,108 +340,16 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
                 gap: 3,
                 justifyContent: 'space-between'
             }}>
-                {kpiCards.map((card, index) => (
-                    <Box
+                {kpiCardsData.map((card, index) => (
+                    <MainKPICard
                         key={index}
-                        sx={{
-                            flex: '1 1 280px',
-                            minWidth: '280px',
-                            maxWidth: '320px',
-                            p: 3,
-                            borderRadius: 3,
-                            background: 'rgba(255, 255, 255, 0.02)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            backdropFilter: 'blur(10px)',
-                            transition: 'all 0.3s ease',
-                            position: 'relative',
-                            overflow: 'hidden',
-                            '&:hover': {
-                                transform: 'translateY(-8px)',
-                                background: 'rgba(255, 255, 255, 0.03)',
-                                border: `1px solid ${card.color}60`,
-                                boxShadow: `0 20px 40px -12px ${card.color}30`
-                            },
-                            '&::before': {
-                                content: '""',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                height: '3px',
-                                background: `linear-gradient(90deg, ${card.color}, ${card.color}80)`,
-                                opacity: 0.8
-                            }
-                        }}
-                    >
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                            <Box 
-                                sx={{ 
-                                    p: 2, 
-                                    borderRadius: 2, 
-                                    background: `linear-gradient(135deg, ${card.color}20, ${card.color}10)`,
-                                    color: card.color,
-                                    mr: 3,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '1.5rem'
-                                }}
-                            >
-                                {card.icon}
-                            </Box>
-                            <Box>
-                                <Typography 
-                                    variant="body2" 
-                                    sx={{ 
-                                        fontWeight: 'medium',
-                                        color: 'rgba(255, 255, 255, 0.7)',
-                                        mb: 1
-                                    }}
-                                >
-                                    {card.title}
-                                </Typography>
-                                <Typography 
-                                    variant="h4" 
-                                    sx={{ 
-                                        fontWeight: 'bold',
-                                        color: 'white',
-                                        lineHeight: 1
-                                    }}
-                                >
-                                    {card.value}
-                                </Typography>
-                            </Box>
-                        </Box>
-                        
-                        <Typography 
-                            variant="body2" 
-                            sx={{ 
-                                color: 'rgba(255, 255, 255, 0.6)',
-                                fontSize: '0.875rem',
-                                mb: card.progress ? 2 : 0
-                            }}
-                        >
-                            {card.subtitle}
-                        </Typography>
-
-                        {card.progress && (
-                            <Box sx={{ mt: 2 }}>
-                                <LinearProgress 
-                                    variant="determinate" 
-                                    value={card.progress} 
-                                    sx={{
-                                        height: 6,
-                                        borderRadius: 3,
-                                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                        '& .MuiLinearProgress-bar': {
-                                            borderRadius: 3,
-                                            background: `linear-gradient(90deg, ${card.color}, ${card.color}80)`
-                                        }
-                                    }} 
-                                />
-                            </Box>
-                        )}
-                    </Box>
+                        title={card.title}
+                        value={card.value}
+                        subtitle={card.subtitle}
+                        icon={card.icon}
+                        type={card.type}
+                        progress={card.progress}
+                    />
                 ))}
             </Box>
         </Box>
