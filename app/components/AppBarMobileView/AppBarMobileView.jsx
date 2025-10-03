@@ -11,16 +11,26 @@ import {
 import { AppBar, Drawer, useMobileView } from '../../context/MobileViewContext';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { AppBarMobileViewNavigationList } from './AppBarMobileViewNavigationList';
 import './AppBarMobileView.css';
-import theme from '../../theme';
+import { useTheme } from '@mui/material/styles';
 
 export const AppBarMobileView = () => {
     const { handleDrawerToggleSideBar, mobileOpenSideBar } = useMobileView();
+    const theme = useTheme();
 
     return (
         <>
-            <AppBar position="absolute" sx={{ backgroundColor: theme.palette.background.paper }} open={mobileOpenSideBar}>
+            <AppBar 
+                position="absolute" 
+                sx={{ 
+                    backgroundColor: theme.palette.background.paper,
+                    backdropFilter: 'blur(10px)',
+                    borderBottom: `1px solid ${theme.palette.divider}`
+                }} 
+                open={mobileOpenSideBar}
+            >
                 <Toolbar
                     sx={{
                         pr: '24px', // keep right padding when drawer closed
@@ -47,14 +57,15 @@ export const AppBarMobileView = () => {
                         <Box sx={{
                             width: 40,
                             height: 40,
-                            backgroundColor: 'primary.main',
+                            background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            borderRadius: 1,
-                            mr: 2
+                            borderRadius: 2,
+                            mr: 2,
+                            boxShadow: `0 4px 12px ${theme.palette.primary.main}30`
                         }}>
-                            📊
+                            <AssessmentIcon sx={{ color: 'white', fontSize: '1.5rem' }} />
                         </Box>
                     </Box>
                     
@@ -87,22 +98,34 @@ export const AppBarMobileView = () => {
                 </Toolbar>
             </AppBar>
             
-            <Drawer variant="permanent" open={mobileOpenSideBar}>
+            <Drawer 
+                variant="permanent" 
+                open={mobileOpenSideBar}
+            >
                 <Toolbar
                     sx={{
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'flex-end',
                         px: [1],
+                        backgroundColor: theme.palette.background.paper
                     }}
                 >
-                    <IconButton onClick={handleDrawerToggleSideBar}>
+                    <IconButton 
+                        onClick={handleDrawerToggleSideBar}
+                        sx={{
+                            color: theme.palette.text.primary,
+                            '&:hover': {
+                                backgroundColor: `${theme.palette.primary.main}20`
+                            }
+                        }}
+                    >
                         <ChevronLeftIcon />
                     </IconButton>
                 </Toolbar>
-                <Divider />
+                <Divider sx={{ borderColor: theme.palette.divider }} />
                 <List component="nav">
-                    <AppBarMobileViewNavigationList />
+                    <AppBarMobileViewNavigationList open={mobileOpenSideBar} />
                 </List>
             </Drawer>
         </>

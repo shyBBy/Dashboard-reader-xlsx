@@ -29,6 +29,10 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
             position: 'relative',
             whiteSpace: 'nowrap',
             width: drawerSideBarWidth,
+            backgroundColor: theme.palette.background.paper,
+            backdropFilter: 'blur(10px)',
+            borderRight: `1px solid ${theme.palette.divider}`,
+            backgroundImage: 'none',
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.enteringScreen,
