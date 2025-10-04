@@ -39,7 +39,7 @@ import {
     Speed,
     AutoAwesome
 } from '@mui/icons-material';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const CategoryCard = ({ title, description, icon: Icon, color, items, weight }) => {
     const theme = useTheme();

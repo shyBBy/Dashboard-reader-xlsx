@@ -33,7 +33,7 @@ import {
     Settings,
     Group
 } from '@mui/icons-material';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const InfoPage = () => {
     const theme = useTheme();

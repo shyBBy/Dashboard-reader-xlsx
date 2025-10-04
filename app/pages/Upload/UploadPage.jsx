@@ -19,7 +19,7 @@ import {
     CheckCircle, 
     Description
 } from '@mui/icons-material';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { ExcelUploader } from '../../components/ExcelUploader/ExcelUploader';
 import { useExcelData } from '../../context/ExcelDataContext';
 

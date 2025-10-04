@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Typography, Alert, Divider } from '@mui/material';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { DataFilters } from '../DataFilters/DataFilters';
 import { KPICards } from '../KPICards/KPICards';
 import { DynamicDataTable } from '../DynamicDataTable/DynamicDataTable';

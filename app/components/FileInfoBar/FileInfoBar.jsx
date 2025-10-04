@@ -20,7 +20,7 @@ import {
     CheckCircle
 } from '@mui/icons-material';
 import { useExcelData } from '../../context/ExcelDataContext';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 export const FileInfoBar = () => {
     const theme = useTheme();

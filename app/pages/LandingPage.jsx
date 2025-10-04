@@ -15,7 +15,7 @@ import {
     Info,
     Analytics
 } from '@mui/icons-material';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
     const theme = useTheme();
