@@ -46,8 +46,8 @@ export const Dashboard = () => {
                 </Typography>
             </Box>
 
-            {/* Obsługa błędów */}
-            {error && (
+            {/* Obsługa błędów - ukryj błędy localStorage */}
+            {error && !error.includes('localStorage') && !error.includes('Storage') && !error.includes('quota') && (
                 <Alert severity="error" sx={{ mb: 3 }}>
                     {error}
                 </Alert>

@@ -84,14 +84,9 @@ export const TableCellRenderer = ({ header, value }) => {
                     <Typography variant="body2" sx={{ 
                         fontWeight: 'medium',
                         fontSize: '0.9rem',
-                        color: theme.palette.text.primary,
-                        backgroundColor: theme.palette.grey[100],
-                        padding: '4px 8px',
-                        borderRadius: 1,
-                        display: 'inline-block',
-                        border: `1px solid ${theme.palette.grey[300]}`
+                        color: theme.palette.secondary.main
                     }}>
-                        📅 {formatDate(value)}
+                        {formatDate(value)}
                     </Typography>
                 );
             }

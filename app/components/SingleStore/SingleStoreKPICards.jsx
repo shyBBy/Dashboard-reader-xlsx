@@ -16,7 +16,7 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
 
     const kpiData = useMemo(() => {
         if (!storeData || storeData.length === 0) return null;
-
+        console.log('DAAAAAAANE KPI DATA', storeData);
         // Podstawowe statystyki
         const totalRecords = storeData.length;
         

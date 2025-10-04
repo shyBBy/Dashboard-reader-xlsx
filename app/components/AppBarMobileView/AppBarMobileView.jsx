@@ -13,6 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import { AppBarMobileViewNavigationList } from './AppBarMobileViewNavigationList';
+import { FileInfoBar } from '../FileInfoBar/FileInfoBar';
 import './AppBarMobileView.css';
 import { useTheme } from '@mui/material/styles';
 
@@ -74,10 +75,13 @@ export const AppBarMobileView = () => {
                         variant="h6"
                         color="inherit"
                         noWrap
-                        sx={{ flexGrow: 1 }}
+                        sx={{ flexGrow: 0, mr: 3 }}
                     >
                         Dashboard Reader XLSX
                     </Typography>
+
+                    {/* Informacje o pliku i przyciski zarządzania */}
+                    <FileInfoBar />
 
                     <Box sx={{ flexGrow: 1 }} />
                     
