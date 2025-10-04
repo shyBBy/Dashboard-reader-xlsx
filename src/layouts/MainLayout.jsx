@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Container, CssBaseline, Grid, Typography, Toolbar, Link } from '@mui/material';
 import { AppBarMobileView } from '../components/AppBarMobileView/AppBarMobileView';
-import { MobileViewProvider } from '../context/MobileViewContext';
 import theme from '../theme';
 
 export const Copyright = (props) => {
@@ -31,28 +30,26 @@ export const Copyright = (props) => {
 
 export const MainLayout = ({ children }) => {
     return (
-        <MobileViewProvider>
-            <Box sx={{ display: 'flex' }}>
-                <CssBaseline />
-                <AppBarMobileView />
-                <Box
-                    component="main"
-                    sx={{
-                        backgroundColor: theme.palette.background.default,
-                        flexGrow: 1,
-                        height: '100vh',
-                        overflow: 'auto',
-                    }}
-                >
-                    <Toolbar />
-                    <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 3, width: '100%' }}>
-                        <Grid container spacing={3} sx={{ width: '100%', m: 0 }}>
-                            {children}
-                        </Grid>
-                        <Copyright sx={{ pt: 4 }} />
-                    </Container>
-                </Box>
+        <Box sx={{ display: 'flex' }}>
+            <CssBaseline />
+            <AppBarMobileView />
+            <Box
+                component="main"
+                sx={{
+                    backgroundColor: theme.palette.background.default,
+                    flexGrow: 1,
+                    height: '100vh',
+                    overflow: 'auto',
+                }}
+            >
+                <Toolbar />
+                <Container maxWidth={false} sx={{ mt: 4, mb: 4, px: 3, width: '100%' }}>
+                    <Grid container spacing={3} sx={{ width: '100%', m: 0 }}>
+                        {children}
+                    </Grid>
+                    <Copyright sx={{ pt: 4 }} />
+                </Container>
             </Box>
-        </MobileViewProvider>
+        </Box>
     );
 };

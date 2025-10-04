@@ -1,13 +1,11 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { MainLayout } from '../app/layouts/MainLayout';
-import LandingPage from '../app/pages/LandingPage';
-import { DashboardPage } from '../app/pages/DashboardPage';
-import { UploadPage } from '../app/pages/Upload/UploadPage';
-import InfoPage from '../app/pages/InfoPage';
-
-// Import dla pojedynczego sklepu
-import SingleStoreView from '../app/views/SingleStoreView';
+import { MainLayout } from './layouts/MainLayout';
+import LandingPage from './pages/LandingPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { UploadPage } from './pages/Upload/UploadPage';
+import InfoPage from './pages/InfoPage';
+import SingleStoreView from './views/SingleStoreView';
 
 export default function App() {
   return (

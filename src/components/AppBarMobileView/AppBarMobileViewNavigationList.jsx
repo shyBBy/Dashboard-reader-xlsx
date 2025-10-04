@@ -10,8 +10,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import PieChartIcon from '@mui/icons-material/PieChart';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 export const AppBarMobileViewNavigationList = ({ open }) => {
@@ -24,7 +22,7 @@ export const AppBarMobileViewNavigationList = ({ open }) => {
             to: '/dashboard',
             icon: DashboardIcon,
             title: 'Dashboard',
-            tooltip: 'Dashboard'
+            tooltip: 'Dashboard analiz'
         },
         {
             key: 'upload',
@@ -34,18 +32,11 @@ export const AppBarMobileViewNavigationList = ({ open }) => {
             tooltip: 'Wgraj plik Excel'
         },
         {
-            key: 'charts',
-            to: '/charts',
+            key: 'info',
+            to: '/info',
             icon: BarChartIcon,
-            title: 'Wykresy',
-            tooltip: 'Generuj wykresy'
-        },
-        {
-            key: 'analytics',
-            to: '/analytics',
-            icon: TrendingUpIcon,
-            title: 'Analityki',
-            tooltip: 'Analizy danych'
+            title: 'Informacje',
+            tooltip: 'Informacje o aplikacji'
         }
     ];
 
@@ -53,7 +44,9 @@ export const AppBarMobileViewNavigationList = ({ open }) => {
         <React.Fragment>
             {navigationItems.map((item) => {
                 const IconComponent = item.icon;
-                const isActive = location.pathname.includes(item.to);
+                // Dokładne porównanie ścieżki lub sprawdzenie czy zaczyna się od ścieżki (dla podstron)
+                const isActive = location.pathname === item.to || 
+                                (item.to !== '/' && location.pathname.startsWith(item.to + '/'));
                 
                 return (
                     <ListItemButton 

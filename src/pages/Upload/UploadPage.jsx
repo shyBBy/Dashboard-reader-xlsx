@@ -1,5 +1,4 @@
 import React from 'react';
-import { MainLayout } from '../../layouts/MainLayout';
 import { 
     Typography, 
     Box, 
@@ -312,9 +311,5 @@ const UploadView = () => {
 };
 
 export const UploadPage = () => {
-    return (
-        <MainLayout>
-            <UploadView />
-        </MainLayout>
-    );
+    return <UploadView />;
 };
