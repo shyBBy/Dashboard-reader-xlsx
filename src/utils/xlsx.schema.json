@@ -1,0 +1,285 @@
+{
+  "table": "work.POWODY_BLOKERA_DZZWD",
+  "description": "Finalna tabela analizy przyczyn blokerów DZZwD z rekomendacjami działań",
+  "columns": [
+    {
+      "name": "StoreId",
+      "type": "number",
+      "example": 1234
+    },
+    {
+      "name": "Gospodarz_Sklepu",
+      "type": "string",
+      "example": "Jan Kowalski"
+    },
+    {
+      "name": "Lider",
+      "type": "string",
+      "example": "Anna Nowak"
+    },
+    {
+      "name": "LW",
+      "type": "string",
+      "example": "LW-01"
+    },
+    {
+      "name": "BlockerName",
+      "type": "string",
+      "example": "PCP"
+    },
+    {
+      "name": "Ostatnie_zam",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "06-10-2025"
+    },
+    {
+      "name": "Bloker_ostatnie_zam",
+      "type": "number",
+      "example": 504
+    },
+    {
+      "name": "Najblizsze_zam",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "10-10-2025"
+    },
+    {
+      "name": "Bloker_najblizsze_zam",
+      "type": "number",
+      "example": 8
+    },
+    {
+      "name": "Kolejne_zam",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "14-10-2025"
+    },
+    {
+      "name": "Bloker_kolejne_zam",
+      "type": "number",
+      "example": 6
+    },
+    {
+      "name": "Zera_w_blokerze_ostatnie_zam",
+      "type": "number",
+      "example": 3
+    },
+    {
+      "name": "Udzial_procentowy_zer_w_powodzie",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.25
+    },
+    {
+      "name": "Dostepnosc_siec",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.90
+    },
+    {
+      "name": "Dostepnosc_drogeria",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.92
+    },
+    {
+      "name": "Udzial_w_sieci_next",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.22
+    },
+    {
+      "name": "Udzial_procentowy_drog_next",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.28
+    },
+    {
+      "name": "Odchylenie_od_sieci",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.06
+    },
+    {
+      "name": "Udzial_w_sieci_kolejne",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.15
+    },
+    {
+      "name": "Udzial_procentowy_drog_kolejne",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.20
+    },
+    {
+      "name": "Odchylenie_od_sieci_kolejne",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.05
+    },
+    {
+      "name": "Udzial_w_sieci",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.18
+    },
+    {
+      "name": "Udzial_procentowy_drogeria",
+      "type": "number",
+      "unit": "percent-decimal",
+      "example": 0.27
+    },
+    {
+      "name": "Suma_linii",
+      "type": "number",
+      "example": 45
+    },
+    {
+      "name": "Suma_linii_next",
+      "type": "number",
+      "example": 36
+    },
+    {
+      "name": "Suma_linii_kolejne",
+      "type": "number",
+      "example": 30
+    },
+    {
+      "name": "Sredni_bloker_siec",
+      "type": "number",
+      "example": 9
+    },
+    {
+      "name": "Sredni_bloker_siec_next",
+      "type": "number",
+      "example": 10
+    },
+    {
+      "name": "Sredni_bloker_siec_kolejne",
+      "type": "number",
+      "example": 7
+    },
+    {
+      "name": "SUMA_LINII_ZAM_DZIS",
+      "type": "number",
+      "example": 2450
+    },
+    {
+      "name": "LICZBA_SKLEPOW_DZIS",
+      "type": "number",
+      "example": 45
+    },
+    {
+      "name": "REFDATE",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "09-10-2025"
+    },
+    {
+      "name": "DATA_ZAM",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "06-10-2025"
+    },
+    {
+      "name": "DATA_PROJEKCJI",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "06-10-2025"
+    },
+    {
+      "name": "DATA_ZAM_CHAR",
+      "type": "string",
+      "example": "20251006"
+    },
+    {
+      "name": "DATA_PROJEKCJI_CHAR",
+      "type": "string",
+      "example": "20251006"
+    },
+    {
+      "name": "DATA_PROJEKCJI_NEXT",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "09-10-2025"
+    },
+    {
+      "name": "DATA_PROJEKCJI_KOLEJNE",
+      "type": "date",
+      "format": "DDMMYYD10.",
+      "example": "09-10-2025"
+    },
+    {
+      "name": "Zrodlo_danych",
+      "type": "string",
+      "example": "WSZYSTKIE_3_OKRESY"
+    },
+    {
+      "name": "MaxBox_najblizsze",
+      "type": "number",
+      "example": 85.0
+    },
+    {
+      "name": "Cele_linii_najblizsze",
+      "type": "number",
+      "example": 120.0
+    },
+    {
+      "name": "MaxBox_kolejne",
+      "type": "number",
+      "example": 86.0
+    },
+    {
+      "name": "Cele_linii_kolejne",
+      "type": "number",
+      "example": 125.0
+    },
+    {
+      "name": "Wplyw",
+      "type": "string",
+      "example": "WYSOKI"
+    },
+    {
+      "name": "Opis",
+      "type": "string",
+      "example": "Problem z dostępnością PCP w magazynie"
+    },
+    {
+      "name": "Rekomendacja",
+      "type": "string",
+      "example": "Zwiększyć zamówienie PCP o 20%"
+    },
+    {
+      "name": "Trend_analiza",
+      "type": "string",
+      "example": "PROBLEM_W_PRZYSZLOSCI"
+    },
+    {
+      "name": "Decyzja",
+      "type": "string",
+      "example": "REKOMENDUJ"
+    },
+    {
+      "name": "Powod_decyzji",
+      "type": "string",
+      "example": "Problem wykryty w najbliższym zamówieniu - wymaga akcji"
+    },
+    {
+      "name": "Kwalifikuje_sie",
+      "type": "number",
+      "example": 1
+    },
+    {
+      "name": "Powod_wykluczenia",
+      "type": "string",
+      "example": ""
+    },
+    {
+      "name": "Rekomendacja_dzialania",
+      "type": "string",
+      "example": "Zwiększyć zamówienie PCP o 20%"
+    }
+  ]
+}

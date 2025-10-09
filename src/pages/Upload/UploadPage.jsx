@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
     Typography, 
     Box, 
@@ -18,18 +18,24 @@ import {
     CheckCircle, 
     Description
 } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
-import { ExcelUploader } from '../../components/ExcelUploader/ExcelUploader';
+import { Link, useNavigate } from 'react-router-dom';
+import { ExcelUploader } from './components/ExcelUploader/ExcelUploader';
 import { useExcelData } from '../../context/ExcelDataContext';
 
 
 
 const UploadView = () => {
     const { hasData, loadData, clearData, handleError, fileName, totalRows } = useExcelData();
+    const navigate = useNavigate();
     const theme = useTheme();
 
     const handleDataLoaded = (data) => {
         loadData(data);
+        // Automatyczne przekierowanie na dashboard po załadowaniu
+        console.log('✅ Dane załadowane, przekierowuję na /dashboard');
+        setTimeout(() => {
+            navigate('/dashboard');
+        }, 500); // Krótkie opóźnienie dla UX (user widzi sukces)
     };
 
     const handleClearData = () => {

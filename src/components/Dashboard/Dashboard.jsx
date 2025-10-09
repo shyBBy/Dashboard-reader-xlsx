@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { DataFilters } from '../DataFilters/DataFilters';
 import { KPICards } from '../KPICards/KPICards';
 import { DynamicDataTable } from '../DynamicDataTable/DynamicDataTable';
+import { DetailedViewToggle } from '../DetailedViewToggle/DetailedViewToggle';
 import { useExcelData } from '../../context/ExcelDataContext';
 import { useDataFilters } from '../../hooks/useDataFilters.hook';
+import { getVisibleHeaders, getColumnStats } from '../../helpers/columnVisibility.helper';
 
 /**
  * Zrefaktorowany komponent Dashboard - znacznie krótszy dzięki wydzieleniu logiki do hooków
@@ -13,6 +15,9 @@ import { useDataFilters } from '../../hooks/useDataFilters.hook';
 export const Dashboard = () => {
     const { excelData, hasData, error } = useExcelData();
     const navigate = useNavigate();
+    
+    // State dla widoku szczegółowego (domyślnie wyłączony)
+    const [detailedView, setDetailedView] = useState(false);
 
     // Logika filtrowania przeniesiona do custom hooka
     const {
@@ -21,6 +26,10 @@ export const Dashboard = () => {
         handleFiltersChange,
         filteredCount
     } = useDataFilters(excelData?.data);
+    
+    // Oblicz widoczne nagłówki na podstawie trybu widoku
+    const visibleHeaders = getVisibleHeaders(excelData?.headers, detailedView);
+    const columnStats = getColumnStats(excelData?.headers, detailedView);
 
     // Przekieruj na upload jeśli brak danych
     useEffect(() => {
@@ -61,6 +70,13 @@ export const Dashboard = () => {
 
             <Divider sx={{ my: 4 }} />
 
+            {/* Toggle widoku szczegółowego - NAD filtrami */}
+            <DetailedViewToggle
+                detailedView={detailedView}
+                onToggle={setDetailedView}
+                columnStats={columnStats}
+            />
+
             {/* Filtry */}
             <DataFilters
                 data={excelData.data}
@@ -69,10 +85,10 @@ export const Dashboard = () => {
                 filteredCount={filteredCount}
             />
 
-            {/* Tabela danych - teraz używa nowego zrefaktorowanego komponentu */}
+            {/* Tabela danych - z filtrowanymi nagłówkami */}
             <DynamicDataTable
                 data={excelData.data}
-                headers={excelData.headers}
+                headers={visibleHeaders}
                 filteredData={filteredData}
             />
 

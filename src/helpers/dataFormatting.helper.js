@@ -13,7 +13,7 @@ export const isNumeric = (value) => {
 
 /**
  * Formatuje wartość procentową
- * @param {string|number} value - Wartość do sformatowania
+ * @param {string|number} value - Wartość do sformatowania (może być decimal 0.25 lub procent 25)
  * @returns {string} - Sformatowana wartość procentowa
  */
 export const formatPercentage = (value) => {
@@ -24,6 +24,12 @@ export const formatPercentage = (value) => {
     const numValue = parseFloat(value);
     if (isNaN(numValue)) return '-';
     
+    // Jeśli wartość jest między 0 a 1, to jest decimal (np. 0.25 = 25%)
+    if (numValue >= 0 && numValue <= 1) {
+        return `${(numValue * 100).toFixed(1)}%`;
+    }
+    
+    // Jeśli wartość > 1, to już jest procentem (np. 25)
     return `${numValue.toFixed(1)}%`;
 };
 
@@ -52,15 +58,145 @@ export const isLongText = (text, maxLength = 40) => {
 };
 
 /**
+ * Konwertuje datę Excel (serial number) na obiekt Date
+ * @param {number} excelDate - Numer seryjny daty Excel
+ * @returns {Date} - Obiekt Date
+ */
+const excelDateToJSDate = (excelDate) => {
+    // Excel przechowuje daty jako liczbę dni od 1 stycznia 1900
+    // (z błędem 1900 jako rok przestępny)
+    const excelEpoch = new Date(1899, 11, 30); // 30 grudnia 1899
+    const msPerDay = 86400000; // 24 * 60 * 60 * 1000
+    return new Date(excelEpoch.getTime() + excelDate * msPerDay);
+};
+
+/**
+ * Parsuje datę z różnych formatów do obiektu Date
+ * @param {string|Date|number} dateValue - Wartość daty
+ * @returns {Date|null} - Obiekt Date lub null jeśli niepoprawna
+ */
+export const parseDate = (dateValue) => {
+    if (!dateValue) return null;
+    
+    try {
+        let date;
+        
+        // Obsługa numeru seryjnego Excel (np. 45204)
+        if (typeof dateValue === 'number' && dateValue > 1000 && dateValue < 100000) {
+            date = excelDateToJSDate(dateValue);
+        }
+        // Obsługa stringa "DD-MM-YYYY", "D-M-YYYY", "DD.MM.YYYY", "D.M.YYYY" itp.
+        else if (typeof dateValue === 'string') {
+            // Sprawdź czy to format europejski (DD-MM-YYYY lub DD.MM.YYYY)
+            const separators = ['-', '.', '/'];
+            let parsed = false;
+            
+            for (const sep of separators) {
+                if (dateValue.includes(sep)) {
+                    const parts = dateValue.split(sep);
+                    
+                    // Format DD-MM-YYYY lub D-M-YYYY (dzień na początku)
+                    if (parts.length === 3 && parts[0].length <= 2 && parts[1].length <= 2) {
+                        const day = parseInt(parts[0], 10);
+                        const month = parseInt(parts[1], 10);
+                        const year = parseInt(parts[2], 10);
+                        
+                        // Walidacja zakresu
+                        if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900) {
+                            date = new Date(year, month - 1, day);
+                            parsed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Jeśli nie udało się parsować jako format europejski, próbuj standardowego parsowania
+            if (!parsed) {
+                date = new Date(dateValue);
+            }
+        }
+        // Obsługa obiektu Date
+        else if (dateValue instanceof Date) {
+            date = dateValue;
+        } else {
+            return null;
+        }
+        
+        if (isNaN(date.getTime())) return null;
+        
+        return date;
+    } catch (error) {
+        return null;
+    }
+};
+
+/**
+ * Porównuje dwie daty (tylko dzień, bez godzin)
+ * @param {Date|string|number} date1 - Pierwsza data
+ * @param {Date|string|number} date2 - Druga data
+ * @returns {boolean} - True jeśli ten sam dzień
+ */
+export const isSameDay = (date1, date2) => {
+    const d1 = parseDate(date1);
+    const d2 = parseDate(date2);
+    
+    if (!d1 || !d2) return false;
+    
+    const result = d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
+    
+    // Debug dla pierwszych 5 wywołań
+    if (typeof window !== 'undefined' && !window.__isSameDayDebugCount) {
+        window.__isSameDayDebugCount = 0;
+    }
+    if (window.__isSameDayDebugCount < 5) {
+        console.log('🔍 isSameDay debug:', {
+            date1_raw: date1,
+            date2_raw: date2,
+            date1_parsed: d1?.toLocaleDateString('pl-PL'),
+            date2_parsed: d2?.toLocaleDateString('pl-PL'),
+            result
+        });
+        window.__isSameDayDebugCount++;
+    }
+    
+    return result;
+};
+
+/**
  * Formatuje datę do formatu DD-MM-YYYY
- * @param {string|Date} dateValue - Wartość daty do sformatowania
+ * @param {string|Date|number} dateValue - Wartość daty do sformatowania
  * @returns {string} - Sformatowana data lub '-'
  */
 export const formatDate = (dateValue) => {
     if (!dateValue) return '-';
     
     try {
-        const date = new Date(dateValue);
+        let date;
+        
+        // Obsługa numeru seryjnego Excel (np. 45204)
+        if (typeof dateValue === 'number' && dateValue > 1000 && dateValue < 100000) {
+            date = excelDateToJSDate(dateValue);
+        }
+        // Obsługa stringa "DD-MM-YYYY" lub "YYYY-MM-DD"
+        else if (typeof dateValue === 'string') {
+            // Sprawdź czy to format DD-MM-YYYY
+            if (dateValue.includes('-') && dateValue.split('-')[0].length === 2) {
+                const [day, month, year] = dateValue.split('-');
+                date = new Date(year, month - 1, day);
+            } else {
+                date = new Date(dateValue);
+            }
+        }
+        // Obsługa obiektu Date
+        else if (dateValue instanceof Date) {
+            date = dateValue;
+        } else {
+            return '-';
+        }
+        
         if (isNaN(date.getTime())) return '-';
         
         const day = String(date.getDate()).padStart(2, '0');
@@ -69,12 +205,13 @@ export const formatDate = (dateValue) => {
         
         return `${day}-${month}-${year}`;
     } catch (error) {
+        console.warn('Błąd formatowania daty:', dateValue, error);
         return '-';
     }
 };
 
 /**
- * Sprawdza czy wartość może być datą (zawiera słowo DATE lub kończy się na _zam)
+ * Sprawdza czy wartość może być datą (zawiera słowo DATE lub kończy się DOKŁADNIE na _zam, ale NIE zawiera "bloker")
  * @param {string} header - Nazwa nagłówka
  * @returns {boolean}
  */
@@ -82,16 +219,44 @@ export const isDateField = (header) => {
     if (!header || typeof header !== 'string') return false;
     
     const upperHeader = header.toUpperCase();
-    return upperHeader.includes('DATE') || upperHeader.endsWith('_ZAM');
+    const lowerHeader = header.toLowerCase();
+    
+    // Jeśli zawiera "bloker" to NA PEWNO nie jest datą (to liczba!)
+    if (lowerHeader.includes('bloker') || lowerHeader.includes('zera_')) {
+        return false;
+    }
+    
+    // Tylko kolumny z "DATE" lub DOKŁADNIE kończące się na "_zam"
+    return upperHeader.includes('DATE') || 
+           upperHeader === 'OSTATNIE_ZAM' || 
+           upperHeader === 'NAJBLIZSZE_ZAM' || 
+           upperHeader === 'KOLEJNE_ZAM' ||
+           (upperHeader.startsWith('DATA_') && !upperHeader.includes('CHAR'));
+};
+
+/**
+ * Sprawdza czy pole jest procentem (zawiera "udzial", "dostepnosc", "odchylenie")
+ * @param {string} header - Nazwa nagłówka
+ * @returns {boolean}
+ */
+export const isPercentageField = (header) => {
+    if (!header || typeof header !== 'string') return false;
+    
+    const lowerHeader = header.toLowerCase();
+    return lowerHeader.includes('udzial') || 
+           lowerHeader.includes('dostepnosc') || 
+           lowerHeader.includes('odchylenie') ||
+           lowerHeader.includes('procent');
 };
 
 /**
  * Formatuje wartość do wyświetlenia w tabeli
  * @param {any} value - Wartość do sformatowania
- * @param {string} header - Nazwa nagłówka (opcjonalnie dla dat)
+ * @param {string} header - Nazwa nagłówka (opcjonalnie dla dat i procentów)
  * @returns {string} - Sformatowana wartość
  */
 export const formatDisplayValue = (value, header = '') => {
+    // WAŻNE: 0 jest poprawną wartością! Nie traktuj jako pustej.
     if (value === null || value === undefined || value === '') {
         return '-';
     }
@@ -101,12 +266,17 @@ export const formatDisplayValue = (value, header = '') => {
         return formatDate(value);
     }
     
+    // Sprawdź czy to pole procentowe
+    if (isPercentageField(header)) {
+        return formatPercentage(value);
+    }
+    
     // Wartości liczbowe
     if (isNumeric(value)) {
         const numValue = parseFloat(value);
         // Jeśli to całkowita, pokaż bez miejsc po przecinku
         if (Number.isInteger(numValue)) {
-            return numValue.toString();
+            return numValue.toLocaleString('pl-PL'); // Formatowanie z separatorami tysięcy
         }
         // Inaczej z 2 miejscami po przecinku
         return numValue.toFixed(2);

@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { UploadFile, CheckCircle, Error } from '@mui/icons-material';
 import * as XLSX from 'xlsx';
+import { generateCompatibilityReport, logCompatibilityReport } from '../../../../helpers/schemaValidation.helper';
 
 export const ExcelUploader = ({ onDataLoaded, onError }) => {
     const [uploading, setUploading] = useState(false);
@@ -48,7 +49,9 @@ export const ExcelUploader = ({ onDataLoaded, onError }) => {
             const formattedData = rows.map(row => {
                 const obj = {};
                 headers.forEach((header, index) => {
-                    obj[header] = row[index] || '';
+                    // WAŻNE: Nie zamieniaj 0 na ''! 0 jest poprawną wartością.
+                    const value = row[index];
+                    obj[header] = (value !== null && value !== undefined) ? value : '';
                 });
                 return obj;
             });
@@ -60,6 +63,28 @@ export const ExcelUploader = ({ onDataLoaded, onError }) => {
                 fileName: file.name,
                 sheetName
             };
+            
+            // 🔍 Walidacja kompatybilności ze schematem
+            const compatibilityReport = generateCompatibilityReport(processedData);
+            logCompatibilityReport(compatibilityReport);
+            
+            // 🔍 Debug - Sprawdź pierwsze 3 wiersze pod kątem kolumn blokerów
+            console.log('🔍 DEBUG - Pierwsze 3 wiersze danych:');
+            formattedData.slice(0, 3).forEach((row, idx) => {
+                console.log(`Wiersz ${idx + 1}:`, {
+                    StoreId: row.StoreId,
+                    Bloker_ostatnie_zam: row.Bloker_ostatnie_zam,
+                    Bloker_najblizsze_zam: row.Bloker_najblizsze_zam,
+                    Bloker_kolejne_zam: row.Bloker_kolejne_zam,
+                    Zera_w_blokerze_ostatnie_zam: row.Zera_w_blokerze_ostatnie_zam,
+                    Ostatnie_zam: row.Ostatnie_zam
+                });
+            });
+            
+            // Sprawdź czy plik jest kompatybilny
+            if (!compatibilityReport.compatible) {
+                throw new Error(`Plik nie jest kompatybilny: brakuje wymaganych kolumn (${compatibilityReport.validation.missing.join(', ')})`);
+            }
             
             setFileInfo({
                 name: file.name,

@@ -89,6 +89,7 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                     sx={{ 
                         maxHeight: { xs: 400, sm: 600, md: 700, lg: 800, xl: 900 },
                         width: '100%',
+                        transition: 'all 0.3s ease',
                         '&::-webkit-scrollbar': {
                             width: '8px',
                             height: '8px'
@@ -105,7 +106,15 @@ export const DynamicDataTable = ({ data, headers, filteredData }) => {
                         }
                     }}
                 >
-                    <Table stickyHeader size="medium">
+                    <Table 
+                        stickyHeader 
+                        size="medium"
+                        sx={{
+                            '& th, & td': {
+                                transition: 'all 0.2s ease'
+                            }
+                        }}
+                    >
                         {/* Nagłówek tabeli - wydzielony do osobnego komponentu */}
                         <TableHeaderRow 
                             headers={headers}

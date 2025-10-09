@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Tooltip, Chip, useTheme } from '@mui/material';
 import { Info, Warning, CheckCircle, Error } from '@mui/icons-material';
-import { formatDisplayValue, isLongText, truncateText, isDateField, formatDate } from '../../helpers/dataFormatting.helper';
+import { formatDisplayValue, isLongText, truncateText, isDateField, formatDate, isPercentageField, formatPercentage } from '../../helpers/dataFormatting.helper';
 
 /**
  * Komponent do renderowania wartości komórki tabeli

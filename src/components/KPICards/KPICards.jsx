@@ -7,7 +7,9 @@ import {
     Assessment,
     CheckCircle,
     Error,
-    Info
+    Info,
+    Today,
+    ShoppingCart
 } from '@mui/icons-material';
 import MainKPICard from '../MainKPICard';
 
@@ -21,7 +23,9 @@ export const KPICards = ({ data, filteredData }) => {
                 lowImpactBlockers: 0,
                 recomendedActions: 0,
                 availabilityAvg: 0,
-                trendsCount: { nasilajacy: 0, malejacy: 0, stabilny: 0 }
+                trendsCount: { nasilajacy: 0, malejacy: 0, stabilny: 0 },
+                storesWithOrderToday: 0,
+                sumaLiniiToday: 0
             };
         }
 
@@ -45,14 +49,15 @@ export const KPICards = ({ data, filteredData }) => {
         // Oblicz średnią dostępność
         const availabilityValues = dataToAnalyze
             .map(row => {
-                const dostepnosc = row.DOSTEPNOSC_DROGERIA;
+                // Spróbuj obu wariantów nazwy kolumny (case-insensitive)
+                const dostepnosc = row.Dostepnosc_drogeria || row.DOSTEPNOSC_DROGERIA || row.dostepnosc_drogeria;
                 if (typeof dostepnosc === 'string') {
                     return parseFloat(dostepnosc.replace('%', '').replace(',', '.'));
                 } else if (typeof dostepnosc === 'number') {
                     if (dostepnosc <= 1) {
-                        return dostepnosc * 100; // Format dziesiętny
+                        return dostepnosc * 100; // Format dziesiętny (0.90 = 90%)
                     }
-                    return dostepnosc; // Format procentowy
+                    return dostepnosc; // Format procentowy (90)
                 }
                 return 0;
             })
@@ -71,6 +76,31 @@ export const KPICards = ({ data, filteredData }) => {
             return acc;
         }, { nasilajacy: 0, malejacy: 0, stabilny: 0 });
 
+        // 📅 NOWE KPI: Wartości pre-obliczone w SAS (SUMA_LINII_ZAM_DZIS, LICZBA_SKLEPOW_DZIS)
+        // Każdy wiersz ma tę samą wartość globalną, więc wystarczy pobrać z pierwszego wiersza
+        
+        // Debug - sprawdź co jest w pierwszym wierszu
+        if (dataToAnalyze.length > 0) {
+            console.log('🔍 DEBUG - Pierwszy wiersz (nowe kolumny):', {
+                LICZBA_SKLEPOW_DZIS: dataToAnalyze[0].LICZBA_SKLEPOW_DZIS,
+                SUMA_LINII_ZAM_DZIS: dataToAnalyze[0].SUMA_LINII_ZAM_DZIS,
+                allKeys: Object.keys(dataToAnalyze[0])
+            });
+        }
+        
+        const storesWithOrderToday = dataToAnalyze.length > 0 
+            ? parseInt(dataToAnalyze[0].LICZBA_SKLEPOW_DZIS) || 0 
+            : 0;
+        
+        const sumaLiniiToday = dataToAnalyze.length > 0 
+            ? parseInt(dataToAnalyze[0].SUMA_LINII_ZAM_DZIS) || 0 
+            : 0;
+        
+        console.log('📊 KPI Values:', {
+            storesWithOrderToday,
+            sumaLiniiToday
+        });
+
         return {
             totalStores: uniqueStores,
             totalBlockers,
@@ -78,7 +108,10 @@ export const KPICards = ({ data, filteredData }) => {
             lowImpactBlockers: lowImpact,
             recomendedActions: recommended,
             availabilityAvg: Math.round(availabilityAvg * 100) / 100,
-            trendsCount
+            trendsCount,
+            // Nowe metryki
+            storesWithOrderToday,
+            sumaLiniiToday: Math.round(sumaLiniiToday)
         };
     }, [data, filteredData]);
 
@@ -177,6 +210,25 @@ export const KPICards = ({ data, filteredData }) => {
                     icon={<TrendingUp />}
                     type="error"
                     progress={metrics.totalBlockers > 0 ? (metrics.trendsCount.nasilajacy / metrics.totalBlockers) * 100 : 0}
+                />
+
+                {/* 🆕 Sklepy z zamówieniem dzisiaj */}
+                <MainKPICard
+                    title="Zamówienia dzisiaj"
+                    value={metrics.storesWithOrderToday.toLocaleString()}
+                    subtitle="Sklepy z ostatnim zam. dzisiaj"
+                    icon={<Today />}
+                    type="primary"
+                    progress={metrics.totalStores > 0 ? (metrics.storesWithOrderToday / metrics.totalStores) * 100 : 0}
+                />
+
+                {/* 🆕 Suma linii dzisiaj */}
+                <MainKPICard
+                    title="Suma linii dzisiaj"
+                    value={metrics.sumaLiniiToday.toLocaleString()}
+                    subtitle="Łączna suma linii dla zamówień dzisiaj"
+                    icon={<ShoppingCart />}
+                    type="success"
                 />
 
                 {/* Blockery niskiej wagi */}
