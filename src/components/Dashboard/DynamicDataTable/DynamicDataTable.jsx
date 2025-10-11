@@ -9,9 +9,9 @@ import {
     TablePagination,
     Typography
 } from '@mui/material';
-import { useTableLogic } from '../../hooks/useTableLogic.hook';
-import { TableHeaderRow } from '../Table/TableHeaderRow';
-import { TableDataRow } from '../Table/TableDataRow';
+import { useTableLogic } from '../../../hooks/useTableLogic.hook';
+import { TableHeaderRow } from '../../Table/TableHeaderRow';
+import { TableDataRow } from '../../Table/TableDataRow';
 
 /**
  * Zrefaktorowany komponent tabeli danych - teraz znacznie krótszy i czytelniejszy!

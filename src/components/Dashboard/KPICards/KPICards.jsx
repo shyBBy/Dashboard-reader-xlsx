@@ -11,7 +11,7 @@ import {
     Today,
     ShoppingCart
 } from '@mui/icons-material';
-import MainKPICard from '../MainKPICard';
+import MainKPICard from '../../MainKPICard';
 
 export const KPICards = ({ data, filteredData }) => {
     const metrics = useMemo(() => {

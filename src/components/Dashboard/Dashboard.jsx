@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Alert, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { DataFilters } from '../DataFilters/DataFilters';
-import { KPICards } from '../KPICards/KPICards';
-import { DynamicDataTable } from '../DynamicDataTable/DynamicDataTable';
-import { DetailedViewToggle } from '../DetailedViewToggle/DetailedViewToggle';
+import { DataFilters } from './DataFilters/DataFilters';
+import { KPICards } from './KPICards/KPICards';
+import { DynamicDataTable } from './DynamicDataTable/DynamicDataTable';
+import { DetailedViewToggle } from './DetailedViewToggle/DetailedViewToggle';
 import { useExcelData } from '../../context/ExcelDataContext';
 import { useDataFilters } from '../../hooks/useDataFilters.hook';
 import { getVisibleHeaders, getColumnStats } from '../../helpers/columnVisibility.helper';
