@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 import {
     Store,
     Warning,
@@ -21,6 +21,8 @@ import {
 } from '../../../helpers/businessMetrics.helper';
 
 export const KPICards = ({ data, filteredData }) => {
+    const theme = useTheme();
+    
     const metrics = useMemo(() => {
         const dataToAnalyze = filteredData || data;
         
@@ -61,7 +63,23 @@ export const KPICards = ({ data, filteredData }) => {
 
     return (
         <Box sx={{ mb: 4 }}>
-    
+            <Typography 
+                variant="h4" 
+                gutterBottom 
+                sx={{ 
+                    mb: 4, 
+                    fontWeight: 800,
+                    background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    letterSpacing: '-0.02em',
+                    textAlign: 'center'
+                }}
+            >
+                📊 Kluczowe wskaźniki (KPI)
+            </Typography>
+
             <Box sx={{ 
                 display: 'flex', 
                 flexWrap: 'wrap', 

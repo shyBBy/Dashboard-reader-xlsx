@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Container, CssBaseline, Grid, Typography, Toolbar, Link } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { AppBarMobileView } from '../components/AppBarMobileView/AppBarMobileView';
-import theme from '../theme';
 
 export const Copyright = (props) => {
     return (
@@ -29,6 +29,8 @@ export const Copyright = (props) => {
 };
 
 export const MainLayout = ({ children }) => {
+    const theme = useTheme();
+    
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />

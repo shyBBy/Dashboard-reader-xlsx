@@ -11,6 +11,7 @@ export default function MainKPICard({
     onClick 
 }) {
     const theme = useTheme();
+    const isDarkMode = theme.palette.mode === 'dark';
 
     // Mapowanie typów na kolory z theme
     const getTypeColors = (type) => {
@@ -64,18 +65,31 @@ export default function MainKPICard({
                 maxWidth: '320px',
                 p: 3,
                 borderRadius: 3,
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                // Theme-responsive background
+                background: isDarkMode 
+                    ? 'rgba(255, 255, 255, 0.02)' 
+                    : theme.palette.background.paper,
+                border: isDarkMode 
+                    ? '1px solid rgba(255, 255, 255, 0.1)' 
+                    : `1px solid ${theme.palette.divider}`,
                 backdropFilter: 'blur(10px)',
+                // Theme-responsive shadow
+                boxShadow: isDarkMode
+                    ? '0 4px 12px rgba(0, 0, 0, 0.3)'
+                    : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                 transition: 'all 0.3s ease',
                 position: 'relative',
                 overflow: 'hidden',
                 cursor: onClick ? 'pointer' : 'default',
                 '&:hover': {
-                    transform: 'translateY(-8px)',
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    transform: 'translateY(-4px)', // Mniejszy lift
+                    background: isDarkMode 
+                        ? 'rgba(255, 255, 255, 0.05)' 
+                        : theme.palette.background.paper,
                     border: `1px solid ${color}60`,
-                    boxShadow: `0 20px 40px -12px ${color}30`
+                    boxShadow: isDarkMode
+                        ? `0 20px 40px -12px ${color}30`
+                        : `0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px ${color}30`
                 },
                 '&::before': {
                     content: '""',
@@ -112,7 +126,9 @@ export default function MainKPICard({
                         variant="body2" 
                         sx={{ 
                             fontWeight: 'medium',
-                            color: 'rgba(255, 255, 255, 0.7)',
+                            color: isDarkMode 
+                                ? 'rgba(255, 255, 255, 0.7)' 
+                                : theme.palette.text.secondary,
                             mb: 1
                         }}
                     >
@@ -122,7 +138,9 @@ export default function MainKPICard({
                         variant="h4" 
                         sx={{ 
                             fontWeight: 'bold',
-                            color: 'white',
+                            color: isDarkMode 
+                                ? 'white' 
+                                : theme.palette.text.primary,
                             lineHeight: 1
                         }}
                     >
@@ -135,7 +153,9 @@ export default function MainKPICard({
                 <Typography 
                     variant="body2" 
                     sx={{ 
-                        color: 'rgba(255, 255, 255, 0.6)',
+                        color: isDarkMode 
+                            ? 'rgba(255, 255, 255, 0.6)' 
+                            : theme.palette.text.secondary,
                         fontSize: '0.875rem',
                         mb: progress !== undefined ? 2 : 0
                     }}
@@ -152,7 +172,9 @@ export default function MainKPICard({
                         sx={{
                             height: 6,
                             borderRadius: 3,
-                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            backgroundColor: isDarkMode 
+                                ? 'rgba(255, 255, 255, 0.1)' 
+                                : `${color}20`, // Używaj koloru typu z alpha
                             '& .MuiLinearProgress-bar': {
                                 borderRadius: 3,
                                 background: `linear-gradient(90deg, ${color}, ${color}80)`

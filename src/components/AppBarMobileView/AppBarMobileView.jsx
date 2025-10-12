@@ -14,6 +14,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import { AppBarMobileViewNavigationList } from './AppBarMobileViewNavigationList';
 import { FileInfoBar } from '../FileInfoBar/FileInfoBar';
+import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
 import './AppBarMobileView.css';
 import { useTheme } from '@mui/material/styles';
 
@@ -85,7 +86,15 @@ export const AppBarMobileView = () => {
 
                     <Box sx={{ flexGrow: 1 }} />
                     
-                    <Box sx={{ display: { xs: 'flex', md: 'flex' } }}>
+                    <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 1 
+                    }}>
+                        {/* Theme Toggle */}
+                        <ThemeToggle variant="icon" />
+                        
+                        {/* User Avatar */}
                         <IconButton sx={{ p: 0 }}>
                             <Avatar 
                                 alt="User" 
