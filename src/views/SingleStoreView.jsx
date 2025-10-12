@@ -7,10 +7,13 @@ import {
     Button, 
     Grid,
     Breadcrumbs,
-    IconButton
+    IconButton,
+    CircularProgress,
+    Alert,
+    Chip
 } from '@mui/material';
-import { ArrowBack, Home, Store } from '@mui/icons-material';
-import { useApiData } from '../context/ApiDataContext';
+import { ArrowBack, Home, Store, Refresh } from '@mui/icons-material';
+import { useStoreData } from '../hooks/useStoreData.hook';
 import SingleStoreKPICards from '../components/SingleStore/SingleStoreKPICards';
 import SingleStoreCharts from '../components/SingleStore/SingleStoreCharts';
 import BlockerAnalysis from '../components/SingleStore/BlockerAnalysis';
@@ -19,36 +22,21 @@ import NextOrderBlockers from '../components/SingleStore/NextOrderBlockers';
 
 export default function SingleStoreView() {
     const { storeId } = useParams();
-    const { excelData, hasData, isLoading } = useApiData();
     const navigate = useNavigate();
-    const [isInitializing, setIsInitializing] = React.useState(true);
+    
+    // Nowy hook do pobierania danych konkretnego sklepu
+    const { 
+        storeData, 
+        storeBlockers, 
+        storeStats, 
+        storeHighImpact, 
+        isLoading, 
+        error, 
+        refreshStoreData, 
+        hasData 
+    } = useStoreData(storeId);
 
-    // Daj czas na inicjalizację
-    React.useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsInitializing(false);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, []);
-
-    // Nie przekierowuj już na upload - dane przychodzą z API
-    // React.useEffect(() => {
-    //     if (!isInitializing && !isLoading && !hasData && !excelData) {
-    //         console.log('🚨 SingleStoreView - Brak danych, przekierowuję na /dashboard');
-    //         navigate('/dashboard');
-    //     }
-    // }, [isInitializing, isLoading, hasData, excelData, navigate]);
-
-    // Filtrowanie danych tylko dla tego sklepu
-    const storeData = React.useMemo(() => {
-        if (!excelData?.data || !storeId) return [];
-        
-        // Użyj dopasowania po konwersji na string (najczęściej działa)
-        return excelData.data.filter(row => String(row.StoreId) === String(storeId));
-    }, [excelData?.data, storeId]);
-
-    console.log('🏪 [STORE_VIEW] Sklep:', storeId, '- dane:', storeData.length, 'rekordów');
-
+    // Brak ID sklepu w URL
     if (!storeId) {
         return (
             <Box sx={{ p: 4, textAlign: 'center' }}>
@@ -56,72 +44,11 @@ export default function SingleStoreView() {
                     <Typography variant="h5" color="error">
                         ❌ Brak ID sklepu w URL
                     </Typography>
-                </Paper>
-            </Box>
-        );
-    }
-
-    // Pokaż loading state
-    if (isInitializing || isLoading) {
-        return (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Paper elevation={2} sx={{ p: 4, textAlign: 'center', mt: 4 }}>
-                    <Typography variant="h5" color="primary.main">
-                        ⏳ Ładowanie danych sklepu...
-                    </Typography>
-                    <Typography variant="body1" sx={{ mt: 2 }}>
-                        Poczekaj chwilę, inicjalizuję widok dla sklepu {storeId}
-                    </Typography>
-                </Paper>
-            </Box>
-        );
-    }
-
-    if (!hasData || !excelData?.data || excelData.data.length === 0) {
-        return (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Paper elevation={2} sx={{ p: 4, textAlign: 'center', mt: 4 }}>
-                    <Typography variant="h5" color="text.secondary">
-                        📋 Brak danych do wyświetlenia
-                    </Typography>
-                    <Typography variant="body1" sx={{ mt: 2 }}>
-                        API nie zwróciło danych o blokerach
-                    </Typography>
-                </Paper>
-            </Box>
-        );
-    }
-
-    if (storeData.length === 0) {
-        return (
-            <Box sx={{ p: 4 }}>
-                <Box sx={{ mb: 3 }}>
-                    <Breadcrumbs>
-                        <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Home fontSize="small" />
-                                Start
-                            </Box>
-                        </Link>
-                        <Link to="/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
-                            Dashboard
-                        </Link>
-                        <Typography color="text.primary">Sklep {storeId}</Typography>
-                    </Breadcrumbs>
-                </Box>
-
-                <Paper elevation={2} sx={{ p: 4, textAlign: 'center' }}>
-                    <Typography variant="h5" color="warning.main">
-                        ⚠️ Brak danych dla sklepu: {storeId}
-                    </Typography>
-                    <Typography variant="body1" sx={{ mt: 2, mb: 3 }}>
-                        Nie znaleziono danych dla tego sklepu w wgranych danych
-                    </Typography>
                     <Button 
                         variant="contained" 
-                        startIcon={<ArrowBack />}
-                        component={Link} 
-                        to="/dashboard"
+                        startIcon={<Home />}
+                        onClick={() => navigate('/dashboard')}
+                        sx={{ mt: 2 }}
                     >
                         Powrót do Dashboard
                     </Button>
@@ -130,115 +57,204 @@ export default function SingleStoreView() {
         );
     }
 
-    return (
-        <Box 
-            sx={{ 
-                width: '100%', 
-                minHeight: '100vh',
-                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                px: { xs: 2, sm: 3, md: 4, lg: 6 }, 
-                py: 4 
-            }}
-        >
-            {/* Nagłówek i breadcrumbs */}
-            <Box sx={{ mb: 6 }}>
-                <Breadcrumbs 
-                    sx={{ 
-                        mb: 3,
-                        '& .MuiBreadcrumbs-separator': {
-                            color: 'text.secondary'
-                        }
-                    }}
-                >
-                    <Link 
-                        to="/" 
-                        style={{ 
-                            textDecoration: 'none', 
-                            color: 'inherit',
-                            opacity: 0.7,
-                            transition: 'opacity 0.2s'
+    // Loading state - ładowanie danych z API
+    if (isLoading) {
+        return (
+            <Box sx={{ 
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                flexDirection: 'column',
+                gap: 3,
+                textAlign: 'center',
+                backgroundColor: 'background.default'
+            }}>
+                <Box sx={{ position: 'relative' }}>
+                    <CircularProgress 
+                        size={60} 
+                        thickness={4}
+                        sx={{
+                            color: (theme) => theme.palette.primary.main,
+                        }}
+                    />
+                    <Typography 
+                        variant="h4" 
+                        sx={{ 
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            fontSize: '1.5rem'
                         }}
                     >
+                        🏪
+                    </Typography>
+                </Box>
+                
+                <Box>
+                    <Typography variant="h5" color="text.primary" gutterBottom>
+                        Ładowanie sklepu {storeId}
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        Pobieranie danych z API...
+                    </Typography>
+                </Box>
+            </Box>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+                <Alert severity="error" sx={{ mb: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Błąd ładowania danych sklepu {storeId}
+                    </Typography>
+                    <Typography variant="body2">
+                        {error}
+                    </Typography>
+                </Alert>
+                <Button 
+                    variant="contained" 
+                    startIcon={<Refresh />}
+                    onClick={refreshStoreData}
+                    sx={{ mr: 2 }}
+                >
+                    Spróbuj ponownie
+                </Button>
+                <Button 
+                    variant="outlined" 
+                    startIcon={<Home />}
+                    onClick={() => navigate('/dashboard')}
+                >
+                    Powrót do Dashboard
+                </Button>
+            </Box>
+        );
+    }
+
+    // Brak danych - sklep nie istnieje lub nie ma blokerów
+    if (!hasData || !storeBlockers || storeBlockers.length === 0) {
+        return (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+                <Paper elevation={2} sx={{ p: 4, textAlign: 'center', mt: 4 }}>
+                    <Typography variant="h5" color="text.secondary" gutterBottom>
+                        📋 Brak danych dla sklepu {storeId}
+                    </Typography>
+                    <Typography variant="body1" sx={{ mt: 2 }}>
+                        Sklep nie istnieje lub nie ma blokerów w systemie
+                    </Typography>
+                    <Button 
+                        variant="contained" 
+                        startIcon={<Home />}
+                        onClick={() => navigate('/dashboard')}
+                        sx={{ mt: 2 }}
+                    >
+                        Powrót do Dashboard
+                    </Button>
+                </Paper>
+            </Box>
+        );
+    }
+
+    // Główny widok sklepu - renderowanie danych
+    return (
+        <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 }, py: 3 }}>
+            {/* Breadcrumbs i nagłówek */}
+            <Box sx={{ mb: 3 }}>
+                <Breadcrumbs>
+                    <Link to="/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Home fontSize="small" />
-                            Start
+                            Dashboard
                         </Box>
                     </Link>
-                    <Link 
-                        to="/dashboard" 
-                        style={{ 
-                            textDecoration: 'none', 
-                            color: 'inherit',
-                            opacity: 0.7,
-                            transition: 'opacity 0.2s'
-                        }}
-                    >
-                        Dashboard
-                    </Link>
-                    <Typography color="text.primary" sx={{ fontWeight: 500 }}>
+                    <Typography color="text.primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Store fontSize="small" />
                         Sklep {storeId}
                     </Typography>
                 </Breadcrumbs>
+            </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3 }}>
-                    <IconButton 
-                        component={Link} 
-                        to="/dashboard" 
-                        sx={{ 
-                            background: 'rgba(255, 255, 255, 0.1)',
-                            '&:hover': {
-                                background: 'rgba(255, 255, 255, 0.2)',
-                            }
-                        }}
-                    >
-                        <ArrowBack sx={{ color: 'text.primary' }} />
-                    </IconButton>
-                    <Box>
-                        <Typography 
-                            variant="h2" 
-                            component="h1" 
-                            sx={{ 
-                                fontWeight: 800,
-                                background: 'linear-gradient(45deg, #6366f1, #06b6d4)',
-                                backgroundClip: 'text',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                letterSpacing: '-0.02em',
-                                mb: 1
-                            }}
-                        >
-                            Sklep {storeId}
-                        </Typography>
-                        <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400 }}>
-                            Szczegółowa analiza • {storeData.length} rekordów danych
-                        </Typography>
-                    </Box>
+            {/* Nagłówek z informacjami o sklepie */}
+            <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                        🏪 Sklep {storeId}
+                    </Typography>
+                    <Chip 
+                        label={`${storeBlockers?.length || 0} blokerów`}
+                        color="primary"
+                        variant="outlined"
+                    />
                 </Box>
-            </Box>
-
-            {/* KPI Cards */}
-            <Box sx={{ mb: 8 }}>
-                <SingleStoreKPICards storeData={storeData} storeId={storeId} />
-            </Box>
-
-            {/* Wykresy */}
-            <Box sx={{ mb: 8 }}>
-                <SingleStoreCharts storeData={storeData} storeId={storeId} />
-            </Box>
-
-            {/* Analiza Blokerów */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <BlockerAnalysis storeData={storeData} storeId={storeId} />
                 
-                <Box sx={{ display: 'flex', gap: 4, width: '100%' }}>
-                    <Box sx={{ flex: 1 }}>
-                        <LastOrderBlockers storeData={storeData} storeId={storeId} />
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                        <NextOrderBlockers storeData={storeData} storeId={storeId} />
-                    </Box>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button 
+                        variant="outlined" 
+                        startIcon={<Refresh />}
+                        onClick={refreshStoreData}
+                        size="small"
+                    >
+                        Odśwież
+                    </Button>
+                    <IconButton 
+                        onClick={() => navigate('/dashboard')}
+                        sx={{ color: 'text.secondary' }}
+                    >
+                        <ArrowBack />
+                    </IconButton>
                 </Box>
             </Box>
+
+            {/* KPI Cards dla sklepu */}
+            <SingleStoreKPICards 
+                storeId={storeId}
+                storeData={storeBlockers}
+                storeStats={storeStats}
+                storeHighImpact={storeHighImpact}
+            />
+
+            {/* Główne komponenty sklepu */}
+            <Grid container spacing={3}>
+                {/* Wykresy */}
+                <Grid item xs={12} lg={6}>
+                    <SingleStoreCharts 
+                        storeData={storeBlockers} 
+                        storeId={storeId} 
+                    />
+                </Grid>
+
+                {/* Analiza blokerów */}
+                <Grid item xs={12} lg={6}>
+                    <BlockerAnalysis 
+                        storeData={storeBlockers} 
+                        storeId={storeId} 
+                    />
+                </Grid>
+
+                {/* Ostatnie zamówienia z blokerami */}
+                <Grid item xs={12} lg={6}>
+                    <LastOrderBlockers 
+                        storeData={storeBlockers} 
+                        storeId={storeId} 
+                    />
+                </Grid>
+
+                {/* Następne zamówienia z blokerami */}
+                <Grid item xs={12} lg={6}>
+                    <NextOrderBlockers 
+                        storeData={storeBlockers} 
+                        storeId={storeId} 
+                    />
+                </Grid>
+            </Grid>
         </Box>
     );
 }
