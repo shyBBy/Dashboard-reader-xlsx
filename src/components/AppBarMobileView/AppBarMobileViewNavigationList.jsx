@@ -10,7 +10,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import ApiIcon from '@mui/icons-material/Api';
 
 export const AppBarMobileViewNavigationList = ({ open }) => {
     const location = useLocation();
@@ -25,11 +25,11 @@ export const AppBarMobileViewNavigationList = ({ open }) => {
             tooltip: 'Dashboard analiz'
         },
         {
-            key: 'upload',
-            to: '/upload',
-            icon: UploadFileIcon,
-            title: 'Wgraj Excel',
-            tooltip: 'Wgraj plik Excel'
+            key: 'api-test',
+            to: '/api-test',
+            icon: ApiIcon,
+            title: 'Test API',
+            tooltip: 'Testowanie API'
         },
         {
             key: 'info',

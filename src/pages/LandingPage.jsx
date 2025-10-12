@@ -78,10 +78,10 @@ const LandingPage = () => {
                     >
                         <Button
                             component={Link}
-                            to="/upload"
+                            to="/dashboard"
                             variant="contained"
                             size="large"
-                            startIcon={<Upload />}
+                            startIcon={<Dashboard />}
                             sx={{ 
                                 px: 6, 
                                 py: 2,
@@ -93,16 +93,16 @@ const LandingPage = () => {
                                 }
                             }}
                         >
-                            Wgraj dane Excel
+                            Przejdź do Dashboard
                         </Button>
                         
                         <Button
                             component={Link}
-                            to="/dashboard"
+                            to="/api-test"
                             variant="contained"
                             color="secondary"
                             size="large"
-                            startIcon={<Dashboard />}
+                            startIcon={<Analytics />}
                             sx={{ 
                                 px: 4, 
                                 py: 2, 
@@ -114,7 +114,7 @@ const LandingPage = () => {
                                 }
                             }}
                         >
-                            Dashboard
+                            Test API
                         </Button>
                         
                         <Button

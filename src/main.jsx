@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { ExcelDataProvider } from './context/ExcelDataContext';
+import { ApiDataProvider } from './context/ApiDataContext';
 import { MobileViewProvider } from './context/MobileViewContext';
 import { ThemeContextProvider } from './context/ThemeContext';
 import App from './App';
@@ -11,11 +11,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeContextProvider>
-        <ExcelDataProvider>
+        <ApiDataProvider>
           <MobileViewProvider>
             <App />
           </MobileViewProvider>
-        </ExcelDataProvider>
+        </ApiDataProvider>
       </ThemeContextProvider>
     </BrowserRouter>
   </React.StrictMode>

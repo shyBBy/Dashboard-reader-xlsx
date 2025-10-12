@@ -10,7 +10,7 @@ import {
     IconButton
 } from '@mui/material';
 import { ArrowBack, Home, Store } from '@mui/icons-material';
-import { useExcelData } from '../context/ExcelDataContext';
+import { useApiData } from '../context/ApiDataContext';
 import SingleStoreKPICards from '../components/SingleStore/SingleStoreKPICards';
 import SingleStoreCharts from '../components/SingleStore/SingleStoreCharts';
 import BlockerAnalysis from '../components/SingleStore/BlockerAnalysis';
@@ -19,7 +19,7 @@ import NextOrderBlockers from '../components/SingleStore/NextOrderBlockers';
 
 export default function SingleStoreView() {
     const { storeId } = useParams();
-    const { excelData, hasData, loading } = useExcelData();
+    const { excelData, hasData, isLoading } = useApiData();
     const navigate = useNavigate();
     const [isInitializing, setIsInitializing] = React.useState(true);
 
@@ -31,13 +31,13 @@ export default function SingleStoreView() {
         return () => clearTimeout(timer);
     }, []);
 
-    // Przekieruj na upload jeśli brak danych, ale tylko po inicjalizacji
-    React.useEffect(() => {
-        if (!isInitializing && !loading && !hasData && !excelData) {
-            console.log('🚨 SingleStoreView - Brak danych, przekierowuję na /upload');
-            navigate('/upload');
-        }
-    }, [isInitializing, loading, hasData, excelData, navigate]);
+    // Nie przekierowuj już na upload - dane przychodzą z API
+    // React.useEffect(() => {
+    //     if (!isInitializing && !isLoading && !hasData && !excelData) {
+    //         console.log('🚨 SingleStoreView - Brak danych, przekierowuję na /dashboard');
+    //         navigate('/dashboard');
+    //     }
+    // }, [isInitializing, isLoading, hasData, excelData, navigate]);
 
     // Filtrowanie danych tylko dla tego sklepu
     const storeData = React.useMemo(() => {
@@ -62,7 +62,7 @@ export default function SingleStoreView() {
     }
 
     // Pokaż loading state
-    if (isInitializing || loading) {
+    if (isInitializing || isLoading) {
         return (
             <Box sx={{ p: 4, textAlign: 'center' }}>
                 <Paper elevation={2} sx={{ p: 4, textAlign: 'center', mt: 4 }}>
@@ -85,7 +85,7 @@ export default function SingleStoreView() {
                         📋 Brak danych do wyświetlenia
                     </Typography>
                     <Typography variant="body1" sx={{ mt: 2 }}>
-                        Wgraj plik Excel aby zobaczyć dane sklepu
+                        API nie zwróciło danych o blokerach
                     </Typography>
                 </Paper>
             </Box>
