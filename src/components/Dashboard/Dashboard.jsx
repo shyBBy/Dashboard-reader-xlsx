@@ -46,14 +46,14 @@ export const Dashboard = () => {
     return (
         <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 4 }, py: 3 }}>
             {/* Nagłówek */}
-            <Box sx={{ mb: 4 }}>
+            {/* <Box sx={{ mb: 4 }}>
                 <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
                     📊 Dashboard Analiz Blokerów
                 </Typography>
                 <Typography variant="h6" color="text.secondary">
                     Analizuj dane z pliku: <strong>{excelData.fileName}</strong> ({excelData.totalRows} wierszy)
                 </Typography>
-            </Box>
+            </Box> */}
 
             {/* Obsługa błędów - ukryj błędy localStorage */}
             {error && !error.includes('localStorage') && !error.includes('Storage') && !error.includes('quota') && (
