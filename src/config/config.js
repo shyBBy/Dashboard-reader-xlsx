@@ -10,8 +10,8 @@ const isDevelopment = import.meta.env.DEV;
 const config = {
     // Lokalne API (Python FastAPI)
     API_URL: isDevelopment 
-        ? 'http://localhost:8000' // Dev - lokalne API Python (bez /api prefix)
-        : 'http://192.168.1.100:8000', // Production - IP w sieci lokalnej
+        ? 'http://localhost:4175' // Dev - lokalne API Python (port 4175)
+        : 'http://172.27.0.69:4175', // Production - IP w sieci lokalnej (port 4175)
     
     // Timeouts
     REQUEST_TIMEOUT: 30000, // 30 sekund
