@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Alert, Divider, CircularProgress } from '@mui/material';
+import { Warning } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DataFilters } from './DataFilters/DataFilters';
 import { KPICards } from './KPICards/KPICards';
@@ -8,6 +9,7 @@ import { DetailedViewToggle } from './DetailedViewToggle/DetailedViewToggle';
 import { useApiData } from '../../context/ApiDataContext';
 import { useDataFilters } from '../../hooks/useDataFilters.hook';
 import { getVisibleHeaders, getColumnStats } from '../../helpers/columnVisibility.helper';
+import ErrorCard from '../ErrorCard';
 
 /**
  * Zrefaktorowany komponent Dashboard - znacznie krótszy dzięki wydzieleniu logiki do hooków
@@ -96,35 +98,25 @@ export const Dashboard = () => {
     // Error state - gdy API nie działa
     if (!isApiConnected || error) {
         return (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Alert severity="error" sx={{ mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Błąd połączenia z API
-                    </Typography>
-                    <Typography variant="body2">
-                        {error || 'Nie można połączyć się z serwerem Python FastAPI'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                        Sprawdź czy serwer działa na: <code>http://localhost:8000</code>
-                    </Typography>
-                </Alert>
-            </Box>
+            <ErrorCard
+                title="Błąd połączenia z API"
+                message={error || 'Nie można połączyć się z serwerem Python FastAPI. Sprawdź czy backend działa poprawnie.'}
+                type="error"
+                onRetry={() => window.location.reload()}
+            />
         );
     }
 
     // Jeśli nie ma danych ale API działa
     if (!hasData) {
         return (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Alert severity="warning" sx={{ mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Brak danych
-                    </Typography>
-                    <Typography variant="body2">
-                        API działa, ale nie zwróciło żadnych danych o blokerach
-                    </Typography>
-                </Alert>
-            </Box>
+            <ErrorCard
+                title="Brak danych"
+                message="API działa poprawnie, ale nie zwróciło żadnych danych o blokerach. Sprawdź czy baza danych zawiera dane."
+                type="warning"
+                icon={Warning}
+                onRetry={() => window.location.reload()}
+            />
         );
     }
 

@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Home, Store, Refresh } from '@mui/icons-material';
 import { useStoreData } from '../hooks/useStoreData.hook';
+import ErrorCard from '../components/ErrorCard';
 import SingleStoreKPICards from '../components/SingleStore/SingleStoreKPICards';
 import SingleStoreCharts from '../components/SingleStore/SingleStoreCharts';
 import BlockerAnalysis from '../components/SingleStore/BlockerAnalysis';
@@ -111,31 +112,12 @@ export default function SingleStoreView() {
     // Error state
     if (error) {
         return (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Alert severity="error" sx={{ mb: 3 }}>
-                    <Typography variant="h6" gutterBottom>
-                        Błąd ładowania danych sklepu {storeId}
-                    </Typography>
-                    <Typography variant="body2">
-                        {error}
-                    </Typography>
-                </Alert>
-                <Button 
-                    variant="contained" 
-                    startIcon={<Refresh />}
-                    onClick={refreshStoreData}
-                    sx={{ mr: 2 }}
-                >
-                    Spróbuj ponownie
-                </Button>
-                <Button 
-                    variant="outlined" 
-                    startIcon={<Home />}
-                    onClick={() => navigate('/dashboard')}
-                >
-                    Powrót do Dashboard
-                </Button>
-            </Box>
+            <ErrorCard
+                title={`Błąd ładowania sklepu ${storeId}`}
+                message={`Nie można pobrać danych dla sklepu ${storeId}. ${error}`}
+                type="error"
+                onRetry={refreshStoreData}
+            />
         );
     }
 
