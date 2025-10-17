@@ -64,32 +64,32 @@ export default function MainKPICard({
                 minWidth: '280px',
                 maxWidth: '320px',
                 p: 3,
-                borderRadius: 3,
-                // Theme-responsive background
+                borderRadius: 4,
+                // Modern card design with subtle gradients
                 background: isDarkMode 
-                    ? 'rgba(255, 255, 255, 0.02)' 
-                    : theme.palette.background.paper,
+                    ? `linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)` 
+                    : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, rgba(249, 250, 251, 0.8) 100%)`,
                 border: isDarkMode 
-                    ? '1px solid rgba(255, 255, 255, 0.1)' 
-                    : `1px solid ${theme.palette.divider}`,
-                backdropFilter: 'blur(10px)',
-                // Theme-responsive shadow
+                    ? '1px solid rgba(255, 255, 255, 0.08)' 
+                    : `1px solid rgba(229, 231, 235, 0.6)`,
+                backdropFilter: 'blur(20px)',
+                // Modern shadow system
                 boxShadow: isDarkMode
-                    ? '0 4px 12px rgba(0, 0, 0, 0.3)'
-                    : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                transition: 'all 0.3s ease',
+                    ? '0 4px 20px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)'
+                    : '0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                 position: 'relative',
                 overflow: 'hidden',
                 cursor: onClick ? 'pointer' : 'default',
                 '&:hover': {
-                    transform: 'translateY(-4px)', // Mniejszy lift
+                    transform: 'translateY(-8px) scale(1.02)',
                     background: isDarkMode 
-                        ? 'rgba(255, 255, 255, 0.05)' 
-                        : theme.palette.background.paper,
-                    border: `1px solid ${color}60`,
+                        ? `linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.05) 100%)` 
+                        : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, rgba(243, 244, 246, 0.9) 100%)`,
+                    border: `1px solid ${color}40`,
                     boxShadow: isDarkMode
-                        ? `0 20px 40px -12px ${color}30`
-                        : `0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px ${color}30`
+                        ? `0 20px 40px rgba(0, 0, 0, 0.5), 0 8px 32px ${color}20`
+                        : `0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 32px ${color}15`
                 },
                 '&::before': {
                     content: '""',
@@ -97,9 +97,20 @@ export default function MainKPICard({
                     top: 0,
                     left: 0,
                     right: 0,
-                    height: '3px',
-                    background: `linear-gradient(90deg, ${color}, ${color}80)`,
-                    opacity: 0.8
+                    height: '4px',
+                    background: `linear-gradient(90deg, ${color}, ${color}60, ${color})`,
+                    opacity: 0.9,
+                    borderRadius: '16px 16px 0 0'
+                },
+                '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    width: '100px',
+                    height: '100px',
+                    background: `radial-gradient(circle, ${color}08 0%, transparent 70%)`,
+                    opacity: 0.6
                 }
             }}
         >
@@ -107,15 +118,28 @@ export default function MainKPICard({
                 {icon && (
                     <Box 
                         sx={{ 
-                            p: 2, 
-                            borderRadius: 2, 
-                            background: `linear-gradient(135deg, ${color}20, ${color}10)`,
+                            width: 56,
+                            height: 56,
+                            borderRadius: 3, 
+                            background: `linear-gradient(135deg, ${color}15, ${color}08)`,
+                            backdropFilter: 'blur(10px)',
+                            border: `1px solid ${color}20`,
                             color: color,
                             mr: 3,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '1.5rem'
+                            fontSize: '1.75rem',
+                            boxShadow: `0 4px 12px ${color}15`,
+                            position: 'relative',
+                            '&::before': {
+                                content: '""',
+                                position: 'absolute',
+                                inset: 0,
+                                borderRadius: 3,
+                                background: `linear-gradient(135deg, ${color}10, transparent)`,
+                                opacity: 0.7
+                            }
                         }}
                     >
                         {icon}
@@ -165,19 +189,28 @@ export default function MainKPICard({
             )}
 
             {progress !== undefined && (
-                <Box sx={{ mt: 2 }}>
+                <Box sx={{ mt: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                            Progress
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: color, fontWeight: 600 }}>
+                            {Math.round(progress)}%
+                        </Typography>
+                    </Box>
                     <LinearProgress 
                         variant="determinate" 
                         value={progress} 
                         sx={{
-                            height: 6,
-                            borderRadius: 3,
+                            height: 8,
+                            borderRadius: 4,
                             backgroundColor: isDarkMode 
-                                ? 'rgba(255, 255, 255, 0.1)' 
-                                : `${color}20`, // Używaj koloru typu z alpha
+                                ? 'rgba(255, 255, 255, 0.08)' 
+                                : `${color}12`,
                             '& .MuiLinearProgress-bar': {
-                                borderRadius: 3,
-                                background: `linear-gradient(90deg, ${color}, ${color}80)`
+                                borderRadius: 4,
+                                background: `linear-gradient(90deg, ${color}, ${color}CC, ${color}80)`,
+                                boxShadow: `0 2px 8px ${color}30`
                             }
                         }} 
                     />

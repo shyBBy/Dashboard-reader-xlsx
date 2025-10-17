@@ -14,53 +14,53 @@ export const useTheme = () => {
     return context;
 };
 
-// Definicje kolorów dla obu trybów
+// Definicje kolorów dla obu trybów - Premium MUI Style
 const lightPalette = {
     mode: 'light',
     primary: {
-        main: '#4f46e5', // Ciemniejszy indigo - lepszy kontrast
-        light: '#6366f1',
-        dark: '#3730a3',
+        main: '#635BFF', // Modern purple-blue
+        light: '#8B7EFF',
+        dark: '#4F46E5',
     },
     secondary: {
-        main: '#0891b2', // Ciemniejszy cyan - lepszy kontrast
-        light: '#06b6d4',
-        dark: '#0e7490',
+        main: '#00C9A7', // Modern teal
+        light: '#4DDDCD',
+        dark: '#00A085',
     },
     success: {
-        main: '#059669', // Ciemniejszy emerald
-        light: '#10b981',
-        dark: '#047857',
+        main: '#22C55E', // Fresh green
+        light: '#4ADE80',
+        dark: '#16A34A',
     },
     warning: {
-        main: '#d97706', // Ciemniejszy amber
-        light: '#f59e0b',
-        dark: '#b45309',
+        main: '#F59E0B', // Warm orange
+        light: '#FBBF24',
+        dark: '#D97706',
     },
     error: {
-        main: '#dc2626', // Ciemniejszy red
-        light: '#ef4444',
-        dark: '#b91c1c',
+        main: '#EF4444', // Modern red
+        light: '#F87171',
+        dark: '#DC2626',
     },
     info: {
-        main: '#2563eb', // Ciemniejszy blue
-        light: '#3b82f6',
-        dark: '#1d4ed8',
+        main: '#3B82F6', // Clean blue
+        light: '#60A5FA',
+        dark: '#2563EB',
     },
     background: {
-        default: '#f8fafc', // Slate-50
-        paper: '#ffffff',
-        secondary: '#f1f5f9', // Slate-100
+        default: '#F9FAFB', // Ultra light gray
+        paper: '#FFFFFF',
+        secondary: '#F3F4F6', // Soft gray
     },
     text: {
-        primary: '#0f172a', // Slate-900 - ciemny tekst
-        secondary: '#475569', // Ciemniejszy secondary text - Slate-600
+        primary: '#111827', // Rich dark
+        secondary: '#6B7280', // Soft gray text
     },
-    divider: '#cbd5e1', // Ciemniejszy divider - Slate-300
+    divider: '#E5E7EB', // Light divider
     glass: {
-        background: 'rgba(255, 255, 255, 0.95)', // Bardziej nieprzezroczyste
-        backdrop: 'rgba(148, 163, 184, 0.1)', // Slate-400 z alpha
-        border: 'rgba(148, 163, 184, 0.3)', // Bardziej widoczny border
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdrop: 'rgba(148, 163, 184, 0.1)',
+        border: 'rgba(229, 231, 235, 0.8)',
     },
 };
 
@@ -155,15 +155,16 @@ const getThemeConfig = (palette) => ({
                 root: {
                     backgroundImage: 'none',
                     backgroundColor: palette.mode === 'light' 
-                        ? 'rgba(255, 255, 255, 0.98)' // Prawie nieprzezroczyste w light mode
+                        ? '#FFFFFF'
                         : palette.glass.background,
                     backdropFilter: 'blur(20px)',
                     border: palette.mode === 'light'
-                        ? `1px solid rgba(148, 163, 184, 0.2)` // Subtelny border w light
+                        ? '1px solid rgba(229, 231, 235, 0.6)'
                         : `1px solid ${palette.glass.border}`,
                     boxShadow: palette.mode === 'light' 
-                        ? '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' // Tailwind shadow-md
+                        ? '0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04)'
                         : '0 8px 32px rgba(0, 0, 0, 0.3)',
+                    borderRadius: '16px'
                 },
             },
         },
@@ -189,18 +190,28 @@ const getThemeConfig = (palette) => ({
         MuiButton: {
             styleOverrides: {
                 root: {
-                    borderRadius: 8,
+                    borderRadius: 12,
                     textTransform: 'none',
-                    fontWeight: 500,
+                    fontWeight: 600,
+                    padding: '10px 24px',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 },
                 contained: {
-                    boxShadow: palette.mode === 'light'
-                        ? '0 4px 12px rgba(0, 0, 0, 0.15)'
-                        : '0 4px 12px rgba(0, 0, 0, 0.4)',
+                    boxShadow: palette.mode === 'light' 
+                        ? '0 4px 20px rgba(0, 0, 0, 0.1)' 
+                        : '0 4px 20px rgba(0, 0, 0, 0.4)',
                     '&:hover': {
-                        boxShadow: palette.mode === 'light'
-                            ? '0 6px 16px rgba(0, 0, 0, 0.2)'
-                            : '0 6px 16px rgba(0, 0, 0, 0.5)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: palette.mode === 'light' 
+                            ? '0 8px 25px rgba(0, 0, 0, 0.15)' 
+                            : '0 8px 25px rgba(0, 0, 0, 0.5)',
+                    },
+                },
+                outlined: {
+                    borderWidth: '1.5px',
+                    '&:hover': {
+                        borderWidth: '1.5px',
+                        transform: 'translateY(-1px)',
                     },
                 },
             },
@@ -227,15 +238,24 @@ const getThemeConfig = (palette) => ({
             styleOverrides: {
                 root: {
                     '& .MuiOutlinedInput-root': {
-                        borderRadius: 8,
+                        borderRadius: 12,
                         backgroundColor: palette.mode === 'light' 
-                            ? 'rgba(255, 255, 255, 0.9)' // Bardziej nieprzezroczyste
+                            ? 'rgba(249, 250, 251, 0.8)' 
                             : 'rgba(30, 41, 59, 0.7)',
                         backdropFilter: 'blur(10px)',
+                        transition: 'all 0.3s ease',
                         '& .MuiOutlinedInput-notchedOutline': {
-                            borderColor: palette.mode === 'light'
-                                ? 'rgba(148, 163, 184, 0.4)' // Wyraźniejszy border
+                            borderColor: palette.mode === 'light' 
+                                ? 'rgba(229, 231, 235, 0.8)' 
                                 : 'rgba(71, 85, 105, 0.3)',
+                            borderWidth: '1.5px',
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: palette.primary?.main || '#635BFF',
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: palette.primary?.main || '#635BFF',
+                            borderWidth: '2px',
                         },
                     },
                 },

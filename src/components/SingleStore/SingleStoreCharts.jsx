@@ -147,30 +147,41 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                         sx={{ 
                             p: 3,
                             borderRadius: 3,
-                            background: 'rgba(255, 255, 255, 0.02)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            backdropFilter: 'blur(10px)',
-                            height: '100%'
+                            backgroundColor: 'background.paper',
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: theme.shadows[2],
+                            height: '400px',
+                            display: 'flex',
+                            flexDirection: 'column'
                         }}
                     >
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
                             🎯 Rozkład Wpływu
                         </Typography>
-                        <PieChart
-                            series={[
-                                {
-                                    data: chartData.wplywChartData.map((item, index) => ({
-                                        id: index,
-                                        value: item.value,
-                                        label: `${item.name}: ${item.percentage}%`,
-                                        color: colors[item.name] || theme.palette.grey[500]
-                                    }))
-                                }
-                            ]}
-                            width={400}
-                            height={300}
-                            margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                        />
+                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <PieChart
+                                series={[
+                                    {
+                                        data: chartData.wplywChartData.map((item, index) => ({
+                                            id: index,
+                                            value: item.value,
+                                            label: `${item.name}: ${item.percentage}%`,
+                                            color: colors[item.name] || theme.palette.grey[500]
+                                        }))
+                                    }
+                                ]}
+                                width={350}
+                                height={300}
+                                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                                slotProps={{
+                                    legend: {
+                                        direction: 'column',
+                                        position: { vertical: 'middle', horizontal: 'right' },
+                                        padding: 0,
+                                    },
+                                }}
+                            />
+                        </Box>
                     </Box>
                 </Grid>
 
@@ -180,113 +191,166 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                         sx={{ 
                             p: 3,
                             borderRadius: 3,
-                            background: 'rgba(255, 255, 255, 0.02)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            backdropFilter: 'blur(10px)',
-                            height: '100%'
+                            backgroundColor: 'background.paper',
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: theme.shadows[2],
+                            height: '400px',
+                            display: 'flex',
+                            flexDirection: 'column'
                         }}
                     >
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
                             ✅ Rozkład Decyzji
                         </Typography>
-                        <PieChart
-                            series={[
-                                {
-                                    data: chartData.decyzjaChartData.map((item, index) => ({
-                                        id: index,
-                                        value: item.value,
-                                        label: `${item.name}: ${item.value}`,
-                                        color: decyzjaColors[index]
-                                    }))
-                                }
-                            ]}
-                            width={400}
-                            height={300}
-                            margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                        />
+                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <PieChart
+                                series={[
+                                    {
+                                        data: chartData.decyzjaChartData.map((item, index) => ({
+                                            id: index,
+                                            value: item.value,
+                                            label: `${item.name}: ${item.value}`,
+                                            color: decyzjaColors[index]
+                                        }))
+                                    }
+                                ]}
+                                width={350}
+                                height={300}
+                                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                                slotProps={{
+                                    legend: {
+                                        direction: 'column',
+                                        position: { vertical: 'middle', horizontal: 'right' },
+                                        padding: 0,
+                                    },
+                                }}
+                            />
+                        </Box>
                     </Box>
                 </Grid>
 
-                {/* Top blokery - Dwa wykresy obok siebie */}
-                <Grid item xs={12}>
-                    <Box sx={{ display: 'flex', gap: 3 }}>
-                        {/* Ostatnie zamówienie */}
-                        <Box 
-                            sx={{ 
-                                flex: 1,
-                                p: 3,
-                                borderRadius: 3,
-                                background: 'rgba(255, 255, 255, 0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                backdropFilter: 'blur(10px)'
-                            }}
-                        >
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-                                🚫 Top Blokery - Ostatnie Zamówienie
-                            </Typography>
+                {/* Top blokery - Responsywne wykresy */}
+                <Grid item xs={12} lg={6}>
+                    <Box 
+                        sx={{ 
+                            p: 3,
+                            borderRadius: 3,
+                            backgroundColor: 'background.paper',
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: theme.shadows[2],
+                            height: '450px',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
+                            🚫 Top Blokery - Ostatnie Zamówienie
+                        </Typography>
+                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <BarChart
                                 xAxis={[
                                     { 
                                         scaleType: 'band', 
                                         data: chartData.topBlokeryLastOrder.map(item => 
-                                            item.name.length > 12 ? item.name.substring(0, 12) + '...' : item.name
+                                            item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name
                                         ),
                                         tickLabelStyle: {
                                             angle: -45,
                                             textAnchor: 'end',
-                                            fontSize: 10
+                                            fontSize: 11,
+                                            fill: theme.palette.text.primary
+                                        }
+                                    }
+                                ]}
+                                yAxis={[
+                                    {
+                                        tickLabelStyle: {
+                                            fontSize: 11,
+                                            fill: theme.palette.text.primary
                                         }
                                     }
                                 ]}
                                 series={[
                                     { 
                                         data: chartData.topBlokeryLastOrder.map(item => item.totalLines),
-                                        color: theme.palette.error.main
+                                        color: theme.palette.error.main,
+                                        label: 'Linii zablokowanych'
                                     }
                                 ]}
-                                width={400}
+                                width={450}
                                 height={350}
-                                margin={{ top: 20, right: 30, left: 60, bottom: 100 }}
+                                margin={{ top: 40, right: 30, left: 70, bottom: 120 }}
+                                tooltip={{
+                                    trigger: 'item'
+                                }}
+                                slotProps={{
+                                    legend: {
+                                        hidden: true
+                                    }
+                                }}
                             />
                         </Box>
+                    </Box>
+                </Grid>
 
-                        {/* Następne zamówienie */}
-                        <Box 
-                            sx={{ 
-                                flex: 1,
-                                p: 3,
-                                borderRadius: 3,
-                                background: 'rgba(255, 255, 255, 0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                backdropFilter: 'blur(10px)'
-                            }}
-                        >
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-                                � Top Blokery - Następne Zamówienie
-                            </Typography>
+                <Grid item xs={12} lg={6}>
+                    <Box 
+                        sx={{ 
+                            p: 3,
+                            borderRadius: 3,
+                            backgroundColor: 'background.paper',
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: theme.shadows[2],
+                            height: '450px',
+                            display: 'flex',
+                            flexDirection: 'column'
+                        }}
+                    >
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
+                            📈 Top Blokery - Następne Zamówienie
+                        </Typography>
+                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <BarChart
                                 xAxis={[
                                     { 
                                         scaleType: 'band', 
                                         data: chartData.topBlokeryNextOrder.map(item => 
-                                            item.name.length > 12 ? item.name.substring(0, 12) + '...' : item.name
+                                            item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name
                                         ),
                                         tickLabelStyle: {
                                             angle: -45,
                                             textAnchor: 'end',
-                                            fontSize: 10
+                                            fontSize: 11,
+                                            fill: theme.palette.text.primary
+                                        }
+                                    }
+                                ]}
+                                yAxis={[
+                                    {
+                                        tickLabelStyle: {
+                                            fontSize: 11,
+                                            fill: theme.palette.text.primary
                                         }
                                     }
                                 ]}
                                 series={[
                                     { 
                                         data: chartData.topBlokeryNextOrder.map(item => item.totalLines),
-                                        color: theme.palette.warning.main
+                                        color: theme.palette.warning.main,
+                                        label: 'Linii prognozowanych'
                                     }
                                 ]}
-                                width={400}
+                                width={450}
                                 height={350}
-                                margin={{ top: 20, right: 30, left: 60, bottom: 100 }}
+                                margin={{ top: 40, right: 30, left: 70, bottom: 120 }}
+                                tooltip={{
+                                    trigger: 'item'
+                                }}
+                                slotProps={{
+                                    legend: {
+                                        hidden: true
+                                    }
+                                }}
                             />
                         </Box>
                     </Box>
@@ -299,40 +363,62 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                             sx={{ 
                                 p: 3,
                                 borderRadius: 3,
-                                background: 'rgba(255, 255, 255, 0.02)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                backdropFilter: 'blur(10px)',
-                                height: '100%'
+                                backgroundColor: 'background.paper',
+                                border: `1px solid ${theme.palette.divider}`,
+                                boxShadow: theme.shadows[2],
+                                height: '500px',
+                                display: 'flex',
+                                flexDirection: 'column'
                             }}
                         >
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
                                 📊 Trend Dostępności w Czasie
                             </Typography>
-                            <LineChart
-                                xAxis={[
-                                    { 
-                                        scaleType: 'band', 
-                                        data: chartData.dostepnoscTrendData.map(item => item.date)
-                                    }
-                                ]}
-                                yAxis={[
-                                    { 
-                                        min: 0,
-                                        max: 100,
-                                        label: 'Dostępność (%)'
-                                    }
-                                ]}
-                                series={[
-                                    {
-                                        data: chartData.dostepnoscTrendData.map(item => item.dostepnosc),
-                                        color: theme.palette.primary.main,
-                                        curve: 'linear'
-                                    }
-                                ]}
-                                width={800}
-                                height={400}
-                                margin={{ top: 20, right: 30, left: 80, bottom: 60 }}
-                            />
+                            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+                                <LineChart
+                                    xAxis={[
+                                        { 
+                                            scaleType: 'band', 
+                                            data: chartData.dostepnoscTrendData.map(item => item.date),
+                                            tickLabelStyle: {
+                                                fontSize: 11,
+                                                fill: theme.palette.text.primary
+                                            }
+                                        }
+                                    ]}
+                                    yAxis={[
+                                        { 
+                                            min: 0,
+                                            max: 100,
+                                            label: 'Dostępność (%)',
+                                            tickLabelStyle: {
+                                                fontSize: 11,
+                                                fill: theme.palette.text.primary
+                                            }
+                                        }
+                                    ]}
+                                    series={[
+                                        {
+                                            data: chartData.dostepnoscTrendData.map(item => item.dostepnosc),
+                                            color: theme.palette.primary.main,
+                                            curve: 'linear',
+                                            label: 'Dostępność %'
+                                        }
+                                    ]}
+                                    width={Math.min(1000, window.innerWidth - 100)}
+                                    height={380}
+                                    margin={{ top: 40, right: 40, left: 80, bottom: 80 }}
+                                    tooltip={{
+                                        trigger: 'item'
+                                    }}
+                                    slotProps={{
+                                        legend: {
+                                            direction: 'row',
+                                            position: { vertical: 'top', horizontal: 'middle' },
+                                        },
+                                    }}
+                                />
+                            </Box>
                         </Box>
                     </Grid>
                 )}

@@ -25,14 +25,20 @@ const matchesSearchFilter = (row, searchTerm) => {
     const term = searchTerm.trim();
     
     // Jeśli wpisano samą liczbę, szukaj po StoreId
-    if (/^\\d+$/.test(term)) {
+    if (/^\d+$/.test(term)) {
         return String(row.StoreId) === term;
     }
     
-    // Jeśli to tekst, szukaj we wszystkich kolumnach
+    // Jeśli to tekst, szukaj we wszystkich kolumnach tekstowych
     const searchLower = term.toLowerCase();
-    return Object.values(row).some(value => 
-        String(value || '').toLowerCase().includes(searchLower)
+    const searchableFields = [
+        'StoreId', 'Gospodarz_Sklepu', 'Lider', 'LW', 'BlockerName', 
+        'Wplyw', 'Opis', 'Rekomendacja', 'Rekomendacja_dzialania',
+        'Trend_analiza', 'Decyzja', 'Powod_decyzji'
+    ];
+    
+    return searchableFields.some(field => 
+        String(row[field] || '').toLowerCase().includes(searchLower)
     );
 };
 
@@ -64,6 +70,27 @@ export const filterData = (data, filters) => {
         // Filtr StoreId
         if (filters.storeId && filters.storeId !== 'all') {
             if (String(row.StoreId) !== String(filters.storeId)) {
+                return false;
+            }
+        }
+
+        // Filtr Gospodarza Sklepu
+        if (filters.gospodarz && filters.gospodarz !== 'all') {
+            if (row.Gospodarz_Sklepu !== filters.gospodarz) {
+                return false;
+            }
+        }
+
+        // Filtr Lidera
+        if (filters.lider && filters.lider !== 'all') {
+            if (row.Lider !== filters.lider) {
+                return false;
+            }
+        }
+
+        // Filtr LW
+        if (filters.lw && filters.lw !== 'all') {
+            if (row.LW !== filters.lw) {
                 return false;
             }
         }
