@@ -17,75 +17,56 @@ export default function SingleStoreCharts({ storeData, storeId }) {
     const chartData = useMemo(() => {
         if (!storeData || storeData.length === 0) return null;
 
-        // Data dla wykres wpływu
+        // Dane dla wykresu wpływu
         const wplywData = storeData.reduce((acc, row) => {
             const wplyw = row.Wplyw;
-            if (wplyw) {
-                acc[wplyw] = (acc[wplyw] || 0) + 1;
-            }
+            if (wplyw) acc[wplyw] = (acc[wplyw] || 0) + 1;
             return acc;
         }, {});
-
         const wplywChartData = Object.entries(wplywData).map(([key, value]) => ({
             name: key,
             value: value,
             percentage: ((value / storeData.length) * 100).toFixed(1)
         }));
 
-        // Data dla wykres dostępności w czasie (jeśli są daty)
+        // Dane trendu dostępności
         const dostepnoscTrendData = storeData
             .filter(row => row.DOSTEPNOSC_DROGERIA && row.DATE_last_zam)
             .map(row => ({
                 date: new Date(row.DATE_last_zam).toLocaleDateString('pl-PL'),
                 dostepnosc: parseFloat(row.DOSTEPNOSC_DROGERIA?.replace('%', '') || 0),
-                bloker: row.BlockerName || 'Brak'
             }))
             .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        // Top blokery - ostatnie zamówienia
+        // Top blokery – ostatnie zamówienie
         const blokerLastOrderStats = storeData.reduce((acc, row) => {
             const bloker = row.BlockerName;
-            const ostatnieZamLinii = parseInt(row.Bloker_ostatnie_zam) || 0;
-            
-            if (bloker && ostatnieZamLinii > 0) {
-                if (!acc[bloker]) {
-                    acc[bloker] = { name: bloker, totalLines: 0 };
-                }
-                acc[bloker].totalLines += ostatnieZamLinii;
-            }
+            const val = parseInt(row.Bloker_ostatnie_zam) || 0;
+            if (bloker && val > 0) acc[bloker] = (acc[bloker] || 0) + val;
             return acc;
         }, {});
-
-        const topBlokeryLastOrder = Object.values(blokerLastOrderStats)
+        const topBlokeryLastOrder = Object.entries(blokerLastOrderStats)
+            .map(([name, totalLines]) => ({ name, totalLines }))
             .sort((a, b) => b.totalLines - a.totalLines)
             .slice(0, 10);
 
-        // Top blokery - następne zamówienia
+        // Top blokery – następne zamówienie
         const blokerNextOrderStats = storeData.reduce((acc, row) => {
             const bloker = row.BlockerName;
-            const najblizsze_zam_linii = parseInt(row.Bloker_najblizsze_zam) || 0;
-            
-            if (bloker && najblizsze_zam_linii > 0) {
-                if (!acc[bloker]) {
-                    acc[bloker] = { name: bloker, totalLines: 0 };
-                }
-                acc[bloker].totalLines += najblizsze_zam_linii;
-            }
+            const val = parseInt(row.Bloker_najblizsze_zam) || 0;
+            if (bloker && val > 0) acc[bloker] = (acc[bloker] || 0) + val;
             return acc;
         }, {});
-
-        const topBlokeryNextOrder = Object.values(blokerNextOrderStats)
+        const topBlokeryNextOrder = Object.entries(blokerNextOrderStats)
+            .map(([name, totalLines]) => ({ name, totalLines }))
             .sort((a, b) => b.totalLines - a.totalLines)
             .slice(0, 10);
 
-        // Analiza decyzji
+        // Dane decyzji
         const decyzjaData = storeData.reduce((acc, row) => {
             const decyzja = row.Decyzja;
-            if (decyzja === 'REKOMENDUJ') {
-                acc.rekomenduj++;
-            } else if (decyzja && decyzja.includes('BRAK AKCJI')) {
-                acc.brakAkcji++;
-            }
+            if (decyzja === 'REKOMENDUJ') acc.rekomenduj++;
+            else if (decyzja?.includes('BRAK AKCJI')) acc.brakAkcji++;
             return acc;
         }, { rekomenduj: 0, brakAkcji: 0 });
 
@@ -113,6 +94,7 @@ export default function SingleStoreCharts({ storeData, storeId }) {
         );
     }
 
+    // Kolory z theme
     const colors = {
         WYSOKI: theme.palette.error.main,
         SREDNI: theme.palette.warning.main,
@@ -139,12 +121,12 @@ export default function SingleStoreCharts({ storeData, storeId }) {
             >
                 📈 Wykresy dla Sklepu {storeId}
             </Typography>
-            
+
             <Grid container spacing={3}>
-                {/* Wykres wpływu - Pie Chart */}
+                {/* Wpływ */}
                 <Grid item xs={12} md={6}>
-                    <Box 
-                        sx={{ 
+                    <Box
+                        sx={{
                             p: 3,
                             borderRadius: 3,
                             backgroundColor: 'background.paper',
@@ -155,40 +137,34 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                             flexDirection: 'column'
                         }}
                     >
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
+                        <Typography variant="h6" textAlign="center" sx={{ mb: 2, fontWeight: 'bold' }}>
                             🎯 Rozkład Wpływu
                         </Typography>
-                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <PieChart
-                                series={[
-                                    {
-                                        data: chartData.wplywChartData.map((item, index) => ({
-                                            id: index,
-                                            value: item.value,
-                                            label: `${item.name}: ${item.percentage}%`,
-                                            color: colors[item.name] || theme.palette.grey[500]
-                                        }))
-                                    }
-                                ]}
-                                width={350}
-                                height={300}
-                                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                                slotProps={{
-                                    legend: {
-                                        direction: 'column',
-                                        position: { vertical: 'middle', horizontal: 'right' },
-                                        padding: 0,
-                                    },
-                                }}
-                            />
-                        </Box>
+                        <PieChart
+                            series={[
+                                {
+                                    data: chartData.wplywChartData.map((item, i) => ({
+                                        id: i,
+                                        value: item.value,
+                                        label: `${item.name} (${item.percentage}%)`,
+                                        color: colors[item.name] || theme.palette.grey[400]
+                                    })),
+                                    highlightScope: { fade: 'global', highlight: 'item' },
+                                    faded: { innerRadius: 30, additionalRadius: -30, color: theme.palette.grey[400] },
+                                    innerRadius: 40,
+                                    outerRadius: 100,
+                                }
+                            ]}
+                            width={360}
+                            height={300}
+                        />
                     </Box>
                 </Grid>
 
-                {/* Wykres decyzji - Pie Chart */}
+                {/* Decyzje */}
                 <Grid item xs={12} md={6}>
-                    <Box 
-                        sx={{ 
+                    <Box
+                        sx={{
                             p: 3,
                             borderRadius: 3,
                             backgroundColor: 'background.paper',
@@ -199,226 +175,106 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                             flexDirection: 'column'
                         }}
                     >
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
+                        <Typography variant="h6" textAlign="center" sx={{ mb: 2, fontWeight: 'bold' }}>
                             ✅ Rozkład Decyzji
                         </Typography>
-                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <PieChart
-                                series={[
-                                    {
-                                        data: chartData.decyzjaChartData.map((item, index) => ({
-                                            id: index,
-                                            value: item.value,
-                                            label: `${item.name}: ${item.value}`,
-                                            color: decyzjaColors[index]
-                                        }))
-                                    }
-                                ]}
-                                width={350}
-                                height={300}
-                                margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                                slotProps={{
-                                    legend: {
-                                        direction: 'column',
-                                        position: { vertical: 'middle', horizontal: 'right' },
-                                        padding: 0,
-                                    },
-                                }}
-                            />
-                        </Box>
+                        <PieChart
+                            series={[
+                                {
+                                    data: chartData.decyzjaChartData.map((item, i) => ({
+                                        id: i,
+                                        value: item.value,
+                                        label: `${item.name} (${item.value})`,
+                                        color: decyzjaColors[i]
+                                    })),
+                                    highlightScope: { fade: 'global', highlight: 'item' },
+                                    faded: { innerRadius: 30, additionalRadius: -30, color: theme.palette.grey[400] },
+                                    innerRadius: 40,
+                                    outerRadius: 100,
+                                }
+                            ]}
+                            width={360}
+                            height={300}
+                        />
                     </Box>
                 </Grid>
 
-                {/* Top blokery - Responsywne wykresy */}
+                {/* Top blokery */}
                 <Grid item xs={12} lg={6}>
-                    <Box 
-                        sx={{ 
+                    <Box
+                        sx={{
                             p: 3,
                             borderRadius: 3,
                             backgroundColor: 'background.paper',
                             border: `1px solid ${theme.palette.divider}`,
                             boxShadow: theme.shadows[2],
-                            height: '450px',
-                            display: 'flex',
-                            flexDirection: 'column'
+                            height: '450px'
                         }}
                     >
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
-                            🚫 Top Blokery - Ostatnie Zamówienie
+                        <Typography variant="h6" textAlign="center" sx={{ mb: 2, fontWeight: 'bold' }}>
+                            🚫 Top Blokery – Ostatnie Zamówienie
                         </Typography>
-                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <BarChart
-                                xAxis={[
-                                    { 
-                                        scaleType: 'band', 
-                                        data: chartData.topBlokeryLastOrder.map(item => 
-                                            item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name
-                                        ),
-                                        tickLabelStyle: {
-                                            angle: -45,
-                                            textAnchor: 'end',
-                                            fontSize: 11,
-                                            fill: theme.palette.text.primary
-                                        }
-                                    }
-                                ]}
-                                yAxis={[
-                                    {
-                                        tickLabelStyle: {
-                                            fontSize: 11,
-                                            fill: theme.palette.text.primary
-                                        }
-                                    }
-                                ]}
-                                series={[
-                                    { 
-                                        data: chartData.topBlokeryLastOrder.map(item => item.totalLines),
-                                        color: theme.palette.error.main,
-                                        label: 'Linii zablokowanych'
-                                    }
-                                ]}
-                                width={450}
-                                height={350}
-                                margin={{ top: 40, right: 30, left: 70, bottom: 120 }}
-                                tooltip={{
-                                    trigger: 'item'
-                                }}
-                                slotProps={{
-                                    legend: {
-                                        hidden: true
-                                    }
-                                }}
-                            />
-                        </Box>
+                        <BarChart
+                            xAxis={[{ scaleType: 'band', data: chartData.topBlokeryLastOrder.map(item => item.name) }]}
+                            series={[{ data: chartData.topBlokeryLastOrder.map(item => item.totalLines), color: theme.palette.error.main }]}
+                            width={450}
+                            height={350}
+                        />
                     </Box>
                 </Grid>
 
                 <Grid item xs={12} lg={6}>
-                    <Box 
-                        sx={{ 
+                    <Box
+                        sx={{
                             p: 3,
                             borderRadius: 3,
                             backgroundColor: 'background.paper',
                             border: `1px solid ${theme.palette.divider}`,
                             boxShadow: theme.shadows[2],
-                            height: '450px',
-                            display: 'flex',
-                            flexDirection: 'column'
+                            height: '450px'
                         }}
                     >
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
-                            📈 Top Blokery - Następne Zamówienie
+                        <Typography variant="h6" textAlign="center" sx={{ mb: 2, fontWeight: 'bold' }}>
+                            📈 Top Blokery – Następne Zamówienie
                         </Typography>
-                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <BarChart
-                                xAxis={[
-                                    { 
-                                        scaleType: 'band', 
-                                        data: chartData.topBlokeryNextOrder.map(item => 
-                                            item.name.length > 10 ? item.name.substring(0, 10) + '...' : item.name
-                                        ),
-                                        tickLabelStyle: {
-                                            angle: -45,
-                                            textAnchor: 'end',
-                                            fontSize: 11,
-                                            fill: theme.palette.text.primary
-                                        }
-                                    }
-                                ]}
-                                yAxis={[
-                                    {
-                                        tickLabelStyle: {
-                                            fontSize: 11,
-                                            fill: theme.palette.text.primary
-                                        }
-                                    }
-                                ]}
-                                series={[
-                                    { 
-                                        data: chartData.topBlokeryNextOrder.map(item => item.totalLines),
-                                        color: theme.palette.warning.main,
-                                        label: 'Linii prognozowanych'
-                                    }
-                                ]}
-                                width={450}
-                                height={350}
-                                margin={{ top: 40, right: 30, left: 70, bottom: 120 }}
-                                tooltip={{
-                                    trigger: 'item'
-                                }}
-                                slotProps={{
-                                    legend: {
-                                        hidden: true
-                                    }
-                                }}
-                            />
-                        </Box>
+                        <BarChart
+                            xAxis={[{ scaleType: 'band', data: chartData.topBlokeryNextOrder.map(item => item.name) }]}
+                            series={[{ data: chartData.topBlokeryNextOrder.map(item => item.totalLines), color: theme.palette.warning.main }]}
+                            width={450}
+                            height={350}
+                        />
                     </Box>
                 </Grid>
 
-                {/* Trend dostępności w czasie (jeśli są dane) */}  
+                {/* Trend dostępności */}
                 {chartData.dostepnoscTrendData.length > 1 && (
                     <Grid item xs={12}>
-                        <Box 
-                            sx={{ 
+                        <Box
+                            sx={{
                                 p: 3,
                                 borderRadius: 3,
                                 backgroundColor: 'background.paper',
                                 border: `1px solid ${theme.palette.divider}`,
                                 boxShadow: theme.shadows[2],
-                                height: '500px',
-                                display: 'flex',
-                                flexDirection: 'column'
+                                height: '500px'
                             }}
                         >
-                            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', textAlign: 'center', mb: 2 }}>
+                            <Typography variant="h6" textAlign="center" sx={{ mb: 2, fontWeight: 'bold' }}>
                                 📊 Trend Dostępności w Czasie
                             </Typography>
-                            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
-                                <LineChart
-                                    xAxis={[
-                                        { 
-                                            scaleType: 'band', 
-                                            data: chartData.dostepnoscTrendData.map(item => item.date),
-                                            tickLabelStyle: {
-                                                fontSize: 11,
-                                                fill: theme.palette.text.primary
-                                            }
-                                        }
-                                    ]}
-                                    yAxis={[
-                                        { 
-                                            min: 0,
-                                            max: 100,
-                                            label: 'Dostępność (%)',
-                                            tickLabelStyle: {
-                                                fontSize: 11,
-                                                fill: theme.palette.text.primary
-                                            }
-                                        }
-                                    ]}
-                                    series={[
-                                        {
-                                            data: chartData.dostepnoscTrendData.map(item => item.dostepnosc),
-                                            color: theme.palette.primary.main,
-                                            curve: 'linear',
-                                            label: 'Dostępność %'
-                                        }
-                                    ]}
-                                    width={Math.min(1000, window.innerWidth - 100)}
-                                    height={380}
-                                    margin={{ top: 40, right: 40, left: 80, bottom: 80 }}
-                                    tooltip={{
-                                        trigger: 'item'
-                                    }}
-                                    slotProps={{
-                                        legend: {
-                                            direction: 'row',
-                                            position: { vertical: 'top', horizontal: 'middle' },
-                                        },
-                                    }}
-                                />
-                            </Box>
+                            <LineChart
+                                xAxis={[{ scaleType: 'band', data: chartData.dostepnoscTrendData.map(i => i.date) }]}
+                                series={[
+                                    {
+                                        data: chartData.dostepnoscTrendData.map(i => i.dostepnosc),
+                                        color: theme.palette.primary.main,
+                                        label: 'Dostępność %',
+                                        curve: 'monotone'
+                                    }
+                                ]}
+                                width={Math.min(1000, window.innerWidth - 100)}
+                                height={380}
+                            />
                         </Box>
                     </Grid>
                 )}

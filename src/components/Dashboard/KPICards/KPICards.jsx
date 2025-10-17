@@ -65,10 +65,9 @@ export const KPICards = ({ data, filteredData }) => {
         <Box sx={{ mb: 4 }}>
 
             <Box sx={{ 
-                display: 'flex', 
-                flexWrap: 'wrap', 
-                gap: 3,
-                justifyContent: 'space-between'
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+                gap: 3
             }}>
                 {/* Liczba sklepów */}
                 <MainKPICard

@@ -1,121 +1,76 @@
-import { createTheme } from '@mui/material/styles';
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
-import '@fontsource/asap';
-import '@fontsource/bebas-neue';
+// src/theme.js
 
-const theme = createTheme({
+import { createTheme } from '@mui/material/styles';
+import '@fontsource/public-sans';
+
+// Główna funkcja generująca theme na podstawie palety (light/dark)
+export function getTheme(palette) {
+  return createTheme({
     palette: {
-        mode: 'dark',
-        primary: {
-            main: '#6366f1', // Indigo dla primary
-            light: '#818cf8',
-            dark: '#4f46e5',
-        },
-        secondary: {
-            main: '#06b6d4', // Cyan dla secondary
-            light: '#0891b2',
-            dark: '#0e7490',
-        },
-        success: {
-            main: '#10b981', // Emerald green
-            light: '#34d399',
-            dark: '#059669',
-        },
-        warning: {
-            main: '#f59e0b', // Amber
-            light: '#fbbf24',
-            dark: '#d97706',
-        },
-        error: {
-            main: '#ef4444', // Red
-            light: '#f87171',
-            dark: '#dc2626',
-        },
-        info: {
-            main: '#3b82f6', // Blue
-            light: '#60a5fa',
-            dark: '#2563eb',
-        },
-        background: {
-            default: '#0f172a', // Slate 900 - very dark blue
-            paper: 'rgba(30, 41, 59, 0.8)', // Slate 800 with transparency
-        },
-        text: {
-            primary: '#ffffff',
-            secondary: 'rgba(255, 255, 255, 0.7)',
-            disabled: 'rgba(255, 255, 255, 0.4)',
-        },
-        divider: 'rgba(99, 102, 241, 0.2)',
-        // Dodajemy custom kolory dla KPI cards
-        kpi: {
-            cardBackground: 'rgba(30, 41, 59, 0.8)',
-            cardBorder: 'rgba(99, 102, 241, 0.3)',
-            cardHover: 'rgba(30, 41, 59, 0.9)',
-        },
+      ...palette,
     },
     typography: {
-        fontFamily: 'Asap',
-        h1: {
-            fontFamily: 'Bebas Neue',
-        },
-        fontSize: 13,
-        subtitle1: {
-            fontSize: 14,
-            fontWeight: 300,
-        },
-        subtitle2: {
-            fontSize: 12,
-        },
+      fontFamily: 'Public Sans, sans-serif',
+      fontWeightRegular: 400,
+      fontWeightMedium: 600,
+      fontWeightBold: 700,
+      h1: { fontWeight: 700, fontSize: '2.5rem' },
+      h2: { fontWeight: 700, fontSize: '2rem' },
+      h3: { fontWeight: 600, fontSize: '1.75rem' },
+      h4: { fontWeight: 600, fontSize: '1.5rem' },
+      h5: { fontWeight: 600, fontSize: '1.25rem' },
+      h6: { fontWeight: 600, fontSize: '1rem' },
+      subtitle1: { fontSize: '0.875rem', color: palette.text?.secondary },
+      subtitle2: { fontSize: '0.8125rem', color: palette.text?.secondary, fontWeight: 600 },
+      body1: { fontSize: '0.875rem', color: palette.text?.primary },
+      body2: { fontSize: '0.8125rem', color: palette.text?.secondary },
+      button: { fontWeight: 600, textTransform: 'none' },
+      caption: { fontSize: '0.75rem', color: palette.text?.secondary },
+      overline: { fontSize: '0.75rem', letterSpacing: 1.1, textTransform: 'uppercase' },
     },
+    shape: {
+      borderRadius: 12,
+    },
+    shadows: [
+      'none',
+      '0px 2px 1px -1px rgba(145,158,171,0.20),0px 1px 1px 0px rgba(145,158,171,0.14),0px 1px 3px 0px rgba(145,158,171,0.12)',
+      '0px 3px 3px -2px rgba(145,158,171,0.20),0px 3px 4px 0px rgba(145,158,171,0.14),0px 1px 8px 0px rgba(145,158,171,0.12)',
+      '0px 8px 16px 0 rgba(145,158,171,0.16)',
+    ],
     components: {
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                },
-            },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: 'none',
+            borderRadius: 12,
+            boxShadow: '0 0 2px 0 rgba(145,158,171,0.20), 0 12px 24px -4px rgba(145,158,171,0.12)',
+          },
         },
-        MuiPaper: {
-            styleOverrides: {
-                root: {
-                    backgroundImage: 'none',
-                    backgroundColor: 'rgba(30, 41, 59, 0.8)',
-                    border: '1px solid rgba(99, 102, 241, 0.2)',
-                    backdropFilter: 'blur(10px)',
-                },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            textTransform: 'none',
+            fontWeight: 600,
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: '0 8px 16px 0 rgba(145,158,171,0.16)',
             },
+          },
+          containedPrimary: {
+            boxShadow: '0 8px 16px 0 rgba(0,167,111,0.24)',
+          },
         },
-        MuiTableHead: {
-            styleOverrides: {
-                root: {
-                    '& .MuiTableCell-root': {
-                        backgroundColor: 'rgba(30, 41, 59, 0.9)',
-                        color: '#ffffff',
-                        fontWeight: 600,
-                        borderBottom: '1px solid rgba(99, 102, 241, 0.3)',
-                    },
-                },
-            },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: 16,
+            boxShadow: '0 0 2px 0 rgba(145,158,171,0.20), 0 12px 24px -4px rgba(145,158,171,0.12)',
+          },
         },
-        MuiTableBody: {
-            styleOverrides: {
-                root: {
-                    '& .MuiTableCell-root': {
-                        backgroundColor: 'rgba(30, 41, 59, 0.4)',
-                        color: '#ffffff',
-                        borderBottom: '1px solid rgba(99, 102, 241, 0.1)',
-                    },
-                    '& .MuiTableRow-root:hover': {
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    },
-                },
-            },
-        },
+      },
     },
-});
-
-export default theme;
-export { theme };
+  });
+}
