@@ -130,8 +130,8 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             title: 'Powody Blokerów',
             value: kpiData.totalRecords.toLocaleString(),
             icon: <Store />,
-            color: theme.palette.primary.main,
-            bgColor: theme.palette.primary.light + '20',
+            color: theme.vars.palette.primary.main,
+            bgColor: theme.vars.palette.primary.light + '20',
             subtitle: 'pozycji w analizie'
         },
         {
@@ -140,17 +140,17 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             icon: <Inventory />,
             color: (() => {
                 const value = parseFloat(kpiData.dostepnoscDrogeria);
-                if (value >= 96.7) return theme.palette.success.main; // Zielony - bardzo dobra
-                if (value >= 92) return theme.palette.info.main;     // Niebieski - dopuszczalna  
-                if (value >= 89) return theme.palette.warning.main;  // Pomarańczowy - słaba
-                return theme.palette.error.main;                     // Czerwony - krytyczna
+                if (value >= 96.7) return theme.vars.palette.success.main; // Zielony - bardzo dobra
+                if (value >= 92) return theme.vars.palette.info.main;     // Niebieski - dopuszczalna  
+                if (value >= 89) return theme.vars.palette.warning.main;  // Pomarańczowy - słaba
+                return theme.vars.palette.error.main;                     // Czerwony - krytyczna
             })(),
             bgColor: (() => {
                 const value = parseFloat(kpiData.dostepnoscDrogeria);
-                if (value >= 96.7) return theme.palette.success.light + '20';
-                if (value >= 92) return theme.palette.info.light + '20';
-                if (value >= 89) return theme.palette.warning.light + '20';
-                return theme.palette.error.light + '20';
+                if (value >= 96.7) return theme.vars.palette.success.light + '20';
+                if (value >= 92) return theme.vars.palette.info.light + '20';
+                if (value >= 89) return theme.vars.palette.warning.light + '20';
+                return theme.vars.palette.error.light + '20';
             })(),
             subtitle: (() => {
                 const value = parseFloat(kpiData.dostepnoscDrogeria);
@@ -167,17 +167,17 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             icon: <Assessment />,
             color: (() => {
                 const value = parseFloat(kpiData.dostepnoscSiec);
-                if (value >= 96.7) return theme.palette.success.main; // Zielony - bardzo dobra
-                if (value >= 92) return theme.palette.info.main;     // Niebieski - dopuszczalna  
-                if (value >= 89) return theme.palette.warning.main;  // Pomarańczowy - słaba
-                return theme.palette.error.main;                     // Czerwony - krytyczna
+                if (value >= 96.7) return theme.vars.palette.success.main; // Zielony - bardzo dobra
+                if (value >= 92) return theme.vars.palette.info.main;     // Niebieski - dopuszczalna  
+                if (value >= 89) return theme.vars.palette.warning.main;  // Pomarańczowy - słaba
+                return theme.vars.palette.error.main;                     // Czerwony - krytyczna
             })(),
             bgColor: (() => {
                 const value = parseFloat(kpiData.dostepnoscSiec);
-                if (value >= 96.7) return theme.palette.success.light + '20';
-                if (value >= 92) return theme.palette.info.light + '20';
-                if (value >= 89) return theme.palette.warning.light + '20';
-                return theme.palette.error.light + '20';
+                if (value >= 96.7) return theme.vars.palette.success.light + '20';
+                if (value >= 92) return theme.vars.palette.info.light + '20';
+                if (value >= 89) return theme.vars.palette.warning.light + '20';
+                return theme.vars.palette.error.light + '20';
             })(),
             subtitle: (() => {
                 const value = parseFloat(kpiData.dostepnoscSiec);
@@ -192,16 +192,16 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
             title: 'Największy Bloker Ostatnie',
             value: kpiData.blokerLastOrder.value.toString(),
             icon: <Block />,
-            color: theme.palette.error.main,
-            bgColor: theme.palette.error.light + '20',
+            color: theme.vars.palette.error.main,
+            bgColor: theme.vars.palette.error.light + '20',
             subtitle: kpiData.blokerLastOrder.name || 'brak danych'
         },
         {
             title: 'Największy Bloker Następne',
             value: kpiData.blokerNextOrder.value.toString(),
             icon: <TrendingUp />,
-            color: theme.palette.warning.main,
-            bgColor: theme.palette.warning.light + '20',
+            color: theme.vars.palette.warning.main,
+            bgColor: theme.vars.palette.warning.light + '20',
             subtitle: kpiData.blokerNextOrder.name || 'brak danych'
         },
         {

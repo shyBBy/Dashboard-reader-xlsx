@@ -47,8 +47,8 @@ const InfoPage = () => {
         {
             title: "WYSOKI WPŁYW",
             weight: "1.0",
-            color: theme.palette.success.main,
-            bgColor: theme.palette.success.light,
+            color: theme.vars.palette.success.main,
+            bgColor: theme.vars.palette.success.light,
             icon: ThumbUp,
             description: "Maksymalny priorytet działań",
             details: "Parametry systemowe pod pełną kontrolą DZZWD - możemy bezpośrednio wpłynąć na rozwiązanie problemu",
@@ -57,8 +57,8 @@ const InfoPage = () => {
         {
             title: "NISKI WPŁYW", 
             weight: "0.3",
-            color: theme.palette.warning.main,
-            bgColor: theme.palette.warning.light,
+            color: theme.vars.palette.warning.main,
+            bgColor: theme.vars.palette.warning.light,
             icon: Balance,
             description: "Wymagają decyzji biznesowych",
             details: "Ograniczone możliwości wpływu - wymagają decyzji wyższego szczebla lub zmian procesowych",
@@ -67,8 +67,8 @@ const InfoPage = () => {
         {
             title: "ZEROWY WPŁYW",
             weight: "0.0", 
-            color: theme.palette.info.main,
-            bgColor: theme.palette.info.light,
+            color: theme.vars.palette.info.main,
+            bgColor: theme.vars.palette.info.light,
             icon: RemoveRedEye,
             description: "Monitorowanie i eskalacja",
             details: "Brak możliwości bezpośredniego wpływu - skupiamy się na monitorowaniu i eskalacji problemów",
@@ -149,7 +149,7 @@ const InfoPage = () => {
                             height: 100,
                             mx: 'auto',
                             mb: 3,
-                            boxShadow: `0 12px 24px ${theme.palette.primary.main}30`
+                            boxShadow: `0 12px 24px ${theme.vars.palette.primary.main}30`
                         }}
                     >
                         <Info sx={{ fontSize: 50 }} />
@@ -169,8 +169,8 @@ const InfoPage = () => {
                     sx={{ 
                         mb: 8, 
                         borderRadius: 3,
-                        background: `linear-gradient(145deg, ${theme.palette.primary.main}08 0%, ${theme.palette.primary.main}15 100%)`,
-                        border: `2px solid ${theme.palette.primary.main}20`
+                        background: `linear-gradient(145deg, ${theme.vars.palette.primary.main}08 0%, ${theme.vars.palette.primary.main}15 100%)`,
+                        border: `2px solid ${theme.vars.palette.primary.main}20`
                     }}
                 >
                     <CardContent sx={{ p: 4, textAlign: 'center' }}>

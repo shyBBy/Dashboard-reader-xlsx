@@ -33,7 +33,7 @@ const LandingPage = () => {
                 <Box sx={{ 
                     textAlign: 'center', 
                     mb: 8,
-                    background: `linear-gradient(145deg, ${theme.palette.primary.main}08 0%, ${theme.palette.primary.main}15 100%)`,
+                    background: `linear-gradient(145deg, ${theme.vars.palette.primary.main}08 0%, ${theme.vars.palette.primary.main}15 100%)`,
                     borderRadius: 4,
                     p: 6,
                     position: 'relative',
@@ -46,7 +46,7 @@ const LandingPage = () => {
                         width: 200,
                         height: 200,
                         borderRadius: '50%',
-                        background: `linear-gradient(45deg, ${theme.palette.primary.main}10, ${theme.palette.secondary.main}10)`,
+                        background: `linear-gradient(45deg, ${theme.vars.palette.primary.main}10, ${theme.vars.palette.secondary.main}10)`,
                         opacity: 0.5
                     }} />
                     
@@ -57,7 +57,7 @@ const LandingPage = () => {
                             height: 120,
                             mx: 'auto',
                             mb: 3,
-                            boxShadow: `0 20px 40px ${theme.palette.primary.main}40`
+                            boxShadow: `0 20px 40px ${theme.vars.palette.primary.main}40`
                         }}
                     >
                         <Dashboard sx={{ fontSize: 60 }} />
@@ -87,9 +87,9 @@ const LandingPage = () => {
                                 py: 2,
                                 fontSize: '1.1rem',
                                 borderRadius: 3,
-                                boxShadow: `0 8px 20px ${theme.palette.primary.main}40`,
+                                boxShadow: `0 8px 20px ${theme.vars.palette.primary.main}40`,
                                 '&:hover': {
-                                    boxShadow: `0 12px 24px ${theme.palette.primary.main}50`
+                                    boxShadow: `0 12px 24px ${theme.vars.palette.primary.main}50`
                                 }
                             }}
                         >
@@ -108,9 +108,9 @@ const LandingPage = () => {
                                 py: 2, 
                                 fontSize: '1.1rem', 
                                 borderRadius: 3,
-                                boxShadow: `0 8px 20px ${theme.palette.secondary.main}40`,
+                                boxShadow: `0 8px 20px ${theme.vars.palette.secondary.main}40`,
                                 '&:hover': {
-                                    boxShadow: `0 12px 24px ${theme.palette.secondary.main}50`
+                                    boxShadow: `0 12px 24px ${theme.vars.palette.secondary.main}50`
                                 }
                             }}
                         >
@@ -138,7 +138,7 @@ const LandingPage = () => {
                 mt: 'auto',
                 py: 3,
                 backgroundColor: 'background.paper',
-                borderTop: `1px solid ${theme.palette.divider}`
+                borderTop: `1px solid ${theme.vars.palette.divider}`
             }}>
                 <Container maxWidth="xl">
                     <Divider sx={{ mb: 2 }} />

@@ -12,14 +12,14 @@ import {
     DarkMode,
     LightMode 
 } from '@mui/icons-material';
-import { useTheme } from '../../context/ThemeContext';
+import { useAppTheme } from '../../context/ThemeContext';
 
 /**
  * Komponent przełącznika Dark/Light theme
  * Pokazuje różne ikony w zależności od aktualnego trybu
  */
 export const ThemeToggle = ({ variant = 'icon' }) => {
-    const { isDarkMode, toggleTheme } = useTheme();
+    const { isDarkMode, toggleTheme } = useAppTheme();
     const muiTheme = useMuiTheme();
 
     // Różne warianty wyświetlania

@@ -9,6 +9,9 @@ export const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
     zIndex: theme.zIndex.drawer + 1,
+    backgroundColor: theme.vars.palette.background.paper,
+    backdropFilter: 'blur(20px)',
+    borderBottom: `1px solid ${theme.vars.palette.divider}`,
     transition: theme.transitions.create(['width', 'margin'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -29,9 +32,9 @@ export const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
             position: 'relative',
             whiteSpace: 'nowrap',
             width: drawerSideBarWidth,
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.vars.palette.background.paper,
             backdropFilter: 'blur(10px)',
-            borderRight: `1px solid ${theme.palette.divider}`,
+            borderRight: `1px solid ${theme.vars.palette.divider}`,
             backgroundImage: 'none',
             transition: theme.transitions.create('width', {
                 easing: theme.transitions.easing.sharp,

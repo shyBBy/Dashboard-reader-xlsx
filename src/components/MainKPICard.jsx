@@ -4,8 +4,8 @@ import { Box, Typography, useTheme } from '@mui/material';
 
 export default function MainKPICard({ title, value, subtitle, icon, type = 'primary', onClick }) {
   const theme = useTheme();
-  const color = theme.palette[type]?.main || theme.palette.primary.main;
-  const bgColor = theme.palette[type]?.light || `${theme.palette.primary.light}20`;
+  const color = theme.vars.palette[type]?.mainChannel || theme.vars.palette.primary.mainChannel;
+  const bgColor = `rgba(var(--mui-palette-${type}-mainChannel, var(--mui-palette-primary-mainChannel)) / 0.14)`;
 
   return (
     <Box
@@ -34,8 +34,8 @@ export default function MainKPICard({ title, value, subtitle, icon, type = 'prim
               width: 48,
               height: 48,
               borderRadius: 2,
-              backgroundColor: `${color}14`,
-              color: color,
+              backgroundColor: bgColor,
+              color: `rgb(var(${color}))`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

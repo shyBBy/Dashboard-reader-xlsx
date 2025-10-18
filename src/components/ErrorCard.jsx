@@ -16,7 +16,6 @@ export default function ErrorCard({
     type = 'error'
 }) {
     const theme = useTheme();
-    const isDarkMode = theme.palette.mode === 'dark';
 
     // Mapowanie typów na kolory
     const getTypeColors = (type) => {
@@ -61,22 +60,16 @@ export default function ErrorCard({
                     maxWidth: 500,
                     mx: 'auto',
                     p: 4,
-                    background: isDarkMode 
-                        ? `linear-gradient(135deg, ${theme.palette.background.paper}CC 0%, ${theme.palette.background.default}CC 100%)`
-                        : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.grey[50]} 100%)`,
+                    background: `linear-gradient(135deg, ${theme.vars.palette.background.paper} 0%, ${theme.vars.palette.background.default} 100%)`,
                     backdropFilter: 'blur(20px)',
                     borderRadius: 4,
                     border: `2px solid ${colors.borderColor}`,
-                    boxShadow: isDarkMode 
-                        ? `0 20px 40px ${colors.color}10, 0 0 0 1px ${theme.palette.divider}20`
-                        : `0 20px 40px ${colors.color}15, 0 4px 20px ${theme.palette.common.black}08`,
+                    boxShadow: `0 20px 40px ${colors.color}15, 0 4px 20px rgba(0, 0, 0, 0.08)`,
                     textAlign: 'center',
                     transition: 'all 0.3s ease',
                     '&:hover': {
                         transform: 'translateY(-2px)',
-                        boxShadow: isDarkMode 
-                            ? `0 25px 50px ${colors.color}20, 0 0 0 1px ${theme.palette.divider}30`
-                            : `0 25px 50px ${colors.color}20, 0 8px 30px ${theme.palette.common.black}12`
+                        boxShadow: `0 25px 50px ${colors.color}20, 0 8px 30px rgba(0, 0, 0, 0.12)`
                     }
                 }}
             >

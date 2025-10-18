@@ -1,10 +1,11 @@
 import React from 'react';
-import { 
-    Paper, 
-    Typography, 
+import {
+    Paper,
+    Typography,
     Box,
     Stack
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
     BarChart,
     LineChart,
@@ -12,6 +13,8 @@ import {
 } from '@mui/x-charts';
 
 export const SampleCharts = () => {
+    const theme = useTheme();
+
     // Dane dla wykresów słupkowych - sprzedaż miesięczna
     const salesData = [
         { month: 'Sty', value: 45000 },
@@ -58,22 +61,29 @@ export const SampleCharts = () => {
                         series={[{
                             dataKey: 'value',
                             label: 'Sprzedaż',
-                            color: '#EC3656FF',
+                            color: theme.palette.primary.main,
+                            valueFormatter: ({ value }) => `${value.toLocaleString('pl-PL')} zł`,
                         }]}
                         margin={{ left: 70, right: 30, top: 30, bottom: 60 }}
                         sx={{
                             '& .MuiChartsAxis-tickLabel': {
-                                fill: '#BABABAFF !important'
+                                fill: `${theme.vars.palette.text.secondary} !important`
                             },
                             '& .MuiChartsAxis-label': {
-                                fill: '#BABABAFF !important'
+                                fill: `${theme.vars.palette.text.secondary} !important`
                             },
                             '& .MuiChartsAxis-line': {
-                                stroke: '#9c9c9c !important'
+                                stroke: `${theme.vars.palette.divider} !important`
                             },
                             '& .MuiChartsAxis-tick': {
-                                stroke: '#9c9c9c !important'
+                                stroke: `${theme.vars.palette.divider} !important`
                             }
+                        }}
+                        slotProps={{
+                            legend: {
+                                direction: 'row',
+                                position: { vertical: 'top', horizontal: 'center' },
+                            },
                         }}
                     />
                 </Box>
@@ -96,28 +106,38 @@ export const SampleCharts = () => {
                             {
                                 dataKey: 'visitors',
                                 label: 'Odwiedzający',
-                                color: '#EC3656FF',
+                                color: theme.palette.primary.main,
+                                curve: 'monotone',
+                                valueFormatter: ({ value }) => value.toLocaleString('pl-PL'),
                             },
                             {
                                 dataKey: 'pageViews',
                                 label: 'Wyświetlenia stron',
-                                color: '#9c9c9c',
+                                color: theme.palette.secondary.main,
+                                curve: 'monotone',
+                                valueFormatter: ({ value }) => value.toLocaleString('pl-PL'),
                             }
                         ]}
                         margin={{ left: 70, right: 30, top: 30, bottom: 60 }}
                         sx={{
                             '& .MuiChartsAxis-tickLabel': {
-                                fill: '#BABABAFF !important'
+                                fill: `${theme.vars.palette.text.secondary} !important`
                             },
                             '& .MuiChartsAxis-label': {
-                                fill: '#BABABAFF !important'
+                                fill: `${theme.vars.palette.text.secondary} !important`
                             },
                             '& .MuiChartsAxis-line': {
-                                stroke: '#9c9c9c !important'
+                                stroke: `${theme.vars.palette.divider} !important`
                             },
                             '& .MuiChartsAxis-tick': {
-                                stroke: '#9c9c9c !important'
+                                stroke: `${theme.vars.palette.divider} !important`
                             }
+                        }}
+                        slotProps={{
+                            legend: {
+                                direction: 'row',
+                                position: { vertical: 'top', horizontal: 'center' },
+                            },
                         }}
                     />
                 </Box>
@@ -132,15 +152,21 @@ export const SampleCharts = () => {
                     <PieChart
                         series={[
                             {
-                                data: categoryData.map(item => ({
+                                data: categoryData.map((item) => ({
                                     id: item.label,
                                     value: item.value,
                                     label: item.label,
-                                    color: item.color
+                                    color: item.color ?? theme.palette.primary.main,
                                 })),
                                 highlightScope: { faded: 'global', highlighted: 'item' },
-                                faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
-                                valueFormatter: (value) => `${value.value}%`,
+                                faded: {
+                                    innerRadius: 30,
+                                    additionalRadius: -30,
+                                    color: theme.vars.palette.grey[400],
+                                },
+                                valueFormatter: ({ value, label }) => `${label}: ${value}%`,
+                                innerRadius: 40,
+                                outerRadius: 100,
                             }
                         ]}
                         width={400}
@@ -150,7 +176,8 @@ export const SampleCharts = () => {
                             legend: {
                                 direction: 'column',
                                 position: { vertical: 'middle', horizontal: 'right' },
-                                padding: 0
+                                padding: 0,
+                                itemGap: 8,
                             }
                         }}
                     />

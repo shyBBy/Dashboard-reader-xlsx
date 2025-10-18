@@ -1,5 +1,5 @@
 import { useTheme as useMuiTheme } from '@mui/material/styles';
-import { useTheme as useCustomTheme } from '../context/ThemeContext';
+import { useAppTheme as useCustomTheme } from '../context/ThemeContext';
 
 /**
  * Utility hook łączący MUI theme z custom theme context

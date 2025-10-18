@@ -16,7 +16,7 @@ export const TableCellRenderer = ({ header, value }) => {
                 <Typography variant="body2" sx={{ 
                     fontWeight: 'bold', 
                     fontSize: '0.95rem',
-                    color: theme.palette.primary.main
+                    color: theme.vars.palette.primary.main
                 }}>
                     {formatDisplayValue(value)}
                 </Typography>
@@ -27,7 +27,7 @@ export const TableCellRenderer = ({ header, value }) => {
                 <Typography variant="body2" sx={{ 
                     fontWeight: 'medium', 
                     fontSize: '0.9rem',
-                    color: theme.palette.secondary.main
+                    color: theme.vars.palette.secondary.main
                 }}>
                     {formatDisplayValue(value)}
                 </Typography>
@@ -84,7 +84,7 @@ export const TableCellRenderer = ({ header, value }) => {
                     <Typography variant="body2" sx={{ 
                         fontWeight: 'medium',
                         fontSize: '0.9rem',
-                        color: theme.palette.secondary.main
+                        color: theme.vars.palette.secondary.main
                     }}>
                         {formatDate(value)}
                     </Typography>

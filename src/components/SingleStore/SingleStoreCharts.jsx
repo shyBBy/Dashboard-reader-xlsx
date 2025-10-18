@@ -10,9 +10,12 @@ import {
     LineChart
 } from '@mui/x-charts';
 import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function SingleStoreCharts({ storeData, storeId }) {
     const theme = useTheme();
+    const isSmDown = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMdDown = useMediaQuery(theme.breakpoints.down('md'));
 
     const chartData = useMemo(() => {
         if (!storeData || storeData.length === 0) return null;
@@ -104,6 +107,9 @@ export default function SingleStoreCharts({ storeData, storeId }) {
 
     const decyzjaColors = [theme.palette.success.main, theme.palette.error.main];
 
+    const barChartWidth = isSmDown ? 320 : isMdDown ? 380 : 450;
+    const lineChartWidth = isSmDown ? 320 : isMdDown ? 600 : 920;
+
     return (
         <Box>
             <Typography 
@@ -145,17 +151,22 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                                 {
                                     data: chartData.wplywChartData.map((item, i) => ({
                                         id: i,
-                                        value: item.value,
-                                        label: `${item.name} (${item.percentage}%)`,
+                                        value: Number(item.value),
+                                        label: item.name,
                                         color: colors[item.name] || theme.palette.grey[400]
                                     })),
-                                    highlightScope: { fade: 'global', highlight: 'item' },
-                                    faded: { innerRadius: 30, additionalRadius: -30, color: theme.palette.grey[400] },
+                                    highlightScope: { faded: 'global', highlighted: 'item' },
+                                    faded: {
+                                        innerRadius: 30,
+                                        additionalRadius: -30,
+                                        color: theme.vars.palette.grey[400],
+                                    },
                                     innerRadius: 40,
                                     outerRadius: 100,
+                                    valueFormatter: ({ value, label }) => `${label}: ${value} (${chartData.wplywChartData.find((d) => d.name === label)?.percentage ?? 0}%)`,
                                 }
                             ]}
-                            width={360}
+                            width={isSmDown ? 280 : 360}
                             height={300}
                         />
                     </Box>
@@ -183,17 +194,22 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                                 {
                                     data: chartData.decyzjaChartData.map((item, i) => ({
                                         id: i,
-                                        value: item.value,
-                                        label: `${item.name} (${item.value})`,
-                                        color: decyzjaColors[i]
+                                        value: Number(item.value),
+                                        label: item.name,
+                                        color: decyzjaColors[i] || theme.palette.primary.main,
                                     })),
-                                    highlightScope: { fade: 'global', highlight: 'item' },
-                                    faded: { innerRadius: 30, additionalRadius: -30, color: theme.palette.grey[400] },
+                                    highlightScope: { faded: 'global', highlighted: 'item' },
+                                    faded: {
+                                        innerRadius: 30,
+                                        additionalRadius: -30,
+                                        color: theme.vars.palette.grey[400],
+                                    },
                                     innerRadius: 40,
                                     outerRadius: 100,
+                                    valueFormatter: ({ value, label }) => `${label}: ${value}`,
                                 }
                             ]}
-                            width={360}
+                            width={isSmDown ? 280 : 360}
                             height={300}
                         />
                     </Box>
@@ -215,9 +231,17 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                             🚫 Top Blokery – Ostatnie Zamówienie
                         </Typography>
                         <BarChart
-                            xAxis={[{ scaleType: 'band', data: chartData.topBlokeryLastOrder.map(item => item.name) }]}
-                            series={[{ data: chartData.topBlokeryLastOrder.map(item => item.totalLines), color: theme.palette.error.main }]}
-                            width={450}
+                            dataset={chartData.topBlokeryLastOrder}
+                            xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+                            series={[{
+                                dataKey: 'totalLines',
+                                color: theme.palette.error.main,
+                                label: 'Łączna liczba linii',
+                                valueFormatter: ({ value }) => value.toLocaleString('pl-PL'),
+                            }]}
+                            slotProps={{ legend: { hidden: true } }}
+                            margin={{ left: 60, right: 20, top: 20, bottom: 70 }}
+                            width={barChartWidth}
                             height={350}
                         />
                     </Box>
@@ -238,9 +262,17 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                             📈 Top Blokery – Następne Zamówienie
                         </Typography>
                         <BarChart
-                            xAxis={[{ scaleType: 'band', data: chartData.topBlokeryNextOrder.map(item => item.name) }]}
-                            series={[{ data: chartData.topBlokeryNextOrder.map(item => item.totalLines), color: theme.palette.warning.main }]}
-                            width={450}
+                            dataset={chartData.topBlokeryNextOrder}
+                            xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+                            series={[{
+                                dataKey: 'totalLines',
+                                color: theme.palette.warning.main,
+                                label: 'Łączna liczba linii',
+                                valueFormatter: ({ value }) => value.toLocaleString('pl-PL'),
+                            }]}
+                            slotProps={{ legend: { hidden: true } }}
+                            margin={{ left: 60, right: 20, top: 20, bottom: 70 }}
+                            width={barChartWidth}
                             height={350}
                         />
                     </Box>
@@ -263,17 +295,26 @@ export default function SingleStoreCharts({ storeData, storeId }) {
                                 📊 Trend Dostępności w Czasie
                             </Typography>
                             <LineChart
-                                xAxis={[{ scaleType: 'band', data: chartData.dostepnoscTrendData.map(i => i.date) }]}
+                                dataset={chartData.dostepnoscTrendData}
+                                xAxis={[{ scaleType: 'band', dataKey: 'date' }]}
                                 series={[
                                     {
-                                        data: chartData.dostepnoscTrendData.map(i => i.dostepnosc),
+                                        dataKey: 'dostepnosc',
                                         color: theme.palette.primary.main,
                                         label: 'Dostępność %',
-                                        curve: 'monotone'
+                                        curve: 'monotone',
+                                        valueFormatter: ({ value }) => `${value.toFixed(1)}%`,
                                     }
                                 ]}
-                                width={Math.min(1000, window.innerWidth - 100)}
+                                width={lineChartWidth}
                                 height={380}
+                                margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                                slotProps={{
+                                    legend: {
+                                        direction: 'row',
+                                        position: { vertical: 'top', horizontal: 'center' },
+                                    },
+                                }}
                             />
                         </Box>
                     </Grid>

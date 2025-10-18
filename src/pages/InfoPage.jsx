@@ -101,7 +101,7 @@ const InfoPage = () => {
             <Box sx={{ 
                 py: 2,
                 backgroundColor: 'background.paper',
-                borderBottom: `1px solid ${theme.palette.divider}`
+                borderBottom: `1px solid ${theme.vars.palette.divider}`
             }}>
                 <Container maxWidth="xl">
                     <Button
@@ -125,7 +125,7 @@ const InfoPage = () => {
                             height: 100,
                             mx: 'auto',
                             mb: 3,
-                            boxShadow: `0 12px 24px ${theme.palette.primary.main}40`
+                            boxShadow: `0 12px 24px ${theme.vars.palette.primary.main}40`
                         }}
                     >
                         <Info sx={{ fontSize: 50 }} />
@@ -238,7 +238,7 @@ const InfoPage = () => {
                                             p: 3, 
                                             flex: 1,
                                             borderRadius: 2,
-                                            background: `linear-gradient(145deg, ${theme.palette[item.color].main}08 0%, ${theme.palette[item.color].main}15 100%)`
+                                            background: `linear-gradient(145deg, ${theme.vars.palette[item.color].main}08 0%, ${theme.vars.palette[item.color].main}15 100%)`
                                         }}
                                     >
                                         <Typography variant="h6" fontWeight="bold" color={`${item.color}.main`} gutterBottom>
@@ -282,7 +282,7 @@ const InfoPage = () => {
                     
                     <Grid container spacing={4}>
                         <Grid item xs={12} lg={4}>
-                            <Card elevation={4} sx={{ borderRadius: 3, border: `2px solid ${theme.palette.success.main}40` }}>
+                            <Card elevation={4} sx={{ borderRadius: 3, border: `2px solid ${theme.vars.palette.success.main}40` }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                         <Avatar sx={{ bgcolor: 'success.main', mr: 2, width: 48, height: 48 }}>
@@ -303,7 +303,7 @@ const InfoPage = () => {
                         </Grid>
                         
                         <Grid item xs={12} lg={4}>
-                            <Card elevation={4} sx={{ borderRadius: 3, border: `2px solid ${theme.palette.warning.main}40` }}>
+                            <Card elevation={4} sx={{ borderRadius: 3, border: `2px solid ${theme.vars.palette.warning.main}40` }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                         <Avatar sx={{ bgcolor: 'warning.main', mr: 2, width: 48, height: 48 }}>
@@ -324,7 +324,7 @@ const InfoPage = () => {
                         </Grid>
                         
                         <Grid item xs={12} lg={4}>
-                            <Card elevation={4} sx={{ borderRadius: 3, border: `2px solid ${theme.palette.text.secondary}40` }}>
+                            <Card elevation={4} sx={{ borderRadius: 3, border: `2px solid ${theme.vars.palette.text.secondary}40` }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                         <Avatar sx={{ bgcolor: 'text.secondary', mr: 2, width: 48, height: 48 }}>
@@ -390,7 +390,7 @@ const InfoPage = () => {
                 mt: 'auto',
                 py: 3,
                 backgroundColor: 'background.paper',
-                borderTop: `1px solid ${theme.palette.divider}`
+                borderTop: `1px solid ${theme.vars.palette.divider}`
             }}>
                 <Container maxWidth="xl">
                     <Typography variant="body2" color="text.secondary" textAlign="center">

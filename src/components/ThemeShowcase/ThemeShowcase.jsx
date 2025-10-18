@@ -14,7 +14,7 @@ import {
     Brightness7,
     ColorLens
 } from '@mui/icons-material';
-import { useTheme as useCustomTheme } from '../../context/ThemeContext';
+import { useAppTheme } from '../../context/ThemeContext';
 
 /**
  * Komponent demonstracyjny dla theme systemu
@@ -22,15 +22,15 @@ import { useTheme as useCustomTheme } from '../../context/ThemeContext';
  */
 export const ThemeShowcase = () => {
     const theme = useTheme();
-    const { isDarkMode } = useCustomTheme();
+    const { isDarkMode } = useAppTheme();
 
     const colorPairs = [
-        { name: 'Primary', color: theme.palette.primary.main, text: theme.palette.primary.contrastText },
-        { name: 'Secondary', color: theme.palette.secondary.main, text: theme.palette.secondary.contrastText },
-        { name: 'Success', color: theme.palette.success.main, text: theme.palette.success.contrastText },
-        { name: 'Warning', color: theme.palette.warning.main, text: theme.palette.warning.contrastText },
-        { name: 'Error', color: theme.palette.error.main, text: theme.palette.error.contrastText },
-        { name: 'Info', color: theme.palette.info.main, text: theme.palette.info.contrastText },
+        { name: 'Primary', color: theme.vars.palette.primary.main, text: theme.vars.palette.primary.contrastText },
+        { name: 'Secondary', color: theme.vars.palette.secondary.main, text: theme.vars.palette.secondary.contrastText },
+        { name: 'Success', color: theme.vars.palette.success.main, text: theme.vars.palette.success.contrastText },
+        { name: 'Warning', color: theme.vars.palette.warning.main, text: theme.vars.palette.warning.contrastText },
+        { name: 'Error', color: theme.vars.palette.error.main, text: theme.vars.palette.error.contrastText },
+        { name: 'Info', color: theme.vars.palette.info.main, text: theme.vars.palette.info.contrastText },
     ];
 
     return (
@@ -41,7 +41,7 @@ export const ThemeShowcase = () => {
                     <Typography 
                         variant="h4" 
                         sx={{
-                            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                            background: `linear-gradient(45deg, ${theme.vars.palette.primary.main}, ${theme.vars.palette.secondary.main})`,
                             backgroundClip: 'text',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
@@ -154,9 +154,9 @@ export const ThemeShowcase = () => {
 
                                 <Box
                                     sx={{
-                                        background: `linear-gradient(135deg, ${theme.palette.primary.main}20, ${theme.palette.secondary.main}20)`,
+                                        background: `linear-gradient(135deg, ${theme.vars.palette.primary.main}20, ${theme.vars.palette.secondary.main}20)`,
                                         backdropFilter: 'blur(10px)',
-                                        border: `1px solid ${theme.palette.primary.main}30`,
+                                        border: `1px solid ${theme.vars.palette.primary.main}30`,
                                         borderRadius: 3,
                                         p: 3,
                                         minWidth: 200,

@@ -80,7 +80,7 @@ export default function SingleStoreView() {
                         size={60} 
                         thickness={4}
                         sx={{
-                            color: (theme) => theme.palette.primary.main,
+                            color: 'primary.main',
                         }}
                     />
                     <Typography 
