@@ -11,6 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ApiIcon from '@mui/icons-material/Api';
+import ScienceIcon from '@mui/icons-material/Science';
 
 export const AppBarMobileViewNavigationList = ({ open }) => {
     const location = useLocation();
@@ -30,6 +31,13 @@ export const AppBarMobileViewNavigationList = ({ open }) => {
             icon: ApiIcon,
             title: 'Test API',
             tooltip: 'Testowanie API'
+        },
+        {
+            key: 'test-all',
+            to: '/test-all',
+            icon: ScienceIcon,
+            title: 'Test Components',
+            tooltip: 'Wszystkie komponenty'
         },
         {
             key: 'info',

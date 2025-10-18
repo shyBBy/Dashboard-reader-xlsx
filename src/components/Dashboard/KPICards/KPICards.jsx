@@ -1,28 +1,16 @@
 import React, { useMemo } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
-import {
-    Store,
-    Warning,
-    TrendingUp,
-    Assessment,
-    CheckCircle,
-    Error,
-    Info,
-    Today,
-    ShoppingCart
-} from '@mui/icons-material';
-import BlockIcon from '@mui/icons-material/Block';
+import { Box, Typography } from '@mui/material';
+import { Store, Assessment, Info, Today, ShoppingCart } from '@mui/icons-material';
 import MainKPICard from '../../MainKPICard';
 import { 
     calculateAllKPIMetrics, 
     formatDisplayValue, 
-    calculatePercentage, 
     getAvailabilityCardType 
 } from '../../../helpers/businessMetrics.helper';
 
 export const KPICards = ({ data, filteredData }) => {
-    const theme = useTheme();
-    
+    const baseMetrics = useMemo(() => calculateAllKPIMetrics(data), [data]);
+
     const metrics = useMemo(() => {
         const dataToAnalyze = filteredData || data;
         
@@ -45,6 +33,43 @@ export const KPICards = ({ data, filteredData }) => {
 
         return calculatedMetrics;
     }, [data, filteredData]);
+
+    const buildTrend = (currentValue, baseValue) => {
+        const base = baseValue ?? 0;
+        const current = currentValue ?? 0;
+
+        if (base === 0 && current === 0) {
+            return { value: 0, status: 'neutral', label: 'brak zmian' };
+        }
+
+        const diff = current - base;
+        const percentChange = base === 0 ? 0 : (diff / base) * 100;
+        const status = diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral';
+
+        return {
+            value: Math.abs(percentChange).toFixed(1),
+            suffix: '%',
+            status,
+        };
+    };
+
+    const buildSparkline = (baseValue, currentValue) => {
+        const base = baseValue ?? 0;
+        const current = currentValue ?? 0;
+
+        if (base === 0 && current === 0) {
+            return [0, 0, 0, 0, 0, 0, 0];
+        }
+
+        const steps = 6;
+        const result = [];
+        for (let i = 0; i <= steps; i += 1) {
+            const progress = i / steps;
+            const value = base + (current - base) * progress;
+            result.push(Number(value.toFixed(2)));
+        }
+        return result;
+    };
 
     // Jeśli brak danych, pokaż komunikat
     if (!data || data.length === 0) {
@@ -76,6 +101,9 @@ export const KPICards = ({ data, filteredData }) => {
                     subtitle="Unikalne sklepy w danych"
                     icon={<Store />}
                     type="primary"
+                    chartColor="primary"
+                    trend={buildTrend(metrics.totalStores, baseMetrics.totalStores)}
+                    chartData={buildSparkline(baseMetrics.totalStores, metrics.totalStores)}
                 />
         
                 {/* Średnia dostępność */}
@@ -85,7 +113,9 @@ export const KPICards = ({ data, filteredData }) => {
                     subtitle="Średnia dostępność w drogeriach"
                     icon={<Assessment />}
                     type={getAvailabilityCardType(metrics.availabilityAvg)}
-                    progress={metrics.availabilityAvg}
+                    chartColor={getAvailabilityCardType(metrics.availabilityAvg)}
+                    trend={buildTrend(metrics.availabilityAvg, baseMetrics.availabilityAvg)}
+                    chartData={buildSparkline(baseMetrics.availabilityAvg, metrics.availabilityAvg)}
                 />
 
 
@@ -96,7 +126,9 @@ export const KPICards = ({ data, filteredData }) => {
                     subtitle="Sklepy z ostatnim zam. dzisiaj"
                     icon={<Today />}
                     type="primary"
-                    progress={calculatePercentage(metrics.storesWithOrderToday, metrics.totalStores)}
+                    chartColor="success"
+                    trend={buildTrend(metrics.storesWithOrderToday, baseMetrics.storesWithOrderToday)}
+                    chartData={buildSparkline(baseMetrics.storesWithOrderToday, metrics.storesWithOrderToday)}
                 />
 
                 {/* 🆕 Suma linii dzisiaj */}
@@ -104,8 +136,11 @@ export const KPICards = ({ data, filteredData }) => {
                     title="Suma linii dzisiaj"
                     value={formatDisplayValue(metrics.sumaLiniiToday)}
                     subtitle="Łączna suma linii dla zamówień dzisiaj"
-                    icon={<BlockIcon />}
+                    icon={<ShoppingCart />}
                     type="error"
+                    chartColor="warning"
+                    trend={buildTrend(metrics.sumaLiniiToday, baseMetrics.sumaLiniiToday)}
+                    chartData={buildSparkline(baseMetrics.sumaLiniiToday, metrics.sumaLiniiToday)}
                 />
 
             </Box>

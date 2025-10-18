@@ -1,22 +1,11 @@
 import React, { useMemo } from 'react';
-import { Typography, Box, useTheme } from '@mui/material';
-import { 
-    Store, 
-    TrendingUp, 
-    Warning, 
-    CheckCircle, 
-    Block,
-    Assessment,
-    Inventory
-} from '@mui/icons-material';
+import { Typography, Box } from '@mui/material';
+import { Store, TrendingUp, Warning, CheckCircle, Block, Assessment, Inventory } from '@mui/icons-material';
 import MainKPICard from '../MainKPICard';
 
 export default function SingleStoreKPICards({ storeData, storeId }) {
-    const theme = useTheme();
-
     const kpiData = useMemo(() => {
         if (!storeData || storeData.length === 0) return null;
-        console.log('DAAAAAAANE KPI DATA', storeData);
         // Podstawowe statystyki
         const totalRecords = storeData.length;
         
@@ -125,119 +114,64 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
         );
     }
 
-    const kpiCards = [
-        {
-            title: 'Powody Blokerów',
-            value: kpiData.totalRecords.toLocaleString(),
-            icon: <Store />,
-            color: theme.vars.palette.primary.main,
-            bgColor: theme.vars.palette.primary.light + '20',
-            subtitle: 'pozycji w analizie'
-        },
-        {
-            title: 'Dostępność w Drogerii',
-            value: `${kpiData.dostepnoscDrogeria}%`,
-            icon: <Inventory />,
-            color: (() => {
-                const value = parseFloat(kpiData.dostepnoscDrogeria);
-                if (value >= 96.7) return theme.vars.palette.success.main; // Zielony - bardzo dobra
-                if (value >= 92) return theme.vars.palette.info.main;     // Niebieski - dopuszczalna  
-                if (value >= 89) return theme.vars.palette.warning.main;  // Pomarańczowy - słaba
-                return theme.vars.palette.error.main;                     // Czerwony - krytyczna
-            })(),
-            bgColor: (() => {
-                const value = parseFloat(kpiData.dostepnoscDrogeria);
-                if (value >= 96.7) return theme.vars.palette.success.light + '20';
-                if (value >= 92) return theme.vars.palette.info.light + '20';
-                if (value >= 89) return theme.vars.palette.warning.light + '20';
-                return theme.vars.palette.error.light + '20';
-            })(),
-            subtitle: (() => {
-                const value = parseFloat(kpiData.dostepnoscDrogeria);
-                if (value >= 96.7) return 'bardzo dobra dostępność';
-                if (value >= 92) return 'dostępność dopuszczalna';
-                if (value >= 89) return 'słaba dostępność';
-                return 'krytyczna dostępność';
-            })(),
-            progress: parseFloat(kpiData.dostepnoscDrogeria)
-        },
-        {
-            title: 'Dostępność Sieć',
-            value: `${kpiData.dostepnoscSiec}%`,
-            icon: <Assessment />,
-            color: (() => {
-                const value = parseFloat(kpiData.dostepnoscSiec);
-                if (value >= 96.7) return theme.vars.palette.success.main; // Zielony - bardzo dobra
-                if (value >= 92) return theme.vars.palette.info.main;     // Niebieski - dopuszczalna  
-                if (value >= 89) return theme.vars.palette.warning.main;  // Pomarańczowy - słaba
-                return theme.vars.palette.error.main;                     // Czerwony - krytyczna
-            })(),
-            bgColor: (() => {
-                const value = parseFloat(kpiData.dostepnoscSiec);
-                if (value >= 96.7) return theme.vars.palette.success.light + '20';
-                if (value >= 92) return theme.vars.palette.info.light + '20';
-                if (value >= 89) return theme.vars.palette.warning.light + '20';
-                return theme.vars.palette.error.light + '20';
-            })(),
-            subtitle: (() => {
-                const value = parseFloat(kpiData.dostepnoscSiec);
-                if (value >= 96.7) return 'bardzo dobra sieć';
-                if (value >= 92) return 'sieć dopuszczalna';
-                if (value >= 89) return 'sieć słaba';
-                return 'sieć krytyczna';
-            })(),
-            progress: parseFloat(kpiData.dostepnoscSiec)
-        },
-        {
-            title: 'Największy Bloker Ostatnie',
-            value: kpiData.blokerLastOrder.value.toString(),
-            icon: <Block />,
-            color: theme.vars.palette.error.main,
-            bgColor: theme.vars.palette.error.light + '20',
-            subtitle: kpiData.blokerLastOrder.name || 'brak danych'
-        },
-        {
-            title: 'Największy Bloker Następne',
-            value: kpiData.blokerNextOrder.value.toString(),
-            icon: <TrendingUp />,
-            color: theme.vars.palette.warning.main,
-            bgColor: theme.vars.palette.warning.light + '20',
-            subtitle: kpiData.blokerNextOrder.name || 'brak danych'
-        },
-        {
-            title: 'Zera w Blokerze Ostatnie',
-            value: kpiData.zeraLastOrder.toString(),
-            icon: <Warning />,
-            color: theme.palette.error.main,
-            bgColor: theme.palette.error.light + '20',
-            subtitle: 'suma zer ostatnie zam'
-        },
-        {
-            title: 'Rekomendacje',
-            value: kpiData.decyzjaStats.rekomenduj.toString(),
-            icon: <CheckCircle />,
-            color: theme.palette.success.main,
-            bgColor: theme.palette.success.light + '20',
-            subtitle: 'wymaga działania'
-        },
-        {
-            title: 'Wpływ Wysoki',
-            value: kpiData.wplywStats.wysoki.toString(),
-            icon: <Warning />,
-            color: theme.palette.error.main,
-            bgColor: theme.palette.error.light + '20',
-            subtitle: 'priorytetowe problemy'
+    const createSparkline = (value, startFactor = 0.6) => {
+        const numeric = Number(value) || 0;
+        if (numeric === 0) {
+            return [0, 0, 0, 0, 0, 0, 0];
         }
-    ];
 
-    // Definiujemy karty KPI z typami
+        const base = numeric * startFactor;
+        return Array.from({ length: 7 }, (_, idx) => {
+            const progress = idx / 6;
+            return Number((base + (numeric - base) * progress).toFixed(2));
+        });
+    };
+
+    const createTrendFromShare = (part) => {
+        const base = kpiData.totalRecords || 0;
+        const numeric = Number(part) || 0;
+        const share = base === 0 ? 0 : Math.min((numeric / base) * 100, 999);
+        return {
+            value: share.toFixed(1),
+            suffix: '%',
+            status: share > 0 ? 'up' : 'neutral',
+        };
+    };
+
+    const createAvailabilityTrend = (value) => {
+        const numeric = parseFloat(value) || 0;
+        const baseline = 92;
+        const diff = numeric - baseline;
+        const status = diff >= 0 ? (diff > 3 ? 'up' : 'neutral') : 'down';
+        return {
+            value: Math.abs(diff).toFixed(1),
+            suffix: 'p.p.',
+            status,
+        };
+    };
+
+    const createAvailabilitySparkline = (value) => {
+        const numeric = parseFloat(value) || 0;
+        if (numeric === 0) {
+            return [0, 0, 0, 0, 0, 0, 0];
+        }
+        const base = Math.max(numeric - 4, 0);
+        return Array.from({ length: 7 }, (_, idx) => {
+            const progress = idx / 6;
+            return Number((base + (numeric - base) * progress).toFixed(2));
+        });
+    };
+
     const kpiCardsData = [
         {
             title: 'Powody Blokerów',
             value: kpiData.totalRecords.toLocaleString(),
             icon: <Store />,
             type: 'primary',
-            subtitle: 'pozycji w analizie'
+            subtitle: 'pozycji w analizie',
+            trend: createTrendFromShare(kpiData.wplywStats.wysoki + kpiData.wplywStats.sredni),
+            chartColor: 'primary',
+            chartData: createSparkline(kpiData.totalRecords)
         },
         {
             title: 'Dostępność w Drogerii',
@@ -257,7 +191,15 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
                 if (value >= 89) return 'słaba dostępność';
                 return 'krytyczna dostępność';
             })(),
-            progress: parseFloat(kpiData.dostepnoscDrogeria)
+            trend: createAvailabilityTrend(kpiData.dostepnoscDrogeria),
+            chartColor: (() => {
+                const value = parseFloat(kpiData.dostepnoscDrogeria);
+                if (value >= 96.7) return 'success';
+                if (value >= 92) return 'info';
+                if (value >= 89) return 'warning';
+                return 'error';
+            })(),
+            chartData: createAvailabilitySparkline(kpiData.dostepnoscDrogeria)
         },
         {
             title: 'Dostępność Sieć',
@@ -277,42 +219,65 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
                 if (value >= 89) return 'sieć słaba';
                 return 'sieć krytyczna';
             })(),
-            progress: parseFloat(kpiData.dostepnoscSiec)
+            trend: createAvailabilityTrend(kpiData.dostepnoscSiec),
+            chartColor: (() => {
+                const value = parseFloat(kpiData.dostepnoscSiec);
+                if (value >= 96.7) return 'success';
+                if (value >= 92) return 'info';
+                if (value >= 89) return 'warning';
+                return 'error';
+            })(),
+            chartData: createAvailabilitySparkline(kpiData.dostepnoscSiec)
         },
         {
             title: 'Największy Bloker Ostatnie',
             value: kpiData.blokerLastOrder.value.toString(),
             icon: <Block />,
             type: 'error',
-            subtitle: kpiData.blokerLastOrder.name || 'brak danych'
+            subtitle: kpiData.blokerLastOrder.name || 'brak danych',
+            trend: createTrendFromShare(kpiData.blokerLastOrder.value),
+            chartColor: 'error',
+            chartData: createSparkline(kpiData.blokerLastOrder.value, 0.5)
         },
         {
             title: 'Największy Bloker Następne',
             value: kpiData.blokerNextOrder.value.toString(),
             icon: <TrendingUp />,
             type: 'warning',
-            subtitle: kpiData.blokerNextOrder.name || 'brak danych'
+            subtitle: kpiData.blokerNextOrder.name || 'brak danych',
+            trend: createTrendFromShare(kpiData.blokerNextOrder.value),
+            chartColor: 'warning',
+            chartData: createSparkline(kpiData.blokerNextOrder.value, 0.5)
         },
         {
             title: 'Zera w Blokerze Ostatnie',
             value: kpiData.zeraLastOrder.toString(),
             icon: <Warning />,
             type: 'error',
-            subtitle: 'suma zer ostatnie zam'
+            subtitle: 'suma zer ostatnie zam',
+            trend: createTrendFromShare(kpiData.zeraLastOrder),
+            chartColor: 'error',
+            chartData: createSparkline(kpiData.zeraLastOrder, 0.4)
         },
         {
             title: 'Rekomendacje',
             value: kpiData.decyzjaStats.rekomenduj.toString(),
             icon: <CheckCircle />,
             type: 'success',
-            subtitle: 'wymaga działania'
+            subtitle: 'wymaga działania',
+            trend: createTrendFromShare(kpiData.decyzjaStats.rekomenduj),
+            chartColor: 'success',
+            chartData: createSparkline(kpiData.decyzjaStats.rekomenduj, 0.4)
         },
         {
             title: 'Wpływ Wysoki',
             value: kpiData.wplywStats.wysoki.toString(),
             icon: <Warning />,
             type: 'error',
-            subtitle: 'priorytetowe problemy'
+            subtitle: 'priorytetowe problemy',
+            trend: createTrendFromShare(kpiData.wplywStats.wysoki),
+            chartColor: 'error',
+            chartData: createSparkline(kpiData.wplywStats.wysoki, 0.5)
         }
     ];
 
@@ -348,7 +313,9 @@ export default function SingleStoreKPICards({ storeData, storeId }) {
                         subtitle={card.subtitle}
                         icon={card.icon}
                         type={card.type}
-                        progress={card.progress}
+                        trend={card.trend}
+                        chartColor={card.chartColor}
+                        chartData={card.chartData}
                     />
                 ))}
             </Box>

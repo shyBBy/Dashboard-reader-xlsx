@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import InfoPage from './pages/InfoPage';
 import SingleStoreView from './views/SingleStoreView';
 import ApiTestPanel from './components/ApiTestPanel/ApiTestPanel';
+import TestAllComponentsPage from './pages/TestAllComponentsPage';
 
 export default function App() {
   return (
@@ -18,6 +19,9 @@ export default function App() {
       <Route path="/info" element={<MainLayout><InfoPage /></MainLayout>} />
       <Route path="/api-test" element={<MainLayout><ApiTestPanel /></MainLayout>} />
       <Route path="/sklep/:storeId" element={<MainLayout><SingleStoreView /></MainLayout>} />
+      
+      {/* Strony bez layoutu (fullscreen) */}
+      <Route path="/test-all" element={<TestAllComponentsPage />} />
       <Route path="/landing" element={<LandingPage />} />
       
       {/* 404 - przekierowanie na dashboard */}
