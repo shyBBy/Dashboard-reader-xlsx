@@ -47,6 +47,76 @@ export const truncateText = (text, maxLength = 40) => {
     return `${text.substring(0, maxLength - 3)}...`;
 };
 
+const EXCEL_ESCAPE_REGEX = /_x([0-9A-Fa-f]{4})_/g;
+
+/**
+ * Dekoduje sekwencje w stylu Excel `_x0020_` na odpowiadające znaki.
+ * @param {string} value - tekst do dekodowania
+ * @returns {string}
+ */
+export const decodeExcelEscapes = (value) => {
+    if (typeof value !== 'string' || value.length === 0) {
+        return value;
+    }
+
+    return value.replace(EXCEL_ESCAPE_REGEX, (_, hex) => {
+        const codePoint = parseInt(hex, 16);
+        if (Number.isNaN(codePoint)) {
+            return _;
+        }
+        return String.fromCharCode(codePoint);
+    });
+};
+
+/**
+ * Czyści tekst pochodzący z Excela: dekoduje sekwencje `_xNNNN_`, usuwa nadmiarowe białe znaki.
+ * @param {string} value
+ * @returns {string}
+ */
+export const normalizeExcelText = (value) => {
+    if (typeof value !== 'string') {
+        return value;
+    }
+
+    const decoded = decodeExcelEscapes(value);
+    if (typeof decoded !== 'string') {
+        return decoded;
+    }
+
+    return decoded
+        .replace(/\r\n|\r|\n/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+};
+
+/**
+ * Rekurencyjnie normalizuje wszystkie stringi w obiekcie/ tablicy dekodując sekwencje `_xNNNN_`.
+ * @param {any} input
+ * @returns {any}
+ */
+export const normalizeExcelDataset = (input) => {
+    if (input instanceof Date) {
+        return input;
+    }
+
+    if (Array.isArray(input)) {
+        return input.map((item) => normalizeExcelDataset(item));
+    }
+
+    if (input && typeof input === 'object') {
+        return Object.entries(input).reduce((acc, [key, value]) => {
+            acc[key] = normalizeExcelDataset(value);
+            return acc;
+        }, {});
+    }
+
+    if (typeof input === 'string') {
+        return normalizeExcelText(input);
+    }
+
+    return input;
+};
+
 /**
  * Sprawdza czy tekst jest długi i potrzebuje skrócenia
  * @param {string} text - Tekst do sprawdzenia
@@ -261,6 +331,14 @@ export const formatDisplayValue = (value, header = '') => {
         return '-';
     }
     
+    if (typeof value === 'string') {
+        const normalized = normalizeExcelText(value);
+        if (normalized.length === 0) {
+            return '-';
+        }
+        value = normalized;
+    }
+
     // Sprawdź czy to pole daty
     if (isDateField(header)) {
         return formatDate(value);

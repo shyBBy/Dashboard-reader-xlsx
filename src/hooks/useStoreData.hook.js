@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api/api';
+import { normalizeExcelDataset } from '../helpers/dataFormatting.helper';
 
 /**
  * Hook do pobierania danych konkretnego sklepu
@@ -28,7 +29,9 @@ export const useStoreData = (storeId) => {
                 const blockersResponse = await api.getStoreBlockers(storeId);
                 console.log(`📦 Blokery dla sklepu ${storeId}:`, blockersResponse);
                 
-                setStoreBlockers(blockersResponse?.data || blockersResponse || []);
+                const rawBlockers = blockersResponse?.data || blockersResponse || [];
+                const normalizedBlockers = normalizeExcelDataset(rawBlockers);
+                setStoreBlockers(normalizedBlockers);
 
                 // Opcjonalnie pobierz inne dane (mogą nie istnieć)
                 try {
@@ -39,13 +42,13 @@ export const useStoreData = (storeId) => {
                     ]);
 
                     if (storeResponse.status === 'fulfilled') {
-                        setStoreData(storeResponse.value);
+                        setStoreData(normalizeExcelDataset(storeResponse.value));
                     }
                     if (statsResponse.status === 'fulfilled') {
-                        setStoreStats(statsResponse.value);
+                        setStoreStats(normalizeExcelDataset(statsResponse.value));
                     }
                     if (highImpactResponse.status === 'fulfilled') {
-                        setStoreHighImpact(highImpactResponse.value || []);
+                        setStoreHighImpact(normalizeExcelDataset(highImpactResponse.value || []));
                     }
 
                     console.log(`✅ Dane sklepu ${storeId} pobrane:`, {
@@ -85,7 +88,8 @@ export const useStoreData = (storeId) => {
                     const blockersResponse = await api.getStoreBlockers(storeId);
                     console.log(`📦 Odświeżone blokery dla sklepu ${storeId}:`, blockersResponse);
                     
-                    setStoreBlockers(blockersResponse?.data || blockersResponse || []);
+                    const rawBlockers = blockersResponse?.data || blockersResponse || [];
+                    setStoreBlockers(normalizeExcelDataset(rawBlockers));
 
                 } catch (err) {
                     console.error(`❌ Błąd odświeżania danych sklepu ${storeId}:`, err);

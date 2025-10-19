@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import Api from '../api/api';
+import { normalizeExcelDataset } from '../helpers/dataFormatting.helper';
 
 // Context dla danych z API
 const ApiDataContext = createContext();
@@ -71,9 +72,9 @@ export const ApiDataProvider = ({ children }) => {
 
       // Sprawdź czy wszystkie odpowiedzi są OK
       if (blockersResponse.success && storesResponse.success && statsResponse.success) {
-        setBlockers(blockersResponse.data || []);
-        setStores(storesResponse.data || []);
-        setStats(statsResponse.data || null);
+        setBlockers(normalizeExcelDataset(blockersResponse.data || []));
+        setStores(normalizeExcelDataset(storesResponse.data || []));
+        setStats(normalizeExcelDataset(statsResponse.data || null));
         setLastUpdated(new Date());
         setError(null);
         
@@ -119,7 +120,7 @@ export const ApiDataProvider = ({ children }) => {
     try {
       const response = await Api.getStoreStats(storeId);
       if (response.success) {
-        return response.data;
+        return normalizeExcelDataset(response.data);
       } else {
         throw new Error(response.message);
       }
@@ -134,7 +135,7 @@ export const ApiDataProvider = ({ children }) => {
     try {
       const response = await Api.getStoreBlockers(storeId);
       if (response.success) {
-        return response.data;
+        return normalizeExcelDataset(response.data);
       } else {
         throw new Error(response.message);
       }
@@ -151,7 +152,7 @@ export const ApiDataProvider = ({ children }) => {
       
       const response = await Api.searchBlockers(query);
       if (response.success) {
-        return response.data;
+        return normalizeExcelDataset(response.data);
       } else {
         throw new Error(response.message);
       }
@@ -168,7 +169,7 @@ export const ApiDataProvider = ({ children }) => {
       
       const response = await Api.searchStores(query);
       if (response.success) {
-        return response.data;
+        return normalizeExcelDataset(response.data);
       } else {
         throw new Error(response.message);
       }

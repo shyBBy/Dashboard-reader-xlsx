@@ -37,16 +37,15 @@ import { useAppTheme } from '../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 
 // Import komponentów do testowania
-import MainKPICard from '../components/MainKPICard';
 import ErrorCard from '../components/ErrorCard';
 import ThemeToggle from '../components/ThemeToggle/ThemeToggle';
-import SingleStoreKPICards from '../components/SingleStore/SingleStoreKPICards';
 import SingleStoreCharts from '../components/SingleStore/SingleStoreCharts';
 import BlockerAnalysis from '../components/SingleStore/BlockerAnalysis';
 import LastOrderBlockers from '../components/SingleStore/LastOrderBlockers';
 import NextOrderBlockers from '../components/SingleStore/NextOrderBlockers';
 import { TableCellRenderer } from '../components/Table/TableCellRenderer';
 import SurfaceCard from '../components/SurfaceCard';
+import MetricsSection from '../components/Metrics/MetricsSection';
 
 // Przykładowe dane
 const mockStoreData = {
@@ -57,18 +56,6 @@ const mockStoreData = {
     mediumImpactBlockers: 67,
     lowImpactBlockers: 44,
 };
-
-const mockSingleStoreRows = Array.from({ length: 24 }, (_, index) => ({
-    StoreId: '1234',
-    Wplyw: index % 4 === 0 ? 'WYSOKI' : index % 4 === 1 ? 'SREDNI' : index % 4 === 2 ? 'NISKI' : 'ZEROWY',
-    Decyzja: index % 3 === 0 ? 'REKOMENDUJ' : 'BRAK AKCJI',
-    DOSTEPNOSC_DROGERIA: index % 5 === 0 ? '94.5' : '96.8',
-    Dostepnosc_siec: index % 4 === 0 ? '95.2' : '97.4',
-    BlockerName: index % 2 === 0 ? 'StoreVolume' : 'WhsStock',
-    Bloker_ostatnie_zam: index % 5 === 0 ? 10 : 6,
-    Bloker_najblizsze_zam: index % 4 === 0 ? 8 : 5,
-    Zera_w_blokerze_ostatnie_zam: index % 6 === 0 ? 4 : 2,
-}));
 
 const mockBlockersData = [
     { blocker: 'StoreVolume', count: 45, percentage: 28.8, influence: 'WYSOKI', trend: '+5%' },
@@ -130,6 +117,144 @@ const TestAllComponentsPage = () => {
     const { isDarkMode } = useAppTheme();
     const navigate = useNavigate();
     const [showError, setShowError] = useState(false);
+
+    const demoDashboardMetrics = [
+        {
+            id: 'demo-product-sold',
+            overline: 'Sprzedaż',
+            title: 'Produkty sprzedane',
+            value: '765',
+            helperText: '+2.6% tydzień do tygodnia',
+            icon: <TrendingUp fontSize="inherit" />,
+            intent: 'success',
+            trend: { direction: 'up', prefix: '+', value: '2.6', suffix: '%', label: 'vs ostatni tydzień' },
+            sparkline: { data: mockSparklineSeries.totalBlockers, color: 'success' },
+        },
+        {
+            id: 'demo-total-balance',
+            overline: 'Przychody',
+            title: 'Saldo całkowite',
+            value: '18 765',
+            helperText: '-0.4% vs tydzień temu',
+            icon: <Assessment fontSize="inherit" />,
+            intent: 'warning',
+            trend: { direction: 'down', prefix: '-', value: '0.4', suffix: '%', label: 'vs ostatni tydzień' },
+            sparkline: { data: mockSparklineSeries.highImpact, color: 'warning' },
+        },
+        {
+            id: 'demo-profit',
+            overline: 'Marża',
+            title: 'Zysk ze sprzedaży',
+            value: '4 876',
+            helperText: '+0.6% tydzień do tygodnia',
+            icon: <CheckCircle fontSize="inherit" />,
+            intent: 'success',
+            trend: { direction: 'up', prefix: '+', value: '0.6', suffix: '%', label: 'vs ostatni tydzień' },
+            sparkline: { data: mockSparklineSeries.mediumImpact, color: 'success' },
+        },
+        {
+            id: 'demo-downtime',
+            overline: 'Operacje',
+            title: 'Czas przestoju',
+            value: '12 min',
+            helperText: 'na sklep w ostatnim tygodniu',
+            icon: <Warning fontSize="inherit" />,
+            intent: 'error',
+            trend: { direction: 'down', prefix: '-', value: '1.2', suffix: '%', label: 'vs ostatni tydzień' },
+            sparkline: { data: mockSparklineSeries.lowImpact, color: 'error' },
+        },
+    ];
+
+    const demoStoreMetrics = [
+        {
+            id: 'demo-store-blockers',
+            overline: 'Portfel blokera',
+            title: 'Powody blokerów',
+            value: mockStoreData.totalBlockers.toString(),
+            helperText: 'pozycji w analizie',
+            icon: <Store fontSize="inherit" />,
+            intent: 'primary',
+            trend: { direction: 'up', prefix: '+', value: '48.0', suffix: '%', label: 'wysoki + średni wpływ' },
+            sparkline: { data: mockSparklineSeries.totalBlockers, color: 'primary' },
+        },
+        {
+            id: 'demo-store-availability',
+            overline: 'Dostępność',
+            title: 'Dostępność drogerii',
+            value: '96.8%',
+            helperText: 'bardzo dobra dostępność',
+            icon: <Inventory fontSize="inherit" />,
+            intent: 'success',
+            trend: { direction: 'up', prefix: '+', value: '4.8', suffix: ' p.p.', label: 'vs próg 92%' },
+            sparkline: { data: mockSparklineSeries.highImpact, color: 'success' },
+        },
+        {
+            id: 'demo-store-network',
+            overline: 'Dostępność',
+            title: 'Dostępność sieci',
+            value: '95.2%',
+            helperText: 'sieć dopuszczalna',
+            icon: <Assessment fontSize="inherit" />,
+            intent: 'info',
+            trend: { direction: 'up', prefix: '+', value: '3.2', suffix: ' p.p.', label: 'vs próg 92%' },
+            sparkline: { data: mockSparklineSeries.mediumImpact, color: 'info' },
+        },
+        {
+            id: 'demo-store-last-blocker',
+            overline: 'Ostatnie zamówienie',
+            title: 'Największy bloker',
+            value: '23',
+            helperText: 'StoreVolume',
+            icon: <Block fontSize="inherit" />,
+            intent: 'error',
+            trend: { direction: 'up', prefix: '+', value: '14.7', suffix: '%', label: 'udział w portfelu' },
+            sparkline: { data: mockSparklineSeries.lowImpact, color: 'error' },
+        },
+        {
+            id: 'demo-store-next-blocker',
+            overline: 'Najbliższe zamówienie',
+            title: 'Największy bloker',
+            value: '28',
+            helperText: 'WhsStock',
+            icon: <TrendingUp fontSize="inherit" />,
+            intent: 'warning',
+            trend: { direction: 'up', prefix: '+', value: '18.0', suffix: '%', label: 'udział w prognozie' },
+            sparkline: { data: mockSparklineSeries.highImpact, color: 'warning' },
+        },
+        {
+            id: 'demo-store-zeros',
+            overline: 'Ostatnie zamówienie',
+            title: 'Zera w blokerach',
+            value: '42',
+            helperText: 'suma zer ostatnie zam.',
+            icon: <Warning fontSize="inherit" />,
+            intent: 'error',
+            trend: { direction: 'up', prefix: '+', value: '26.9', suffix: '%', label: 'udział w portfelu' },
+            sparkline: { data: mockSparklineSeries.lowImpact, color: 'error' },
+        },
+        {
+            id: 'demo-store-recommendations',
+            overline: 'Działania',
+            title: 'Rekomendacje',
+            value: '58',
+            helperText: 'wymaga działania',
+            icon: <CheckCircle fontSize="inherit" />,
+            intent: 'success',
+            trend: { direction: 'up', prefix: '+', value: '37.1', suffix: '%', label: 'udział w portfelu' },
+            sparkline: { data: mockSparklineSeries.mediumImpact, color: 'success' },
+        },
+        {
+            id: 'demo-store-high-impact',
+            overline: 'Priorytety',
+            title: 'Wysoki wpływ',
+            value: mockStoreData.highImpactBlockers.toString(),
+            helperText: 'priorytetowe problemy',
+            icon: <Warning fontSize="inherit" />,
+            intent: 'error',
+            trend: { direction: 'up', prefix: '+', value: '28.8', suffix: '%', label: 'udział w portfelu' },
+            sparkline: { data: mockSparklineSeries.highImpact, color: 'error' },
+        },
+    ];
 
     return (
         <Box sx={{ 
@@ -196,44 +321,10 @@ const TestAllComponentsPage = () => {
                     <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                         <Dashboard /> Main KPI Cards
                     </Typography>
-                    
-                    <Box
-                        sx={{
-                            display: 'grid',
-                            gap: { xs: 2.5, md: 3 },
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-                        }}
-                    >
-                        <MainKPICard
-                            title="Total active users"
-                            value="18,765"
-                            trend={{ value: '2.6', suffix: '%', label: 'last 7 days', status: 'up' }}
-                            chartData={mockSparklineSeries.totalBlockers}
-                            chartColor="success"
-                        />
-                        <MainKPICard
-                            title="Total installed"
-                            value="4,876"
-                            trend={{ value: '0.2', suffix: '%', label: 'last 7 days', status: 'up' }}
-                            chartData={mockSparklineSeries.highImpact}
-                            chartColor="info"
-                        />
-                        <MainKPICard
-                            title="Total downloads"
-                            value="678"
-                            trend={{ value: '0.1', suffix: '%', label: 'last 7 days', status: 'down' }}
-                            chartData={mockSparklineSeries.lowImpact}
-                            chartColor="error"
-                        />
-                        <MainKPICard
-                            title="Avg. session time"
-                            value="4m 32s"
-                            subtitle="Sample secondary text"
-                            trend={{ value: '1.8', suffix: '%', label: 'last 7 days', status: 'up' }}
-                            chartData={mockSparklineSeries.mediumImpact}
-                            chartColor="primary"
-                        />
-                    </Box>
+                    <MetricsSection
+                        items={demoDashboardMetrics}
+                        minCardWidth={240}
+                    />
                 </SurfaceCard>
 
                 {/* Section 2: Error Card */}
@@ -273,10 +364,9 @@ const TestAllComponentsPage = () => {
                     <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                         <Store /> Single Store KPI Cards
                     </Typography>
-                    
-                    <SingleStoreKPICards 
-                        storeId={mockStoreData.storeId}
-                        storeData={mockSingleStoreRows}
+                    <MetricsSection
+                        items={demoStoreMetrics}
+                        minCardWidth={240}
                     />
                 </SurfaceCard>
 

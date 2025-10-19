@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, Alert, Divider, CircularProgress } from '@mui/material';
-import { Warning } from '@mui/icons-material';
+import { Warning, Store, Assessment, Today, ShoppingCart } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DataFilters } from './DataFilters/DataFilters';
-import { KPICards } from './KPICards/KPICards';
 import { DynamicDataTable } from './DynamicDataTable/DynamicDataTable';
 import { DetailedViewToggle } from './DetailedViewToggle/DetailedViewToggle';
 import { useApiData } from '../../context/ApiDataContext';
 import { useDataFilters } from '../../hooks/useDataFilters.hook';
 import { getVisibleHeaders, getColumnStats } from '../../helpers/columnVisibility.helper';
 import ErrorCard from '../ErrorCard';
+import MetricsSection from '../Metrics/MetricsSection';
+import {
+    calculateAllKPIMetrics,
+    formatDisplayValue,
+    getAvailabilityCardType
+} from '../../helpers/businessMetrics.helper';
 
 /**
  * Zrefaktorowany komponent Dashboard - znacznie krótszy dzięki wydzieleniu logiki do hooków
@@ -32,6 +37,123 @@ export const Dashboard = () => {
     // Oblicz widoczne nagłówki na podstawie trybu widoku
     const visibleHeaders = getVisibleHeaders(excelData?.headers, detailedView);
     const columnStats = getColumnStats(excelData?.headers, detailedView);
+
+    const dashboardMetricItems = useMemo(() => {
+        if (!excelData?.data || excelData.data.length === 0) {
+            return [];
+        }
+
+        const baseMetrics = calculateAllKPIMetrics(excelData.data);
+        const scopedDataset = Array.isArray(filteredData) && filteredData.length > 0 ? filteredData : excelData.data;
+        const scopedMetrics = calculateAllKPIMetrics(scopedDataset);
+
+        const buildPercentageTrend = (currentValue, baseValue, label = 'vs całość') => {
+            const base = Number(baseValue) || 0;
+            const current = Number(currentValue) || 0;
+
+            if (!base && !current) {
+                return { direction: 'neutral', value: '0.0', suffix: '%', label };
+            }
+
+            if (!base) {
+                const direction = current >= 0 ? 'up' : 'down';
+                return {
+                    direction,
+                    prefix: current >= 0 ? '+' : '-',
+                    value: Math.abs(current).toLocaleString('pl-PL'),
+                    suffix: '',
+                    label: 'nowa wartość',
+                };
+            }
+
+            const diff = current - base;
+            const percentChange = (diff / base) * 100;
+            const direction = percentChange > 0 ? 'up' : percentChange < 0 ? 'down' : 'neutral';
+            return {
+                direction,
+                prefix: percentChange > 0 ? '+' : percentChange < 0 ? '-' : '',
+                value: Math.abs(percentChange).toFixed(1),
+                suffix: '%',
+                label,
+            };
+        };
+
+        const buildDeltaTrend = (currentValue, baseValue, { label = 'vs całość', suffix = ' p.p.' } = {}) => {
+            const base = Number(baseValue) || 0;
+            const current = Number(currentValue) || 0;
+            const diff = current - base;
+            const direction = diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral';
+            return {
+                direction,
+                prefix: diff > 0 ? '+' : diff < 0 ? '-' : '',
+                value: Math.abs(diff).toFixed(1),
+                suffix,
+                label,
+            };
+        };
+
+        const buildSparkline = (startValue, endValue) => {
+            const start = Number(startValue) || 0;
+            const end = Number(endValue) || 0;
+            if (!start && !end) {
+                return [0, 0, 0, 0, 0, 0, 0];
+            }
+            const steps = 6;
+            return Array.from({ length: steps + 1 }, (_, index) => {
+                const progress = index / steps;
+                return Number((start + (end - start) * progress).toFixed(2));
+            });
+        };
+
+        const availabilityIntent = getAvailabilityCardType(scopedMetrics.availabilityAvg);
+
+        return [
+            {
+                id: 'dashboard-total-stores',
+                overline: 'Sklepy',
+                title: 'Sklepy w danych',
+                value: formatDisplayValue(scopedMetrics.totalStores),
+                helperText: 'unikalne sklepy w zestawie',
+                icon: <Store fontSize="inherit" />,
+                intent: 'primary',
+                trend: buildPercentageTrend(scopedMetrics.totalStores, baseMetrics.totalStores),
+                sparkline: { data: buildSparkline(baseMetrics.totalStores, scopedMetrics.totalStores), color: 'primary' },
+            },
+            {
+                id: 'dashboard-availability',
+                overline: 'Dostępność',
+                title: 'Średnia dostępność',
+                value: `${Number(scopedMetrics.availabilityAvg || 0).toFixed(2)}%`,
+                helperText: 'średnia dostępność w drogeriach',
+                icon: <Assessment fontSize="inherit" />,
+                intent: availabilityIntent,
+                trend: buildDeltaTrend(scopedMetrics.availabilityAvg, baseMetrics.availabilityAvg, { label: 'vs całość', suffix: ' p.p.' }),
+                sparkline: { data: buildSparkline(baseMetrics.availabilityAvg, scopedMetrics.availabilityAvg), color: availabilityIntent },
+            },
+            {
+                id: 'dashboard-orders-today',
+                overline: 'Zamówienia',
+                title: 'Zamówienia dzisiaj',
+                value: formatDisplayValue(scopedMetrics.storesWithOrderToday),
+                helperText: 'sklepy z zamówieniem dzisiaj',
+                icon: <Today fontSize="inherit" />,
+                intent: 'success',
+                trend: buildPercentageTrend(scopedMetrics.storesWithOrderToday, baseMetrics.storesWithOrderToday),
+                sparkline: { data: buildSparkline(baseMetrics.storesWithOrderToday, scopedMetrics.storesWithOrderToday), color: 'success' },
+            },
+            {
+                id: 'dashboard-lines-today',
+                overline: 'Linie',
+                title: 'Suma linii dzisiaj',
+                value: formatDisplayValue(scopedMetrics.sumaLiniiToday),
+                helperText: 'łączna liczba linii zamówień dzisiaj',
+                icon: <ShoppingCart fontSize="inherit" />,
+                intent: 'warning',
+                trend: buildPercentageTrend(scopedMetrics.sumaLiniiToday, baseMetrics.sumaLiniiToday),
+                sparkline: { data: buildSparkline(baseMetrics.sumaLiniiToday, scopedMetrics.sumaLiniiToday), color: 'warning' },
+            },
+        ];
+    }, [excelData?.data, filteredData]);
 
     // Nie przekierowuj na upload - teraz dane przychodzą z API
     // useEffect(() => {
@@ -139,11 +261,14 @@ export const Dashboard = () => {
                 </Alert>
             )}
 
-            {/* Karty KPI */}
-            <KPICards 
-                data={excelData.data}
-                filteredData={filteredData}
-            />
+            {dashboardMetricItems.length > 0 && (
+                <MetricsSection
+                    title="Kluczowe metryki"
+                    subtitle={excelData?.fileName ? `Źródło: ${excelData.fileName}` : undefined}
+                    items={dashboardMetricItems}
+                    minCardWidth={260}
+                />
+            )}
 
             <Divider sx={{ my: 4 }} />
 
