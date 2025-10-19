@@ -31,7 +31,7 @@ export default function SingleStoreView() {
     const theme = useTheme();
     const baseBackground = theme.palette.background.default;
     const surfaceBackground = theme.palette.background.paper;
-    const borderColor = alpha(theme.palette.divider, theme.palette.mode === 'dark' ? 0.6 : 0.3);
+    const borderColor = alpha(theme.palette.divider, theme.palette.mode === 'dark' ? 0.15 : 0.3);
     const mutedSurface = theme.palette.mode === 'dark'
         ? alpha(theme.palette.common.white, 0.05)
         : alpha(theme.palette.common.black, 0.03);
@@ -760,7 +760,9 @@ export default function SingleStoreView() {
                         position: 'relative',
                         overflow: 'hidden',
                         borderRadius: 4,
-                        background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary?.main || theme.palette.primary.dark} 100%)`,
+                        background: theme.palette.mode === 'dark'
+                            ? 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
+                            : `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary?.main || theme.palette.primary.dark} 100%)`,
                         color: '#fff',
                     }}
                 >
