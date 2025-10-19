@@ -29,6 +29,12 @@ export default function SingleStoreView() {
     const { storeId } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
+    const baseBackground = theme.palette.background.default;
+    const surfaceBackground = theme.palette.background.paper;
+    const borderColor = alpha(theme.palette.divider, theme.palette.mode === 'dark' ? 0.6 : 0.3);
+    const mutedSurface = theme.palette.mode === 'dark'
+        ? alpha(theme.palette.common.white, 0.05)
+        : alpha(theme.palette.common.black, 0.03);
     
     // Nowy hook do pobierania danych konkretnego sklepu
     const { 
@@ -494,13 +500,6 @@ export default function SingleStoreView() {
         return (storeBlockers || []).filter(row => String(row.Wplyw || '').toUpperCase() === 'WYSOKI');
     }, [storeHighImpact, storeBlockers]);
 
-    const scheduleItems = useMemo(() => {
-        if (Array.isArray(storeHighImpact) && storeHighImpact.length > 0) {
-            return storeHighImpact;
-        }
-        return (storeBlockers || []).filter(row => String(row.Wplyw || '').toUpperCase() === 'WYSOKI');
-    }, [storeHighImpact, storeBlockers]);
-
     const scheduleSummary = useMemo(() => {
         const items = [
             {
@@ -573,7 +572,16 @@ export default function SingleStoreView() {
     if (!storeId) {
         return (
             <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Paper elevation={2} sx={{ p: 4, textAlign: 'center', mt: 4 }}>
+                <Paper
+                    elevation={2}
+                    sx={{
+                        p: 4,
+                        textAlign: 'center',
+                        mt: 4,
+                        backgroundColor: surfaceBackground,
+                        borderRadius: 3,
+                    }}
+                >
                     <Typography variant="h5" color="error">
                         ❌ Brak ID sklepu w URL
                     </Typography>
@@ -657,7 +665,16 @@ export default function SingleStoreView() {
     if (!hasData || !storeBlockers || storeBlockers.length === 0) {
         return (
             <Box sx={{ p: 4, textAlign: 'center' }}>
-                <Paper elevation={2} sx={{ p: 4, textAlign: 'center', mt: 4 }}>
+                <Paper
+                    elevation={2}
+                    sx={{
+                        p: 4,
+                        textAlign: 'center',
+                        mt: 4,
+                        backgroundColor: surfaceBackground,
+                        borderRadius: 3,
+                    }}
+                >
                     <Typography variant="h5" color="text.secondary" gutterBottom>
                         📋 Brak danych dla sklepu {storeId}
                     </Typography>
@@ -712,7 +729,16 @@ export default function SingleStoreView() {
 
     // Główny widok sklepu - renderowanie danych
     return (
-        <Box sx={{ width: '100%', px: { xs: 2, sm: 3, md: 5 }, py: 4 }}>
+        <Box
+            sx={{
+                width: '100%',
+                px: { xs: 2, sm: 3, md: 5 },
+                py: 4,
+                backgroundColor: baseBackground,
+                color: theme.palette.text.primary,
+                minHeight: '100vh',
+            }}
+        >
             <Box sx={{ mb: 3 }}>
                 <Breadcrumbs>
                     <Link to="/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -827,8 +853,9 @@ export default function SingleStoreView() {
                     mb: 4,
                     p: { xs: 2.5, md: 3 },
                     borderRadius: 2.5,
-                    border: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
-                    backgroundColor: theme.vars?.palette?.background?.paper || theme.palette.background.paper,
+                    border: `1px solid ${borderColor}`,
+                    backgroundColor: surfaceBackground,
+                    backdropFilter: theme.palette.mode === 'dark' ? 'blur(10px)' : 'none',
                 }}
             >
                 <Box
@@ -896,7 +923,16 @@ export default function SingleStoreView() {
                 }}
             >
                 <Stack spacing={3}>
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.vars?.palette?.divider || theme.palette.divider}` }}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            border: `1px solid ${borderColor}`,
+                            backgroundColor: surfaceBackground,
+                            backdropFilter: theme.palette.mode === 'dark' ? 'blur(8px)' : 'none',
+                        }}
+                    >
                             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                 Kluczowe statystyki
                             </Typography>
@@ -913,7 +949,7 @@ export default function SingleStoreView() {
                                         sx={{
                                             p: 2,
                                             borderRadius: 2,
-                                            backgroundColor: theme.palette.action.hover,
+                                            backgroundColor: mutedSurface,
                                             display: 'flex',
                                             flexDirection: 'column',
                                             gap: 1
@@ -933,7 +969,16 @@ export default function SingleStoreView() {
                             </Box>
                     </Paper>
 
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.vars?.palette?.divider || theme.palette.divider}` }}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            border: `1px solid ${borderColor}`,
+                            backgroundColor: surfaceBackground,
+                            backdropFilter: theme.palette.mode === 'dark' ? 'blur(8px)' : 'none',
+                        }}
+                    >
                             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                 Zespół sklepu
                             </Typography>
@@ -967,7 +1012,16 @@ export default function SingleStoreView() {
                             )}
                     </Paper>
 
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.vars?.palette?.divider || theme.palette.divider}` }}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            border: `1px solid ${borderColor}`,
+                            backgroundColor: surfaceBackground,
+                            backdropFilter: theme.palette.mode === 'dark' ? 'blur(8px)' : 'none',
+                        }}
+                    >
                             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
                                 Dostępność i udział
                             </Typography>
@@ -1003,12 +1057,19 @@ export default function SingleStoreView() {
                             </Box>
                     </Paper>
 
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.vars?.palette?.divider || theme.palette.divider}` }}/>
-                    
                 </Stack>
 
                 <Stack spacing={3}>
-                        <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.vars?.palette?.divider || theme.palette.divider}` }}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 3,
+                                borderRadius: 3,
+                                border: `1px solid ${borderColor}`,
+                                backgroundColor: surfaceBackground,
+                                backdropFilter: theme.palette.mode === 'dark' ? 'blur(8px)' : 'none',
+                            }}
+                        >
                             <Typography variant="h6" sx={{ fontWeight: 700 }}>
                                 Status sklepu
                             </Typography>
@@ -1029,7 +1090,16 @@ export default function SingleStoreView() {
                             </Box>
                     </Paper>
 
-                    <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.vars?.palette?.divider || theme.palette.divider}` }}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            border: `1px solid ${borderColor}`,
+                            backgroundColor: surfaceBackground,
+                            backdropFilter: theme.palette.mode === 'dark' ? 'blur(8px)' : 'none',
+                        }}
+                    >
                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
                                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
                                     Blokery do obserwacji

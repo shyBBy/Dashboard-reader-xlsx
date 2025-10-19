@@ -377,6 +377,7 @@ export const ThemeContextProvider = ({ children }) => {
     const theme = useMemo(
         () =>
             createTheme({
+                palette: mode === 'dark' ? minimalDarkPalette : minimalLightPalette,
                 cssVariables: {
                     colorSchemeSelector: 'data-mui-color-scheme',
                     cssVarPrefix: 'mui',
@@ -466,7 +467,7 @@ export const ThemeContextProvider = ({ children }) => {
                 customShadows: minimalCustomShadows,
                 components: getComponentOverrides(),
             }),
-        []
+        [mode]
     );
 
     // Ustaw color scheme na document element (dla CSS Variables)

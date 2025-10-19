@@ -92,7 +92,7 @@ const MetricCard = ({ item, density, minHeight }) => {
                 minHeight: minHeight || spacing.minHeight,
                 p: spacing.padding,
                 borderRadius: '14px',
-                backgroundColor: theme.vars?.palette?.background?.paper || theme.palette.background.paper,
+                backgroundColor: theme.palette.background.paper,
                 border: `1px solid ${alpha(theme.palette.divider, 0.35)}`,
                 boxShadow: theme.palette.mode === 'light'
                     ? '0 10px 22px rgba(15, 23, 42, 0.06)'
