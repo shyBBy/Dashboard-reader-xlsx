@@ -4,8 +4,6 @@ import {
     Container,
     Typography,
     Grid,
-    Card,
-    CardContent,
     Divider,
     Button,
     Stack,
@@ -48,6 +46,7 @@ import BlockerAnalysis from '../components/SingleStore/BlockerAnalysis';
 import LastOrderBlockers from '../components/SingleStore/LastOrderBlockers';
 import NextOrderBlockers from '../components/SingleStore/NextOrderBlockers';
 import { TableCellRenderer } from '../components/Table/TableCellRenderer';
+import SurfaceCard from '../components/SurfaceCard';
 
 // Przykładowe dane
 const mockStoreData = {
@@ -193,316 +192,299 @@ const TestAllComponentsPage = () => {
                 <Divider sx={{ mb: 4 }} />
 
                 {/* Section 1: Main KPI Cards */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                            <Dashboard /> Main KPI Cards
-                        </Typography>
-                        
-                        <Box sx={{ 
-                            display: 'flex', 
-                            flexWrap: 'wrap', 
-                            gap: 3,
-                            justifyContent: 'center'
-                        }}>
-                            <MainKPICard
-                                title="Total active users"
-                                value="18,765"
-                                trend={{ value: '2.6', suffix: '%', label: 'last 7 days', status: 'up' }}
-                                chartData={mockSparklineSeries.totalBlockers}
-                                chartColor="success"
-                            />
-                            <MainKPICard
-                                title="Total installed"
-                                value="4,876"
-                                trend={{ value: '0.2', suffix: '%', label: 'last 7 days', status: 'up' }}
-                                chartData={mockSparklineSeries.highImpact}
-                                chartColor="info"
-                            />
-                            <MainKPICard
-                                title="Total downloads"
-                                value="678"
-                                trend={{ value: '0.1', suffix: '%', label: 'last 7 days', status: 'down' }}
-                                chartData={mockSparklineSeries.lowImpact}
-                                chartColor="error"
-                            />
-                            <MainKPICard
-                                title="Avg. session time"
-                                value="4m 32s"
-                                subtitle="Sample secondary text"
-                                trend={{ value: '1.8', suffix: '%', label: 'last 7 days', status: 'up' }}
-                                chartData={mockSparklineSeries.mediumImpact}
-                                chartColor="primary"
-                            />
-                        </Box>
-                    </CardContent>
-                </Card>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                        <Dashboard /> Main KPI Cards
+                    </Typography>
+                    
+                    <Box
+                        sx={{
+                            display: 'grid',
+                            gap: { xs: 2.5, md: 3 },
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                        }}
+                    >
+                        <MainKPICard
+                            title="Total active users"
+                            value="18,765"
+                            trend={{ value: '2.6', suffix: '%', label: 'last 7 days', status: 'up' }}
+                            chartData={mockSparklineSeries.totalBlockers}
+                            chartColor="success"
+                        />
+                        <MainKPICard
+                            title="Total installed"
+                            value="4,876"
+                            trend={{ value: '0.2', suffix: '%', label: 'last 7 days', status: 'up' }}
+                            chartData={mockSparklineSeries.highImpact}
+                            chartColor="info"
+                        />
+                        <MainKPICard
+                            title="Total downloads"
+                            value="678"
+                            trend={{ value: '0.1', suffix: '%', label: 'last 7 days', status: 'down' }}
+                            chartData={mockSparklineSeries.lowImpact}
+                            chartColor="error"
+                        />
+                        <MainKPICard
+                            title="Avg. session time"
+                            value="4m 32s"
+                            subtitle="Sample secondary text"
+                            trend={{ value: '1.8', suffix: '%', label: 'last 7 days', status: 'up' }}
+                            chartData={mockSparklineSeries.mediumImpact}
+                            chartColor="primary"
+                        />
+                    </Box>
+                </SurfaceCard>
 
                 {/* Section 2: Error Card */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                            <ErrorIcon /> Error Card Component
-                        </Typography>
-                        
-                        <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-                            <Button 
-                                variant="contained" 
-                                color={showError ? "success" : "error"}
-                                onClick={() => setShowError(!showError)}
-                            >
-                                {showError ? 'Ukryj Error' : 'Pokaż Error'}
-                            </Button>
-                        </Stack>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                        <ErrorIcon /> Error Card Component
+                    </Typography>
+                    
+                    <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+                        <Button 
+                            variant="contained" 
+                            color={showError ? "success" : "error"}
+                            onClick={() => setShowError(!showError)}
+                        >
+                            {showError ? 'Ukryj Error' : 'Pokaż Error'}
+                        </Button>
+                    </Stack>
 
-                        {showError && (
-                            <ErrorCard
-                                title="Błąd Połączenia z API"
-                                message="Nie udało się połączyć z serwerem. Sprawdź czy backend jest uruchomiony."
-                                onRetry={() => alert('Retry clicked!')}
-                            />
-                        )}
+                    {showError && (
+                        <ErrorCard
+                            title="Błąd Połączenia z API"
+                            message="Nie udało się połączyć z serwerem. Sprawdź czy backend jest uruchomiony."
+                            onRetry={() => alert('Retry clicked!')}
+                        />
+                    )}
 
-                        {!showError && (
-                            <Alert severity="info">
-                                <AlertTitle>Kliknij przycisk aby zobaczyć ErrorCard</AlertTitle>
-                                Ten komponent pokazuje się gdy wystąpi błąd połączenia z API
-                            </Alert>
-                        )}
-                    </CardContent>
-                </Card>
+                    {!showError && (
+                        <Alert severity="info">
+                            <AlertTitle>Kliknij przycisk aby zobaczyć ErrorCard</AlertTitle>
+                            Ten komponent pokazuje się gdy wystąpi błąd połączenia z API
+                        </Alert>
+                    )}
+                </SurfaceCard>
 
                 {/* Section 3: Single Store KPI Cards */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                            <Store /> Single Store KPI Cards
-                        </Typography>
-                        
-                        <SingleStoreKPICards 
-                            storeId={mockStoreData.storeId}
-                            storeData={mockSingleStoreRows}
-                        />
-                    </CardContent>
-                </Card>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                        <Store /> Single Store KPI Cards
+                    </Typography>
+                    
+                    <SingleStoreKPICards 
+                        storeId={mockStoreData.storeId}
+                        storeData={mockSingleStoreRows}
+                    />
+                </SurfaceCard>
 
                 {/* Section 4: Charts */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                            <Assessment /> Wykresy Analityczne
-                        </Typography>
-                        
-                        <SingleStoreCharts 
-                            blockersData={mockBlockersData}
-                            trendsData={mockChartData.trendsData}
-                            storeId="1234"
-                        />
-                    </CardContent>
-                </Card>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                        <Assessment /> Wykresy Analityczne
+                    </Typography>
+                    
+                    <SingleStoreCharts 
+                        blockersData={mockBlockersData}
+                        trendsData={mockChartData.trendsData}
+                        storeId="1234"
+                    />
+                </SurfaceCard>
 
                 {/* Section 5: Blocker Analysis */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                            <Block /> Analiza Blokerów (High Impact)
-                        </Typography>
-                        
-                        <BlockerAnalysis 
-                            highImpactBlockers={mockHighImpactBlockers}
-                        />
-                    </CardContent>
-                </Card>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                        <Block /> Analiza Blokerów (High Impact)
+                    </Typography>
+                    
+                    <BlockerAnalysis 
+                        highImpactBlockers={mockHighImpactBlockers}
+                    />
+                </SurfaceCard>
 
                 {/* Section 6: Last Order Blockers */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                            <Inventory /> Blokery Ostatniego Zamówienia
-                        </Typography>
-                        
-                        <LastOrderBlockers 
-                            blockersData={mockLastOrderBlockers}
-                        />
-                    </CardContent>
-                </Card>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                        <Inventory /> Blokery Ostatniego Zamówienia
+                    </Typography>
+                    
+                    <LastOrderBlockers 
+                        blockersData={mockLastOrderBlockers}
+                    />
+                </SurfaceCard>
 
                 {/* Section 7: Next Order Blockers */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                            <TrendingUp /> Blokery Następnego Zamówienia
-                        </Typography>
-                        
-                        <NextOrderBlockers 
-                            blockersData={mockNextOrderBlockers}
-                        />
-                    </CardContent>
-                </Card>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                        <TrendingUp /> Blokery Następnego Zamówienia
+                    </Typography>
+                    
+                    <NextOrderBlockers 
+                        blockersData={mockNextOrderBlockers}
+                    />
+                </SurfaceCard>
 
                 {/* Section 8: Table Cell Renderers */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
-                            📊 Table Cell Renderers
-                        </Typography>
-                        
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                                        StoreId Cell:
-                                    </Typography>
-                                    <TableCellRenderer header="StoreId" value="1234" />
-                                </Paper>
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                                        BlockerName Cell:
-                                    </Typography>
-                                    <TableCellRenderer header="BlockerName" value="StoreVolume" />
-                                </Paper>
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                                        Wplyw Cell:
-                                    </Typography>
-                                    <TableCellRenderer header="Wplyw" value="WYSOKI" />
-                                </Paper>
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                                        Number Cell:
-                                    </Typography>
-                                    <TableCellRenderer header="Count" value={156} />
-                                </Paper>
-                            </Grid>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
+                        📊 Table Cell Renderers
+                    </Typography>
+                    
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                    StoreId Cell:
+                                </Typography>
+                                <TableCellRenderer header="StoreId" value="1234" />
+                            </Paper>
                         </Grid>
-                    </CardContent>
-                </Card>
+
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                    BlockerName Cell:
+                                </Typography>
+                                <TableCellRenderer header="BlockerName" value="StoreVolume" />
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                    Wplyw Cell:
+                                </Typography>
+                                <TableCellRenderer header="Wplyw" value="WYSOKI" />
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                    Number Cell:
+                                </Typography>
+                                <TableCellRenderer header="Count" value={156} />
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </SurfaceCard>
 
                 {/* Section 9: UI Elements Showcase */}
-                <Card elevation={3} sx={{ mb: 4, borderRadius: 3 }}>
-                    <CardContent sx={{ p: 4 }}>
-                        <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
-                            🎨 UI Elements Showcase
-                        </Typography>
-                        
-                        <Grid container spacing={3}>
-                            {/* Buttons */}
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="h6" gutterBottom>Buttons</Typography>
-                                    <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
-                                        <Button variant="contained" color="primary">Primary</Button>
-                                        <Button variant="contained" color="secondary">Secondary</Button>
-                                        <Button variant="contained" color="success">Success</Button>
-                                        <Button variant="contained" color="warning">Warning</Button>
-                                        <Button variant="contained" color="error">Error</Button>
-                                        <Button variant="outlined" color="info">Info</Button>
-                                    </Stack>
-                                </Paper>
-                            </Grid>
-
-                            {/* Chips */}
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="h6" gutterBottom>Chips</Typography>
-                                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                        <Chip label="Primary" color="primary" />
-                                        <Chip label="Secondary" color="secondary" />
-                                        <Chip label="Success" color="success" />
-                                        <Chip label="Warning" color="warning" />
-                                        <Chip label="Error" color="error" />
-                                        <Chip label="Info" color="info" />
-                                    </Stack>
-                                </Paper>
-                            </Grid>
-
-                            {/* Alerts */}
-                            <Grid item xs={12}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="h6" gutterBottom>Alerts</Typography>
-                                    <Stack spacing={2}>
-                                        <Alert severity="success">
-                                            <AlertTitle>Success</AlertTitle>
-                                            Operacja zakończona pomyślnie!
-                                        </Alert>
-                                        <Alert severity="info">
-                                            <AlertTitle>Info</AlertTitle>
-                                            To jest informacja systemowa.
-                                        </Alert>
-                                        <Alert severity="warning">
-                                            <AlertTitle>Warning</AlertTitle>
-                                            Uwaga! Sprawdź te dane.
-                                        </Alert>
-                                        <Alert severity="error">
-                                            <AlertTitle>Error</AlertTitle>
-                                            Wystąpił błąd podczas operacji.
-                                        </Alert>
-                                    </Stack>
-                                </Paper>
-                            </Grid>
-
-                            {/* Progress Indicators */}
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="h6" gutterBottom>Linear Progress</Typography>
-                                    <Stack spacing={2}>
-                                        <LinearProgress color="primary" />
-                                        <LinearProgress color="secondary" variant="determinate" value={60} />
-                                        <LinearProgress color="success" variant="determinate" value={100} />
-                                    </Stack>
-                                </Paper>
-                            </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="h6" gutterBottom>Circular Progress</Typography>
-                                    <Stack direction="row" spacing={3} justifyContent="center">
-                                        <CircularProgress color="primary" />
-                                        <CircularProgress color="secondary" variant="determinate" value={60} />
-                                        <CircularProgress color="success" variant="determinate" value={100} />
-                                    </Stack>
-                                </Paper>
-                            </Grid>
-
-                            {/* Typography */}
-                            <Grid item xs={12}>
-                                <Paper elevation={2} sx={{ p: 3 }}>
-                                    <Typography variant="h6" gutterBottom>Typography</Typography>
-                                    <Stack spacing={1}>
-                                        <Typography variant="h1">Heading 1</Typography>
-                                        <Typography variant="h2">Heading 2</Typography>
-                                        <Typography variant="h3">Heading 3</Typography>
-                                        <Typography variant="h4">Heading 4</Typography>
-                                        <Typography variant="h5">Heading 5</Typography>
-                                        <Typography variant="h6">Heading 6</Typography>
-                                        <Typography variant="body1">Body 1 - Lorem ipsum dolor sit amet</Typography>
-                                        <Typography variant="body2">Body 2 - Lorem ipsum dolor sit amet</Typography>
-                                        <Typography variant="caption" color="text.secondary">Caption text</Typography>
-                                    </Stack>
-                                </Paper>
-                            </Grid>
+                <SurfaceCard sx={{ mb: 4 }}>
+                    <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
+                        🎨 UI Elements Showcase
+                    </Typography>
+                    
+                    <Grid container spacing={3}>
+                        {/* Buttons */}
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="h6" gutterBottom>Buttons</Typography>
+                                <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
+                                    <Button variant="contained" color="primary">Primary</Button>
+                                    <Button variant="contained" color="secondary">Secondary</Button>
+                                    <Button variant="contained" color="success">Success</Button>
+                                    <Button variant="contained" color="warning">Warning</Button>
+                                    <Button variant="contained" color="error">Error</Button>
+                                    <Button variant="outlined" color="info">Info</Button>
+                                </Stack>
+                            </Paper>
                         </Grid>
-                    </CardContent>
-                </Card>
+
+                        {/* Chips */}
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="h6" gutterBottom>Chips</Typography>
+                                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                    <Chip label="Primary" color="primary" />
+                                    <Chip label="Secondary" color="secondary" />
+                                    <Chip label="Success" color="success" />
+                                    <Chip label="Warning" color="warning" />
+                                    <Chip label="Error" color="error" />
+                                    <Chip label="Info" color="info" />
+                                </Stack>
+                            </Paper>
+                        </Grid>
+
+                        {/* Alerts */}
+                        <Grid item xs={12}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="h6" gutterBottom>Alerts</Typography>
+                                <Stack spacing={2}>
+                                    <Alert severity="success">
+                                        <AlertTitle>Success</AlertTitle>
+                                        Operacja zakończona pomyślnie!
+                                    </Alert>
+                                    <Alert severity="info">
+                                        <AlertTitle>Info</AlertTitle>
+                                        To jest informacja systemowa.
+                                    </Alert>
+                                    <Alert severity="warning">
+                                        <AlertTitle>Warning</AlertTitle>
+                                        Uwaga! Sprawdź te dane.
+                                    </Alert>
+                                    <Alert severity="error">
+                                        <AlertTitle>Error</AlertTitle>
+                                        Wystąpił błąd podczas operacji.
+                                    </Alert>
+                                </Stack>
+                            </Paper>
+                        </Grid>
+
+                        {/* Progress Indicators */}
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="h6" gutterBottom>Linear Progress</Typography>
+                                <Stack spacing={2}>
+                                    <LinearProgress color="primary" />
+                                    <LinearProgress color="secondary" variant="determinate" value={60} />
+                                    <LinearProgress color="success" variant="determinate" value={100} />
+                                </Stack>
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={12} md={6}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="h6" gutterBottom>Circular Progress</Typography>
+                                <Stack direction="row" spacing={3} justifyContent="center">
+                                    <CircularProgress color="primary" />
+                                    <CircularProgress color="secondary" variant="determinate" value={60} />
+                                    <CircularProgress color="success" variant="determinate" value={100} />
+                                </Stack>
+                            </Paper>
+                        </Grid>
+
+                        {/* Typography */}
+                        <Grid item xs={12}>
+                            <Paper elevation={2} sx={{ p: 3 }}>
+                                <Typography variant="h6" gutterBottom>Typography</Typography>
+                                <Stack spacing={1}>
+                                    <Typography variant="h1">Heading 1</Typography>
+                                    <Typography variant="h2">Heading 2</Typography>
+                                    <Typography variant="h3">Heading 3</Typography>
+                                    <Typography variant="h4">Heading 4</Typography>
+                                    <Typography variant="h5">Heading 5</Typography>
+                                    <Typography variant="h6">Heading 6</Typography>
+                                    <Typography variant="body1">Body 1 - Lorem ipsum dolor sit amet</Typography>
+                                    <Typography variant="body2">Body 2 - Lorem ipsum dolor sit amet</Typography>
+                                    <Typography variant="caption" color="text.secondary">Caption text</Typography>
+                                </Stack>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </SurfaceCard>
 
                 {/* Footer Info */}
-                <Paper elevation={3} sx={{ p: 3, textAlign: 'center', borderRadius: 3 }}>
+                <SurfaceCard sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary">
                         🧪 Strona testowa - Wszystkie komponenty używają <code>theme.vars.palette</code>
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                         Przełącz tryb Dark/Light aby zobaczyć automatyczne dostosowanie kolorów
                     </Typography>
-                </Paper>
+                </SurfaceCard>
             </Container>
         </Box>
     );

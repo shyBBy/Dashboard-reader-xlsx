@@ -17,210 +17,343 @@ export const useAppTheme = () => {
 // Re-export MUI useTheme dla wygody (zwraca theme object)
 export { useTheme } from '@mui/material/styles';
 
-// Glass morphism values jako stałe (używane w component overrides)
-const glassEffects = {
-    light: {
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdrop: 'rgba(148, 163, 184, 0.1)',
-        border: 'rgba(229, 231, 235, 0.8)',
+const minimalLightPalette = {
+    primary: {
+        lighter: '#C8FAD6',
+        light: '#5BE49B',
+        main: '#00A76F',
+        dark: '#007867',
+        darker: '#004B50',
+        contrastText: '#FFFFFF',
     },
-    dark: {
-        background: 'rgba(30, 41, 59, 0.85)',
-        backdrop: 'rgba(15, 23, 42, 0.3)',
-        border: 'rgba(71, 85, 105, 0.3)',
+    secondary: {
+        lighter: '#EFD6FF',
+        light: '#C684FF',
+        main: '#8E33FF',
+        dark: '#5119B7',
+        darker: '#27097A',
+        contrastText: '#FFFFFF',
     },
+    info: {
+        lighter: '#CAFDF5',
+        light: '#61F3F3',
+        main: '#00B8D9',
+        dark: '#006C9C',
+        darker: '#003768',
+        contrastText: '#FFFFFF',
+    },
+    success: {
+        lighter: '#D3FCD2',
+        light: '#77ED8B',
+        main: '#22C55E',
+        dark: '#118D57',
+        darker: '#065E49',
+        contrastText: '#ffffff',
+    },
+    warning: {
+        lighter: '#FFF5CC',
+        light: '#FFD666',
+        main: '#FFAB00',
+        dark: '#B76E00',
+        darker: '#7A4100',
+        contrastText: '#1C252E',
+    },
+    error: {
+        lighter: '#FFE9D5',
+        light: '#FFAC82',
+        main: '#FF5630',
+        dark: '#B71D18',
+        darker: '#7A0916',
+        contrastText: '#FFFFFF',
+    },
+    grey: {
+        50: '#FCFDFD',
+        100: '#F9FAFB',
+        200: '#F4F6F8',
+        300: '#DFE3E8',
+        400: '#C4CDD5',
+        500: '#919EAB',
+        600: '#637381',
+        700: '#454F5B',
+        800: '#1C252E',
+        900: '#141A21',
+        A100: '#f5f5f5',
+        A200: '#eeeeee',
+        A400: '#bdbdbd',
+        A700: '#616161',
+    },
+    text: {
+        primary: '#1C252E',
+        secondary: '#637381',
+        disabled: '#919EAB',
+    },
+    divider: 'rgba(145, 158, 171, 0.2)',
+    background: {
+        paper: '#FFFFFF',
+        default: '#FFFFFF',
+        neutral: '#F4F6F8',
+    },
+    action: {
+        active: '#637381',
+        hover: 'rgba(145, 158, 171, 0.08)',
+        selected: 'rgba(145, 158, 171, 0.16)',
+        disabled: 'rgba(145, 158, 171, 0.8)',
+        disabledBackground: 'rgba(145, 158, 171, 0.24)',
+        focus: 'rgba(145, 158, 171, 0.24)',
+        hoverOpacity: 0.08,
+        selectedOpacity: 0.16,
+        disabledOpacity: 0.48,
+        focusOpacity: 0.12,
+        activatedOpacity: 0.12,
+    },
+};
+
+const minimalDarkPalette = {
+    primary: {
+        light: '#5eead4',
+        main: '#14b8a6',
+        dark: '#0f766e',
+        contrastText: '#ffffff',
+    },
+    secondary: {
+        light: '#c4b5fd',
+        main: '#8b5cf6',
+        dark: '#5b21b6',
+        contrastText: '#ffffff',
+    },
+    info: {
+        light: '#67e8f9',
+        main: '#06b6d4',
+        dark: '#0e7490',
+        contrastText: '#ffffff',
+    },
+    success: {
+        light: '#4ade80',
+        main: '#22c55e',
+        dark: '#15803d',
+        contrastText: '#051b11',
+    },
+    warning: {
+        light: '#facc15',
+        main: '#f59e0b',
+        dark: '#b45309',
+        contrastText: '#0b1b1a',
+    },
+    error: {
+        light: '#fb7185',
+        main: '#f43f5e',
+        dark: '#be123c',
+        contrastText: '#ffffff',
+    },
+    grey: {
+        100: '#0f172a',
+        200: '#111c2d',
+        300: '#1a2435',
+        400: '#222d40',
+        500: '#334155',
+        600: '#475569',
+        700: '#94a3b8',
+        800: '#cbd5f1',
+        900: '#e2e8f0',
+    },
+    text: {
+        primary: '#e2e8f0',
+        secondary: 'rgba(226, 232, 240, 0.72)',
+        disabled: 'rgba(148, 163, 184, 0.44)',
+    },
+    divider: 'rgba(148, 163, 184, 0.18)',
+    background: {
+        paper: '#111c2d',
+        default: '#0b1424',
+        neutral: 'rgba(71, 85, 105, 0.18)',
+    },
+    action: {
+        active: 'rgba(226, 232, 240, 0.72)',
+        hover: 'rgba(148, 163, 184, 0.12)',
+        selected: 'rgba(148, 163, 184, 0.18)',
+        disabled: 'rgba(148, 163, 184, 0.38)',
+        disabledBackground: 'rgba(51, 65, 85, 0.24)',
+        focus: 'rgba(148, 163, 184, 0.24)',
+        hoverOpacity: 0.12,
+        selectedOpacity: 0.18,
+        disabledOpacity: 0.4,
+        focusOpacity: 0.24,
+        activatedOpacity: 0.16,
+    },
+};
+
+const minimalShadows = [
+    'none',
+    '0px 2px 1px -1px rgba(145, 158, 171, 0.2),0px 1px 1px 0px rgba(145, 158, 171, 0.14),0px 1px 3px 0px rgba(145, 158, 171, 0.12)',
+    '0px 3px 1px -2px rgba(145, 158, 171, 0.2),0px 2px 2px 0px rgba(145, 158, 171, 0.14),0px 1px 5px 0px rgba(145, 158, 171, 0.12)',
+    '0px 3px 3px -2px rgba(145, 158, 171, 0.2),0px 3px 4px 0px rgba(145, 158, 171, 0.14),0px 1px 8px 0px rgba(145, 158, 171, 0.12)',
+    '0px 2px 4px -1px rgba(145, 158, 171, 0.2),0px 4px 5px 0px rgba(145, 158, 171, 0.14),0px 1px 10px 0px rgba(145, 158, 171, 0.12)',
+    '0px 3px 5px -1px rgba(145, 158, 171, 0.2),0px 5px 8px 0px rgba(145, 158, 171, 0.14),0px 1px 14px 0px rgba(145, 158, 171, 0.12)',
+    '0px 3px 5px -1px rgba(145, 158, 171, 0.2),0px 6px 10px 0px rgba(145, 158, 171, 0.14),0px 1px 18px 0px rgba(145, 158, 171, 0.12)',
+    '0px 4px 5px -2px rgba(145, 158, 171, 0.2),0px 7px 10px 1px rgba(145, 158, 171, 0.14),0px 2px 16px 1px rgba(145, 158, 171, 0.12)',
+    '0px 5px 5px -3px rgba(145, 158, 171, 0.2),0px 8px 10px 1px rgba(145, 158, 171, 0.14),0px 3px 14px 2px rgba(145, 158, 171, 0.12)',
+    '0px 5px 6px -3px rgba(145, 158, 171, 0.2),0px 9px 12px 1px rgba(145, 158, 171, 0.14),0px 3px 16px 2px rgba(145, 158, 171, 0.12)',
+    '0px 6px 6px -3px rgba(145, 158, 171, 0.2),0px 10px 14px 1px rgba(145, 158, 171, 0.14),0px 4px 18px 3px rgba(145, 158, 171, 0.12)',
+    '0px 6px 7px -4px rgba(145, 158, 171, 0.2),0px 11px 15px 1px rgba(145, 158, 171, 0.14),0px 4px 20px 3px rgba(145, 158, 171, 0.12)',
+    '0px 7px 8px -4px rgba(145, 158, 171, 0.2),0px 12px 17px 2px rgba(145, 158, 171, 0.14),0px 5px 22px 4px rgba(145, 158, 171, 0.12)',
+    '0px 7px 8px -4px rgba(145, 158, 171, 0.2),0px 13px 19px 2px rgba(145, 158, 171, 0.14),0px 5px 24px 4px rgba(145, 158, 171, 0.12)',
+    '0px 7px 9px -4px rgba(145, 158, 171, 0.2),0px 14px 21px 2px rgba(145, 158, 171, 0.14),0px 5px 26px 4px rgba(145, 158, 171, 0.12)',
+    '0px 8px 9px -5px rgba(145, 158, 171, 0.2),0px 15px 22px 2px rgba(145, 158, 171, 0.14),0px 6px 28px 5px rgba(145, 158, 171, 0.12)',
+    '0px 8px 10px -5px rgba(145, 158, 171, 0.2),0px 16px 24px 2px rgba(145, 158, 171, 0.14),0px 6px 30px 5px rgba(145, 158, 171, 0.12)',
+    '0px 8px 11px -5px rgba(145, 158, 171, 0.2),0px 17px 26px 2px rgba(145, 158, 171, 0.14),0px 6px 32px 5px rgba(145, 158, 171, 0.12)',
+    '0px 9px 11px -5px rgba(145, 158, 171, 0.2),0px 18px 28px 2px rgba(145, 158, 171, 0.14),0px 7px 34px 6px rgba(145, 158, 171, 0.12)',
+    '0px 9px 12px -6px rgba(145, 158, 171, 0.2),0px 19px 29px 2px rgba(145, 158, 171, 0.14),0px 7px 36px 6px rgba(145, 158, 171, 0.12)',
+    '0px 10px 13px -6px rgba(145, 158, 171, 0.2),0px 20px 31px 3px rgba(145, 158, 171, 0.14),0px 8px 38px 7px rgba(145, 158, 171, 0.12)',
+    '0px 10px 13px -6px rgba(145, 158, 171, 0.2),0px 21px 33px 3px rgba(145, 158, 171, 0.14),0px 8px 40px 7px rgba(145, 158, 171, 0.12)',
+    '0px 10px 14px -6px rgba(145, 158, 171, 0.2),0px 22px 35px 3px rgba(145, 158, 171, 0.14),0px 8px 42px 7px rgba(145, 158, 171, 0.12)',
+    '0px 11px 14px -7px rgba(145, 158, 171, 0.2),0px 23px 36px 3px rgba(145, 158, 171, 0.14),0px 9px 44px 8px rgba(145, 158, 171, 0.12)',
+    '0px 11px 15px -7px rgba(145, 158, 171, 0.2),0px 24px 38px 3px rgba(145, 158, 171, 0.14),0px 9px 46px 8px rgba(145, 158, 171, 0.12)',
+];
+
+const minimalCustomShadows = {
+    z1: '0 1px 2px 0 rgba(145, 158, 171, 0.16)',
+    z4: '0 4px 8px 0 rgba(145, 158, 171, 0.16)',
+    z8: '0 8px 16px 0 rgba(145, 158, 171, 0.16)',
+    z12: '0 12px 24px -4px rgba(145, 158, 171, 0.16)',
+    z16: '0 16px 32px -4px rgba(145, 158, 171, 0.16)',
+    z20: '0 20px 40px -4px rgba(145, 158, 171, 0.16)',
+    z24: '0 24px 48px 0 rgba(145, 158, 171, 0.16)',
+    dialog: '-40px 40px 80px -8px rgba(0, 0, 0, 0.24)',
+    card: '0 0 2px 0 rgba(145, 158, 171, 0.2),0 12px 24px -4px rgba(145, 158, 171, 0.12)',
+    dropdown: '0 0 2px 0 rgba(145, 158, 171, 0.24),-20px 20px 40px -4px rgba(145, 158, 171, 0.24)',
+    primary: '0 8px 16px 0 rgba(0, 167, 111, 0.24)',
+    secondary: '0 8px 16px 0 rgba(142, 51, 255, 0.24)',
+    info: '0 8px 16px 0 rgba(0, 184, 217, 0.24)',
+    success: '0 8px 16px 0 rgba(34, 197, 94, 0.24)',
+    warning: '0 8px 16px 0 rgba(255, 171, 0, 0.24)',
+    error: '0 8px 16px 0 rgba(255, 86, 48, 0.24)',
 };
 
 // Definicja colorSchemes - nowe API z MUI v6+
 const getColorSchemes = () => ({
     light: {
-        palette: {
-            primary: {
-                main: '#635BFF', // Modern purple-blue
-                light: '#8B7EFF',
-                dark: '#4F46E5',
-            },
-            secondary: {
-                main: '#00C9A7', // Modern teal
-                light: '#4DDDCD',
-                dark: '#00A085',
-            },
-            success: {
-                main: '#22C55E', // Fresh green
-                light: '#4ADE80',
-                dark: '#16A34A',
-            },
-            warning: {
-                main: '#F59E0B', // Warm orange
-                light: '#FBBF24',
-                dark: '#D97706',
-            },
-            error: {
-                main: '#EF4444', // Modern red
-                light: '#F87171',
-                dark: '#DC2626',
-            },
-            info: {
-                main: '#3B82F6', // Clean blue
-                light: '#60A5FA',
-                dark: '#2563EB',
-            },
-            background: {
-                default: '#F9FAFB', // Ultra light gray
-                paper: '#FFFFFF',
-            },
-            text: {
-                primary: '#111827', // Rich dark
-                secondary: '#6B7280', // Soft gray text
-            },
-            divider: '#E5E7EB', // Light divider
-        },
+        palette: minimalLightPalette,
     },
     dark: {
-        palette: {
-            primary: {
-                main: '#8b5cf6', // Violet - bardziej widoczny w dark mode
-                light: '#a78bfa',
-                dark: '#7c3aed',
-            },
-            secondary: {
-                main: '#06b6d4', // Cyan
-                light: '#22d3ee',
-                dark: '#0891b2',
-            },
-            success: {
-                main: '#10b981', // Emerald
-                light: '#34d399',
-                dark: '#059669',
-            },
-            warning: {
-                main: '#f59e0b', // Amber
-                light: '#fbbf24',
-                dark: '#d97706',
-            },
-            error: {
-                main: '#f87171', // Red - jaśniejszy w dark mode
-                light: '#fca5a5',
-                dark: '#ef4444',
-            },
-            info: {
-                main: '#60a5fa', // Blue - jaśniejszy w dark mode
-                light: '#93c5fd',
-                dark: '#3b82f6',
-            },
-            background: {
-                default: '#0f172a', // Slate-900
-                paper: '#1e293b', // Slate-800
-            },
-            text: {
-                primary: '#f8fafc', // Slate-50
-                secondary: '#cbd5e1', // Slate-300
-            },
-            divider: '#475569', // Slate-600
-        },
+        palette: minimalDarkPalette,
     },
 });
 
 // Wspólne ustawienia komponentów z CSS Variables
 const getComponentOverrides = () => ({
-    // Paper - glass morphism effect z CSS Variables
     MuiPaper: {
         styleOverrides: {
+            root: ({ theme }) => {
+                const isDark = theme.palette.mode === 'dark';
+                return {
+                    backgroundImage: 'none',
+                    borderRadius: theme.shape.borderRadius * 2,
+                    border: `1px solid ${theme.vars.palette.divider}`,
+                    backgroundColor: theme.vars.palette.background.paper,
+                    boxShadow: isDark ? '0 24px 48px rgba(2, 6, 23, 0.55)' : theme.customShadows.card,
+                    transition: theme.transitions.create(['box-shadow', 'transform'], {
+                        duration: 200,
+                    }),
+                };
+            },
+        },
+    },
+    MuiCard: {
+        styleOverrides: {
             root: ({ theme }) => ({
-                backgroundImage: 'none',
-                backgroundColor: theme.vars.palette.background.paper,
-                backdropFilter: 'blur(20px)',
-                border: `1px solid ${theme.vars.palette.divider}`,
-                boxShadow: theme.shadows[3],
-                borderRadius: 16,
+                borderRadius: theme.shape.borderRadius * 2,
+                boxShadow: theme.customShadows.card,
             }),
         },
     },
-    // AppBar z CSS Variables
     MuiAppBar: {
         styleOverrides: {
             root: ({ theme }) => ({
                 backgroundColor: theme.vars.palette.background.paper,
-                backdropFilter: 'blur(20px)',
-                borderBottom: `1px solid ${theme.vars.palette.divider}`,
-                boxShadow: theme.shadows[1],
                 color: theme.vars.palette.text.primary,
+                boxShadow: 'none',
+                borderBottom: `1px solid ${theme.vars.palette.divider}`,
             }),
         },
     },
-    // Buttons
     MuiButton: {
         styleOverrides: {
             root: ({ theme }) => ({
-                borderRadius: 12,
+                borderRadius: theme.shape.borderRadius,
                 textTransform: 'none',
-                fontWeight: 600,
-                padding: '10px 24px',
-                transition: theme.transitions.create(['all'], {
-                    duration: 300,
+                fontWeight: 700,
+                letterSpacing: 0,
+                padding: '10px 22px',
+                transition: theme.transitions.create(['box-shadow', 'transform'], {
+                    duration: 150,
                 }),
             }),
             contained: ({ theme }) => ({
-                boxShadow: theme.shadows[4],
+                boxShadow: theme.customShadows.primary,
                 '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: theme.shadows[8],
+                    boxShadow: theme.customShadows.primary,
+                    transform: 'translateY(-1px)',
                 },
             }),
             outlined: {
-                borderWidth: '1.5px',
+                borderWidth: 1,
                 '&:hover': {
-                    borderWidth: '1.5px',
+                    borderWidth: 1,
                     transform: 'translateY(-1px)',
+                },
+            },
+            text: {
+                '&:hover': {
+                    backgroundColor: 'rgba(145, 158, 171, 0.08)',
                 },
             },
         },
     },
-    // Cards - glass effect z CSS Variables
-    MuiCard: {
+    MuiChip: {
         styleOverrides: {
             root: ({ theme }) => ({
-                backgroundColor: theme.vars.palette.background.paper,
-                backdropFilter: 'blur(20px)',
-                border: `1px solid ${theme.vars.palette.divider}`,
-                boxShadow: theme.shadows[4],
+                borderRadius: theme.shape.borderRadius,
+                fontWeight: 600,
             }),
         },
     },
-    // TextField z CSS Variables
-    MuiTextField: {
+    MuiOutlinedInput: {
         styleOverrides: {
             root: ({ theme }) => ({
-                '& .MuiOutlinedInput-root': {
-                    borderRadius: 12,
-                    backgroundColor: 'rgba(var(--mui-palette-background-default-channel) / 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    transition: theme.transitions.create(['all'], {
-                        duration: 300,
-                    }),
-                    '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: theme.vars.palette.divider,
-                        borderWidth: '1.5px',
-                    },
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: theme.vars.palette.primary.main,
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: theme.vars.palette.primary.main,
-                        borderWidth: '2px',
-                    },
+                borderRadius: theme.shape.borderRadius,
+                '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: theme.vars.palette.divider,
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: theme.vars.palette.text.primary,
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: theme.vars.palette.primary.main,
+                    borderWidth: 1.5,
                 },
             }),
         },
     },
-    // Tables z CSS Variables
     MuiTableContainer: {
         styleOverrides: {
             root: ({ theme }) => ({
-                backgroundColor: theme.vars.palette.background.paper,
-                backdropFilter: 'blur(20px)',
+                borderRadius: theme.shape.borderRadius * 2,
+                boxShadow: theme.customShadows.card,
                 border: `1px solid ${theme.vars.palette.divider}`,
-                boxShadow: theme.shadows[2],
+            }),
+        },
+    },
+    MuiListItemButton: {
+        styleOverrides: {
+            root: ({ theme }) => ({
+                borderRadius: theme.shape.borderRadius,
+                '&.Mui-selected': {
+                    backgroundColor: 'rgba(0, 167, 111, 0.08)',
+                    color: theme.vars.palette.primary.main,
+                    '& .MuiListItemIcon-root': {
+                        color: theme.vars.palette.primary.main,
+                    },
+                },
             }),
         },
     },
@@ -244,54 +377,96 @@ export const ThemeContextProvider = ({ children }) => {
     const theme = useMemo(
         () =>
             createTheme({
-                // 🔥 NOWE: Włącz CSS Variables
                 cssVariables: {
                     colorSchemeSelector: 'data-mui-color-scheme',
                     cssVarPrefix: 'mui',
                 },
-                // 🔥 NOWE: ColorSchemes zamiast pojedynczej palety
                 colorSchemes: getColorSchemes(),
-                
-                // Typography - wspólne dla obu trybów
                 typography: {
-                    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+                    fontFamily: '"Public Sans Variable", "Public Sans", "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
                     h1: {
+                        fontFamily: '"Barlow", "Public Sans Variable", sans-serif',
                         fontWeight: 800,
-                        letterSpacing: '-0.025em',
+                        fontSize: '2.5rem',
+                        lineHeight: 1.25,
+                        letterSpacing: 0,
                     },
                     h2: {
-                        fontWeight: 700,
-                        letterSpacing: '-0.025em',
+                        fontFamily: '"Barlow", "Public Sans Variable", sans-serif',
+                        fontWeight: 800,
+                        fontSize: '2rem',
+                        lineHeight: 1.3333333333,
+                        letterSpacing: 0,
                     },
                     h3: {
+                        fontFamily: '"Barlow", "Public Sans Variable", sans-serif',
                         fontWeight: 700,
-                        letterSpacing: '-0.02em',
+                        fontSize: '1.5rem',
+                        lineHeight: 1.5,
                     },
                     h4: {
-                        fontWeight: 600,
-                        letterSpacing: '-0.02em',
+                        fontWeight: 700,
+                        fontSize: '1.25rem',
+                        lineHeight: 1.5,
                     },
                     h5: {
-                        fontWeight: 600,
+                        fontWeight: 700,
+                        fontSize: '1.125rem',
+                        lineHeight: 1.5,
                     },
                     h6: {
                         fontWeight: 600,
+                        fontSize: '1.0625rem',
+                        lineHeight: 1.5555555556,
+                    },
+                    subtitle1: {
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        lineHeight: 1.5,
+                    },
+                    subtitle2: {
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        lineHeight: 1.5714285714,
+                    },
+                    body1: {
+                        fontWeight: 400,
+                        fontSize: '1rem',
+                        lineHeight: 1.5,
+                    },
+                    body2: {
+                        fontWeight: 400,
+                        fontSize: '0.875rem',
+                        lineHeight: 1.5714285714,
+                    },
+                    caption: {
+                        fontWeight: 400,
+                        fontSize: '0.75rem',
+                        lineHeight: 1.5,
+                    },
+                    overline: {
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        lineHeight: 1.5,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
                     },
                     button: {
-                        fontWeight: 500,
+                        fontWeight: 700,
+                        fontSize: '0.875rem',
+                        lineHeight: 1.7142857143,
                         textTransform: 'none',
                     },
                 },
-                
-                // Shape
+                spacing: 8,
                 shape: {
-                    borderRadius: 12,
+                    borderRadius: 8,
                 },
-                
-                // Component overrides używające CSS Variables
+                shadows: minimalShadows,
+                customShadows: minimalCustomShadows,
                 components: getComponentOverrides(),
             }),
-        [] // Theme jest tworzony raz, color scheme zmienia się przez CSS variables
+        []
     );
 
     // Ustaw color scheme na document element (dla CSS Variables)

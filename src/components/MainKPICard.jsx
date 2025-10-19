@@ -28,6 +28,7 @@ export default function MainKPICard({
   onClick,
 }) {
   const theme = useTheme();
+  const isLight = theme.palette.mode === 'light';
 
   const accentKey = chartColor || type;
   const accentMain = useMemo(
@@ -48,24 +49,44 @@ export default function MainKPICard({
   const trendColorKey = trend?.color || (trend?.direction === 'down' ? 'error' : 'success');
   const trendColor = `rgb(var(--mui-palette-${trendColorKey}-mainChannel, var(--mui-palette-success-mainChannel)))`;
 
+  const borderColor = isLight
+    ? 'rgba(var(--mui-palette-grey-300Channel) / 0.35)'
+    : 'rgba(var(--mui-palette-common-whiteChannel) / 0.18)';
+
   return (
     <Paper
       elevation={0}
+      variant="outlined"
       onClick={onClick}
       sx={{
         flex: '1 1 280px',
         minWidth: 260,
         maxWidth: 360,
-        p: 3,
-        borderRadius: 3,
-        bgcolor: 'background.paper',
-        border: `1px solid ${theme.vars.palette.divider}`,
-        boxShadow: '0 16px 32px rgba(var(--mui-palette-common-blackChannel) / 0.04)',
+        position: 'relative',
+        p: { xs: 2.75, md: 3 },
+        borderRadius: 16,
+        backgroundColor: theme.vars.palette.background.paper,
+        border: `1px solid ${borderColor}`,
+        boxShadow: isLight ? theme.customShadows.card : '0 22px 45px rgba(2, 6, 23, 0.55)',
         cursor: onClick ? 'pointer' : 'default',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-        '&:hover': {
+        transition: 'transform 0.24s ease, box-shadow 0.24s ease',
+        '&::after': {
           transform: 'translateY(-4px)',
-          boxShadow: '0 22px 40px rgba(var(--mui-palette-common-blackChannel) / 0.08)',
+          boxShadow: isLight ? theme.customShadows.z16 : '0 30px 70px rgba(2, 6, 23, 0.7)',
+          inset: 0,
+          borderRadius: 16,
+          pointerEvents: 'none',
+          background: isLight
+            ? 'linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 55%)'
+            : 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 55%)',
+        },
+        '&:hover': {
+          transform: 'translateY(-6px)',
+          boxShadow: hoverShadow,
+        },
+        '& > *': {
+          position: 'relative',
+          zIndex: 1,
         },
       }}
     >
@@ -86,7 +107,7 @@ export default function MainKPICard({
                 sx={{
                   width: 44,
                   height: 44,
-                  borderRadius: 2,
+                  borderRadius: 12,
                   bgcolor: iconBg,
                   color: iconColor,
                   fontSize: 24,

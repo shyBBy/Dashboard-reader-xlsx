@@ -1,187 +1,101 @@
 import React from 'react';
-import { Box, Typography, Button, useTheme } from '@mui/material';
-import { 
-    ErrorOutline, 
-    Refresh, 
-    Settings,
-    CloudOff,
-    Warning
-} from '@mui/icons-material';
+import { Box, Typography, Button, Paper, Stack, useTheme } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import { ErrorOutline, Refresh } from '@mui/icons-material';
 
 export default function ErrorCard({ 
     title = "Błąd połączenia", 
-    message, 
+    message = 'Nie udało się połączyć z serwerem. Spróbuj ponownie za chwilę.', 
     icon: IconComponent = ErrorOutline,
     onRetry,
-    type = 'error'
+    type = 'error',
+    supportText = 'Sprawdź czy serwer Python FastAPI działa na: http://localhost:8000'
 }) {
     const theme = useTheme();
 
-    // Mapowanie typów na kolory
-    const getTypeColors = (type) => {
-        switch (type) {
-            case 'warning':
-                return {
-                    color: theme.palette.warning.main,
-                    bgColor: theme.palette.warning.light + '20',
-                    borderColor: theme.palette.warning.main + '30'
-                };
-            case 'info':
-                return {
-                    color: theme.palette.info.main,
-                    bgColor: theme.palette.info.light + '20',
-                    borderColor: theme.palette.info.main + '30'
-                };
-            default: // error
-                return {
-                    color: theme.palette.error.main,
-                    bgColor: theme.palette.error.light + '20',
-                    borderColor: theme.palette.error.main + '30'
-                };
-        }
-    };
-
-    const colors = getTypeColors(type);
+    const palette = theme.palette[type] || theme.palette.error;
+    const accent = palette.main;
+    const accentSoft = palette.light || palette.main;
+    const softBg = alpha(accent, 0.08);
+    const softBorder = alpha(accent, 0.16);
 
     return (
-        <Box sx={{ 
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            backgroundColor: 'background.default'
-        }}>
-            <Box
+        <Box
+            sx={{
+                width: '100%',
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'background.default',
+                py: { xs: 6, md: 10 },
+                px: 2,
+            }}
+        >
+            <Paper
+                elevation={0}
                 sx={{
-                    maxWidth: 500,
-                    mx: 'auto',
-                    p: 4,
-                    background: `linear-gradient(135deg, ${theme.vars.palette.background.paper} 0%, ${theme.vars.palette.background.default} 100%)`,
-                    backdropFilter: 'blur(20px)',
-                    borderRadius: 4,
-                    border: `2px solid ${colors.borderColor}`,
-                    boxShadow: `0 20px 40px ${colors.color}15, 0 4px 20px rgba(0, 0, 0, 0.08)`,
+                    width: '100%',
+                    maxWidth: 440,
+                    px: { xs: 4, sm: 6 },
+                    py: { xs: 5, sm: 6 },
                     textAlign: 'center',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: `0 25px 50px ${colors.color}20, 0 8px 30px rgba(0, 0, 0, 0.12)`
-                    }
+                    border: `1px solid ${softBorder}`,
+                    backgroundImage: 'none',
                 }}
             >
-                {/* Ikona */}
-                <Box
-                    sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 80,
-                        height: 80,
-                        borderRadius: '50%',
-                        backgroundColor: colors.bgColor,
-                        border: `3px solid ${colors.color}40`,
-                        mb: 3,
-                        position: 'relative',
-                        '&::before': {
-                            content: '""',
-                            position: 'absolute',
-                            top: -4,
-                            left: -4,
-                            right: -4,
-                            bottom: -4,
-                            borderRadius: '50%',
-                            background: `conic-gradient(${colors.color}40, transparent, ${colors.color}40)`,
-                            animation: 'spin 3s linear infinite',
-                            zIndex: -1
-                        },
-                        '@keyframes spin': {
-                            '0%': { transform: 'rotate(0deg)' },
-                            '100%': { transform: 'rotate(360deg)' }
-                        }
-                    }}
-                >
-                    <IconComponent 
-                        sx={{ 
-                            fontSize: 40,
-                            color: colors.color
-                        }} 
-                    />
-                </Box>
-
-                {/* Tytuł */}
-                <Typography 
-                    variant="h4" 
-                    component="h1"
-                    gutterBottom
-                    sx={{ 
-                        fontWeight: 'bold',
-                        color: 'text.primary',
-                        mb: 2
-                    }}
-                >
-                    {title}
-                </Typography>
-
-                {/* Wiadomość */}
-                <Typography 
-                    variant="body1" 
-                    color="text.secondary"
-                    sx={{ 
-                        mb: 3,
-                        lineHeight: 1.6,
-                        maxWidth: 400,
-                        mx: 'auto'
-                    }}
-                >
-                    {message}
-                </Typography>
-
-                {/* Przycisk Retry */}
-                {onRetry && (
-                    <Button
-                        variant="contained"
-                        startIcon={<Refresh />}
-                        onClick={onRetry}
+                <Stack spacing={3} alignItems="center">
+                    <Box
                         sx={{
-                            backgroundColor: colors.color,
-                            color: 'white',
-                            px: 4,
-                            py: 1.5,
-                            borderRadius: 3,
-                            fontWeight: 600,
-                            textTransform: 'none',
-                            boxShadow: `0 4px 20px ${colors.color}30`,
-                            '&:hover': {
-                                backgroundColor: colors.color,
-                                filter: 'brightness(1.1)',
-                                boxShadow: `0 6px 25px ${colors.color}40`,
-                                transform: 'translateY(-1px)'
-                            },
-                            transition: 'all 0.2s ease'
+                            width: 88,
+                            height: 88,
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: `linear-gradient(135deg, ${alpha(accentSoft, 0.25)}, ${alpha(accent, 0.45)})`,
+                            boxShadow: `0 12px 24px ${alpha(accent, 0.16)}`,
                         }}
                     >
-                        Spróbuj ponownie
-                    </Button>
-                )}
+                        <IconComponent sx={{ fontSize: 40, color: theme.palette.getContrastText(accent) }} />
+                    </Box>
 
-                {/* Dodatkowe info */}
-                <Typography 
-                    variant="caption" 
-                    color="text.secondary"
-                    sx={{ 
-                        display: 'block',
-                        mt: 3,
-                        opacity: 0.7,
-                        fontSize: '0.75rem'
-                    }}
-                >
-                    Sprawdź czy serwer Python FastAPI działa na: http://localhost:8000
-                </Typography>
-            </Box>
+                    <Box>
+                        <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
+                            {title}
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary">
+                            {message}
+                        </Typography>
+                    </Box>
+
+                    {onRetry && (
+                        <Button
+                            variant="contained"
+                            startIcon={<Refresh />}
+                            onClick={onRetry}
+                            sx={{
+                                alignSelf: 'stretch',
+                                py: 1.4,
+                                fontWeight: 700,
+                                backgroundColor: accent,
+                                '&:hover': {
+                                    backgroundColor: accent,
+                                    filter: 'brightness(1.05)',
+                                },
+                            }}
+                        >
+                            Spróbuj ponownie
+                        </Button>
+                    )}
+
+                    {supportText && (
+                        <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.7 }}>
+                            {supportText}
+                        </Typography>
+                    )}
+                </Stack>
+            </Paper>
         </Box>
     );
 }

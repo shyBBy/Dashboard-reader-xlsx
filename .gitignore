@@ -5,3 +5,7 @@
 # React Router
 /.react-router/
 /build/
+MIGRATION_PHASE1_COMPLETED.md
+.gitignore
+docs/THEME_ARCHITECTURE.md
+.gitignore
