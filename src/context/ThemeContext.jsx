@@ -262,12 +262,13 @@ const getComponentOverrides = () => ({
         styleOverrides: {
             root: ({ theme }) => {
                 const isDark = theme.palette.mode === 'dark';
+                const darkSurface = theme.vars?.palette?.grey?.[400] || theme.palette.grey[400];
                 return {
                     backgroundImage: 'none',
                     borderRadius: theme.shape.borderRadius * 2,
-                    border: `1px solid ${theme.vars.palette.divider}`,
-                    backgroundColor: theme.vars.palette.background.paper,
-                    boxShadow: isDark ? '0 24px 48px rgba(2, 6, 23, 0.55)' : theme.customShadows.card,
+                    border: isDark ? '1px solid transparent' : `1px solid ${theme.vars.palette.divider}`,
+                    backgroundColor: isDark ? darkSurface : theme.vars.palette.background.paper,
+                    boxShadow: isDark ? '0 24px 48px rgba(6, 8, 14, 0.55)' : theme.customShadows.card,
                     transition: theme.transitions.create(['box-shadow', 'transform'], {
                         duration: 200,
                     }),
@@ -277,10 +278,16 @@ const getComponentOverrides = () => ({
     },
     MuiCard: {
         styleOverrides: {
-            root: ({ theme }) => ({
-                borderRadius: theme.shape.borderRadius * 2,
-                boxShadow: theme.customShadows.card,
-            }),
+            root: ({ theme }) => {
+                const isDark = theme.palette.mode === 'dark';
+                const darkSurface = theme.vars?.palette?.grey?.[400] || theme.palette.grey[400];
+                return {
+                    borderRadius: theme.shape.borderRadius * 2,
+                    border: isDark ? '1px solid transparent' : `1px solid ${theme.vars.palette.divider}`,
+                    backgroundColor: isDark ? darkSurface : theme.vars.palette.background.paper,
+                    boxShadow: isDark ? '0 24px 48px rgba(6, 8, 14, 0.55)' : theme.customShadows.card,
+                };
+            },
         },
     },
     MuiAppBar: {
@@ -353,11 +360,16 @@ const getComponentOverrides = () => ({
     },
     MuiTableContainer: {
         styleOverrides: {
-            root: ({ theme }) => ({
-                borderRadius: theme.shape.borderRadius * 2,
-                boxShadow: theme.customShadows.card,
-                border: `1px solid ${theme.vars.palette.divider}`,
-            }),
+            root: ({ theme }) => {
+                const isDark = theme.palette.mode === 'dark';
+                const darkSurface = theme.vars?.palette?.grey?.[400] || theme.palette.grey[400];
+                return {
+                    borderRadius: theme.shape.borderRadius * 2,
+                    border: isDark ? '1px solid transparent' : `1px solid ${theme.vars.palette.divider}`,
+                    backgroundColor: isDark ? darkSurface : theme.vars.palette.background.paper,
+                    boxShadow: isDark ? '0 24px 48px rgba(6, 8, 14, 0.55)' : theme.customShadows.card,
+                };
+            },
         },
     },
     MuiListItemButton: {
