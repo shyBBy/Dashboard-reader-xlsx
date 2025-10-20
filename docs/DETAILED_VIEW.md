@@ -47,6 +47,17 @@ Dashboard
 └── DynamicDataTable
 ```
 
+### Zakładki tabeli
+```
+Zakładki (Tabs)
+├── Ostatnie zam.   → kolumny `_ostatnie_` + kontekst sklepu
+├── Najbliższe zam. → kolumny `_najblizsze_` + kontekst sklepu
+└── Kolejne zam.    → kolumny `_kolejne_` + kontekst sklepu
+```
+- Każda zakładka ma własny zestaw kolumn (kluczowe vs rozszerzone).
+- Przełączenie zakładki resetuje paginację i sortowanie tabeli.
+- W widoku rozszerzonym wyświetlane są wszystkie kolumny powiązane z danym etapem zamówienia.
+
 ## 🔧 Techniczne
 
 ### Pliki
@@ -70,9 +81,9 @@ User clicks Switch
   ↓
 setDetailedView(true/false)
   ↓
-getVisibleHeaders(allHeaders, detailedView)
+getTabHeaders(allHeaders, detailedView, activeTab)
   ↓
-visibleHeaders → DynamicDataTable
+visibleHeaders → DynamicDataTable (dla activeTab)
   ↓
 Tabela renderuje tylko widoczne kolumny
 ```

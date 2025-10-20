@@ -25,14 +25,20 @@ export const TableDataRow = ({ row, index, headers, onRowClick }) => {
             hover
             onClick={handleRowClick}
             sx={{ 
-                '&:nth-of-type(even)': { 
-                    backgroundColor: 'rgba(0, 0, 0, 0.02)'
+                transition: 'all 0.2s ease',
+                '&:nth-of-type(even)': {
+                    backgroundColor: theme.palette.mode === 'dark'
+                        ? 'rgba(255, 255, 255, 0.02)'
+                        : 'rgba(0, 0, 0, 0.02)'
                 },
                 '&:hover': {
-                    backgroundColor: 'primary.light',
+                    backgroundColor: theme.palette.mode === 'dark'
+                        ? 'rgba(255, 77, 87, 0.12)'
+                        : theme.palette.primary.light,
                     transform: 'scale(1.001)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    transition: 'all 0.2s ease'
+                    boxShadow: theme.palette.mode === 'dark'
+                        ? '0 12px 32px -12px rgba(255, 77, 87, 0.55)'
+                        : '0 2px 8px rgba(0,0,0,0.1)'
                 },
                 cursor: 'pointer'
             }}

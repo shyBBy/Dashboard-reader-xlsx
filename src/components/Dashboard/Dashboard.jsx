@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Typography, Alert, Divider, CircularProgress } from '@mui/material';
+import { Box, Typography, Alert, Divider, CircularProgress, Tabs, Tab } from '@mui/material';
 import { Warning, Store, Assessment, Today, ShoppingCart } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DataFilters } from './DataFilters/DataFilters';
@@ -7,7 +7,11 @@ import { DynamicDataTable } from './DynamicDataTable/DynamicDataTable';
 import { DetailedViewToggle } from './DetailedViewToggle/DetailedViewToggle';
 import { useApiData } from '../../context/ApiDataContext';
 import { useDataFilters } from '../../hooks/useDataFilters.hook';
-import { getVisibleHeaders, getColumnStats } from '../../helpers/columnVisibility.helper';
+import {
+    getVisibleHeaders,
+    getTabHeaders,
+    TABLE_ORDER_TAB_DEFINITIONS
+} from '../../helpers/columnVisibility.helper';
 import ErrorCard from '../ErrorCard';
 import MetricsSection from '../Metrics/MetricsSection';
 import {
@@ -25,6 +29,7 @@ export const Dashboard = () => {
     
     // State dla widoku szczegółowego (domyślnie wyłączony)
     const [detailedView, setDetailedView] = useState(false);
+    const [activeTableTab, setActiveTableTab] = useState('last');
 
     // Logika filtrowania przeniesiona do custom hooka
     const {
@@ -35,8 +40,32 @@ export const Dashboard = () => {
     } = useDataFilters(excelData?.data);
     
     // Oblicz widoczne nagłówki na podstawie trybu widoku
-    const visibleHeaders = getVisibleHeaders(excelData?.headers, detailedView);
-    const columnStats = getColumnStats(excelData?.headers, detailedView);
+    const fallbackHeaders = useMemo(
+        () => getVisibleHeaders(excelData?.headers, detailedView),
+        [excelData?.headers, detailedView]
+    );
+
+    const tableHeaders = useMemo(() => {
+        const headers = getTabHeaders(excelData?.headers, detailedView, activeTableTab);
+        if (headers && headers.length > 0) {
+            return headers;
+        }
+        return fallbackHeaders;
+    }, [excelData?.headers, detailedView, activeTableTab, fallbackHeaders]);
+
+    const columnStats = useMemo(() => {
+        const total = excelData?.headers?.length || 0;
+        const visible = tableHeaders?.length || 0;
+        return {
+            total,
+            visible,
+            hidden: Math.max(total - visible, 0)
+        };
+    }, [excelData?.headers, tableHeaders]);
+
+    const handleTabChange = (_, newValue) => {
+        setActiveTableTab(newValue);
+    };
 
     const dashboardMetricItems = useMemo(() => {
         if (!excelData?.data || excelData.data.length === 0) {
@@ -287,10 +316,69 @@ export const Dashboard = () => {
                 filteredCount={filteredCount}
             />
 
+            <Box
+                sx={{
+                    mt: 3,
+                    borderRadius: 2,
+                    backgroundColor: 'transparent',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    px: { xs: 1.5, md: 2 },
+                    pt: 1,
+                    pb: 0.5
+                }}
+            >
+                <Tabs
+                    value={activeTableTab}
+                    onChange={handleTabChange}
+                    variant="scrollable"
+                    allowScrollButtonsMobile
+                    sx={{
+                        '& .MuiTabs-flexContainer': {
+                            gap: { xs: 1, sm: 1.5 }
+                        },
+                        '& .MuiTab-root': {
+                            minHeight: 44,
+                            borderRadius: 1.5,
+                            textTransform: 'uppercase',
+                            fontFamily: 'inherit',
+                            fontWeight: 700,
+                            letterSpacing: 1,
+                            color: 'text.secondary',
+                            '& .MuiTab-wrapper': {
+                                color: 'text.secondary',
+                                fontWeight: 700
+                            },
+                            px: 2.5
+                        },
+                        '& .Mui-selected': {
+                            color: 'primary.contrastText !important',
+                            backgroundColor: 'primary.main',
+                            '& .MuiTab-wrapper': {
+                                color: 'primary.contrastText',
+                                fontWeight: 800
+                            }
+                        },
+                        '& .MuiTabs-indicator': {
+                            display: 'none'
+                        }
+                    }}
+                >
+                    {TABLE_ORDER_TAB_DEFINITIONS.map((tab) => (
+                        <Tab
+                            key={tab.id}
+                            value={tab.id}
+                            label={tab.label}
+                        />
+                    ))}
+                </Tabs>
+            </Box>
+
             {/* Tabela danych - z filtrowanymi nagłówkami */}
             <DynamicDataTable
+                key={`${activeTableTab}-${detailedView ? 'detail' : 'essential'}`}
                 data={excelData.data}
-                headers={visibleHeaders}
+                headers={tableHeaders}
                 filteredData={filteredData}
             />
 

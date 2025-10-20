@@ -66,7 +66,7 @@ export const DetailedViewToggle = ({
                 />
                 
                 <Chip 
-                    label={detailedView ? 'Wszystkie kolumny' : 'Tylko kluczowe'}
+                    label={detailedView ? 'Rozszerzone kolumny' : 'Tylko kluczowe'}
                     size="small"
                     color={detailedView ? 'primary' : 'default'}
                     variant={detailedView ? 'filled' : 'outlined'}
@@ -79,8 +79,8 @@ export const DetailedViewToggle = ({
                 <Tooltip 
                     title={
                         detailedView 
-                            ? 'Wyświetla wszystkie kolumny z pliku Excel' 
-                            : 'Wyświetla tylko 7 najważniejszych kolumn biznesowych'
+                            ? 'Wyświetla rozszerzony zestaw kolumn dla bieżącej zakładki' 
+                            : 'Wyświetla tylko kluczowe kolumny dla bieżącej zakładki'
                     }
                     arrow
                 >
