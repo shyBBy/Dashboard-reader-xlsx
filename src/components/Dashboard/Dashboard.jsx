@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, Alert, Divider, CircularProgress, Tabs, Tab } from '@mui/material';
-import { Warning, Store, Assessment, Today, ShoppingCart } from '@mui/icons-material';
+import { Warning, Assessment, Today, ShoppingCart } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { DataFilters } from './DataFilters/DataFilters';
 import { DynamicDataTable } from './DynamicDataTable/DynamicDataTable';
@@ -137,17 +137,6 @@ export const Dashboard = () => {
         const availabilityIntent = getAvailabilityCardType(scopedMetrics.availabilityAvg);
 
         return [
-            {
-                id: 'dashboard-total-stores',
-                overline: 'Sklepy',
-                title: 'Sklepy w danych',
-                value: formatDisplayValue(scopedMetrics.totalStores),
-                helperText: 'unikalne sklepy w zestawie',
-                icon: <Store fontSize="inherit" />,
-                intent: 'primary',
-                trend: buildPercentageTrend(scopedMetrics.totalStores, baseMetrics.totalStores),
-                sparkline: { data: buildSparkline(baseMetrics.totalStores, scopedMetrics.totalStores), color: 'primary' },
-            },
             {
                 id: 'dashboard-availability',
                 overline: 'Dostępność',
@@ -345,19 +334,16 @@ export const Dashboard = () => {
                             fontWeight: 700,
                             letterSpacing: 1,
                             color: 'text.secondary',
-                            '& .MuiTab-wrapper': {
-                                color: 'text.secondary',
-                                fontWeight: 700
-                            },
                             px: 2.5
                         },
                         '& .Mui-selected': {
-                            color: 'primary.contrastText !important',
-                            backgroundColor: 'primary.main',
-                            '& .MuiTab-wrapper': {
-                                color: 'primary.contrastText',
-                                fontWeight: 800
-                            }
+                            color: (theme) => theme.palette.mode === 'dark' 
+                                ? `${theme.palette.common.white} !important`
+                                : `${theme.palette.primary.contrastText} !important`,
+                            backgroundColor: (theme) => theme.palette.mode === 'dark'
+                                ? theme.palette.grey[300]
+                                : theme.palette.primary.main,
+                            fontWeight: 800
                         },
                         '& .MuiTabs-indicator': {
                             display: 'none'

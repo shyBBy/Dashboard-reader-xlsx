@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Typography, Paper, Avatar, Stack, Chip } from '@mui/material';
 import { useTheme, alpha } from '@mui/material/styles';
+import { keyframes } from '@mui/system';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
@@ -56,6 +57,27 @@ const TrendIcon = ({ direction, color }) => {
     return <RemoveRoundedIcon sx={{ fontSize: 18, color }} />;
 };
 
+const glowPulse = keyframes({
+    '0%': {
+        transform: 'scale(0.75) rotate(0deg)',
+        opacity: 0.18,
+    },
+    '50%': {
+        transform: 'scale(1.05) rotate(6deg)',
+        opacity: 0.45,
+    },
+    '100%': {
+        transform: 'scale(0.75) rotate(0deg)',
+        opacity: 0.18,
+    },
+});
+
+const gradientShift = keyframes({
+    '0%': { backgroundPosition: '0% 50%' },
+    '50%': { backgroundPosition: '100% 50%' },
+    '100%': { backgroundPosition: '0% 50%' },
+});
+
 const MetricCard = ({ item, density, minHeight }) => {
     const theme = useTheme();
     const spacing = densityTokens[density] ?? densityTokens.comfortable;
@@ -77,6 +99,12 @@ const MetricCard = ({ item, density, minHeight }) => {
     } = item;
 
     const palette = getPaletteByIntent(intent, theme);
+    const accentMain = palette.main || theme.palette.primary.main;
+    const accentLight = palette.light || alpha(accentMain, 0.65);
+    const accentDark = palette.dark || alpha(accentMain, 0.9);
+    const cardBackground = theme.palette.background.paper;
+    const borderGradient = `linear-gradient(135deg, ${alpha(accentLight, theme.palette.mode === 'light' ? 0.45 : 0.6)} 0%, ${alpha(accentDark, theme.palette.mode === 'light' ? 0.85 : 0.95)} 100%)`;
+
     const cardKey = id || title;
     return (
         <Paper
@@ -92,21 +120,82 @@ const MetricCard = ({ item, density, minHeight }) => {
                 minHeight: minHeight || spacing.minHeight,
                 p: spacing.padding,
                 borderRadius: '14px',
-                backgroundColor: theme.palette.background.paper,
-                border: `1px solid ${alpha(theme.palette.divider, 0.35)}`,
+                background: `linear-gradient(${cardBackground}, ${cardBackground}) padding-box, ${borderGradient} border-box`,
+                border: '1px solid transparent',
                 boxShadow: theme.palette.mode === 'light'
-                    ? '0 10px 22px rgba(15, 23, 42, 0.06)'
-                    : '0 14px 28px rgba(2, 6, 23, 0.5)',
+                    ? `0 14px 30px rgba(15, 23, 42, 0.12)`
+                    : `0 24px 42px rgba(8, 11, 20, 0.78)`,
                 cursor: onClick ? 'pointer' : 'default',
                 transition: 'transform 0.16s ease, box-shadow 0.16s ease',
+                overflow: 'hidden',
+                '&:before': {
+                    content: '""',
+                    position: 'absolute',
+                    inset: '-40%',
+                    borderRadius: '40%',
+                    background: borderGradient,
+                    backgroundSize: '200% 200%',
+                    filter: 'blur(48px)',
+                    opacity: 0,
+                    transform: 'scale(0.65)',
+                    transition: 'opacity 0.6s ease, transform 0.6s ease',
+                    animation: `${glowPulse} 8s ease-in-out infinite, ${gradientShift} 18s ease-in-out infinite`,
+                    animationPlayState: 'paused',
+                    zIndex: 0,
+                },
+                '&:after': {
+                    content: '""',
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: 'inherit',
+                    background: borderGradient,
+                    backgroundSize: '160% 160%',
+                    opacity: 0,
+                    transform: 'scale(0.9)',
+                    transition: 'opacity 0.35s ease, transform 0.35s ease',
+                    animation: `${gradientShift} 12s ease-in-out infinite`,
+                    animationPlayState: 'paused',
+                    zIndex: 0,
+                },
                 '&:hover': {
-                    transform: 'translateY(-2px)',
+                    transform: 'translateY(-6px)',
                     boxShadow: theme.palette.mode === 'light'
-                        ? '0 16px 28px rgba(15, 23, 42, 0.08)'
-                        : '0 18px 34px rgba(2, 6, 23, 0.62)',
+                        ? `0 22px 40px rgba(15, 23, 42, 0.16)`
+                        : `0 30px 52px rgba(8, 11, 20, 0.9)`,
+                    '&:before': {
+                        opacity: 0.55,
+                        transform: 'scale(1)',
+                        animationPlayState: 'running',
+                    },
+                    '&:after': {
+                        opacity: 1,
+                        transform: 'scale(1)',
+                        animationPlayState: 'running',
+                    },
+                    '& .metric-card-content': {
+                        filter: 'brightness(1.06)',
+                    }
+                },
+                '&:focus-visible': {
+                    outline: `2px solid ${alpha(accentMain, 0.8)}`,
+                    outlineOffset: 4,
+                    '&:before': {
+                        opacity: 0.55,
+                        transform: 'scale(1)',
+                        animationPlayState: 'running',
+                    },
+                    '&:after': {
+                        opacity: 1,
+                        transform: 'scale(1)',
+                        animationPlayState: 'running',
+                    },
+                    '& .metric-card-content': {
+                        filter: 'brightness(1.06)',
+                    }
                 },
             }}
         >
+            <Box className="metric-card-content" sx={{ display: 'flex', flexDirection: 'column', gap: spacing.gap, flexGrow: 1, position: 'relative', zIndex: 1, transition: 'filter 0.35s ease' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                     {overline && (
@@ -145,9 +234,12 @@ const MetricCard = ({ item, density, minHeight }) => {
                             width: 40,
                             height: 40,
                             borderRadius: 12,
-                            backgroundColor: alpha(palette.main, 0.12),
-                            color: palette.main,
+                            backgroundColor: alpha(accentMain, 0.12),
+                            color: accentMain,
                             fontSize: 22,
+                            boxShadow: theme.palette.mode === 'dark'
+                                ? `0 12px 24px -8px ${alpha(accentMain, 0.6)}`
+                                : `0 10px 20px -8px ${alpha(accentMain, 0.4)}`,
                         }}
                     >
                         {icon}
@@ -206,6 +298,7 @@ const MetricCard = ({ item, density, minHeight }) => {
                     {footnote}
                 </Typography>
             )}
+            </Box>
         </Paper>
     );
 };

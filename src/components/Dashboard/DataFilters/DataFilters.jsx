@@ -314,8 +314,16 @@ export const DataFilters = ({ data, onFiltersChange, selectedFilters = {}, filte
 
                 {/* Informacja o interakcji ze StoreId */}
                 <Grid item xs={12}>
-                    <Box sx={{ p: 2, backgroundColor: 'info.light', borderRadius: 1, mb: 1 }}>
-                        <Typography variant="body2" color="info.dark">
+                    <Box sx={({ palette }) => ({ 
+                        p: 2, 
+                        backgroundColor: palette.mode === 'dark' 
+                            ? palette.grey[400]
+                            : palette.info.light, 
+                        borderRadius: 2, 
+                        mb: 1,
+                        border: `1px solid ${palette.divider}`
+                    })}>
+                        <Typography variant="body2" color="text.primary">
                             💡 <strong>Wskazówka:</strong> Aby sprawdzić konkretny sklep, możesz kliknąć na <strong>StoreId</strong> w tabeli.
                         </Typography>
                     </Box>
